@@ -95,7 +95,7 @@ COPY --from=builder --chown=www-data:www-data /app /app
 WORKDIR /app
 
 # Variables de entorno para Octane + FrankenPHP
-ENV SERVER_NAME=":80" \
+ENV SERVER_NAME=":8081" \
     FRANKENPHP_CONFIG="worker ./public/index.php" \
     OCTANE_SERVER="frankenphp"
 

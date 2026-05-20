@@ -8,9 +8,9 @@
         <!-- Slides -->
         <div id="slide1" class="absolute inset-0 transition-opacity duration-700 opacity-100">
             <div class="absolute inset-0 bg-black/40 z-10"></div>
-            <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80" 
+            <img src="{{ asset('images/carrusel1.png') }}" 
                  alt="Promoción frutas y verduras" 
-                 class="w-full h-full object-cover">
+                 class="w-full h-full  object-contain">
             <div class="absolute inset-0 z-20 flex flex-col items-center justify-center text-white text-center px-4">
                 <h2 class="text-3xl md:text-5xl font-bold mb-4">¡Frescos y saludables!</h2>
                 <p class="text-lg md:text-xl mb-6">Hasta 30% de descuento en frutas y verduras</p>

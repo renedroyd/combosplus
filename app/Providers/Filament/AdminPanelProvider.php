@@ -13,8 +13,6 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -34,12 +32,14 @@ class AdminPanelProvider extends PanelProvider
             ->authGuard('admin') // <-- Usa el guard 'admin' que creamos
             ->registration()
             ->login()
-            ->brandLogo(asset('images/logo2.png'))
+            ->brandLogo(asset('images/logo3.png'))
             ->brandLogoHeight('3rem')
             ->colors([
                 'primary' => Color::Blue,
             ])
             ->sidebarCollapsibleOnDesktop()
+            ->resourceCreatePageRedirect('index')
+            ->resourceEditPageRedirect('index')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
