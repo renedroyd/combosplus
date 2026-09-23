@@ -2,49 +2,53 @@
 
 namespace App\Policies;
 
+use App\Enums\TenantRole;
 use App\Models\Order;
-use App\Models\User;
-use App\Models\Admin; // Asegúrate de importar el modelo Admin
-use Illuminate\Auth\Access\HandlesAuthorization;
+use App\Models\PlatformUser;
+use App\Services\Tenancy\TenantAccessService;
 
 class OrderPolicy
 {
-    use HandlesAuthorization;
-
-    /**
-     * Determina si el usuario puede ver una orden.
-     *
-     * @param  mixed  $user  (puede ser User o Admin)
-     * @param  \App\Models\Order  $order
-     * @return bool
-     */
-    public function view($user, Order $order)
+    public function viewAny(PlatformUser $user, TenantAccessService $access): bool
     {
-        // Si es administrador, puede ver cualquier orden
-        if ($user instanceof Admin) {
-            return true; // O puedes agregar lógica de roles: $user->hasRole('super-admin')
-        }
-
-        // Si es cliente, solo puede ver sus propias órdenes
-        return $user->id === $order->user_id;
+        return $access->canAccessCurrentTenant($user);
     }
 
-    /**
-     * Determina si el usuario puede actualizar una orden.
-     *
-     * @param  mixed  $user
-     * @param  \App\Models\Order  $order
-     * @return bool
-     */
-    public function update($user, Order $order)
+    public function view(PlatformUser $user, Order $order, TenantAccessService $access): bool
     {
-        // Similar: administradores pueden, clientes solo las suyas (si aplica)
-        if ($user instanceof Admin) {
-            return true;
-        }
-
-        return $user->id === $order->user_id;
+        return $this->canOperateOrders($user, $access);
     }
 
-    // Otros métodos (delete, etc.) si los tienes, con la misma lógica
+    public function update(PlatformUser $user, Order $order, TenantAccessService $access): bool
+    {
+        return $this->canOperateOrders($user, $access);
+    }
+
+    public function delete(PlatformUser $user, Order $order, TenantAccessService $access): bool
+    {
+        return $this->canManageOrders($user, $access);
+    }
+
+    private function canOperateOrders(PlatformUser $user, TenantAccessService $access): bool
+    {
+        $membership = $access->membershipForCurrentTenant($user);
+
+        return $membership !== null && in_array($membership->role, [
+            TenantRole::Owner,
+            TenantRole::Admin,
+            TenantRole::Manager,
+            TenantRole::Staff,
+        ], true);
+    }
+
+    private function canManageOrders(PlatformUser $user, TenantAccessService $access): bool
+    {
+        $membership = $access->membershipForCurrentTenant($user);
+
+        return $membership !== null && in_array($membership->role, [
+            TenantRole::Owner,
+            TenantRole::Admin,
+            TenantRole::Manager,
+        ], true);
+    }
 }
