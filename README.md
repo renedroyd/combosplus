@@ -20,6 +20,14 @@ The current application includes commerce and operational flows such as:
 - Laravel Octane
 - Docker/FrankenPHP deployment foundation
 
+## Multi-tenancy foundation
+
+Phase 2 has started with `stancl/tenancy` 3.x and a database-per-tenant foundation. The central database now owns tenant and domain metadata, while tenant databases are provisioned and migrated through the package lifecycle pipeline. Business-domain migrations remain in the central migration tree temporarily. The tenant-schema migration plan is documented in `docs/TENANT-SCHEMA.md`; the next implementation step is to build the tenant schema in parallel, then perform the application cutover once provisioning and isolation tests are green.
+
+For local development, configure `TENANCY_CENTRAL_DOMAINS` and use tenant domains such as `shop.localhost`. Production will use real subdomains/custom domains after the tenant schema migration is complete.
+
+> Dependency note: `stancl/tenancy` 3.10.x is being used while the project remains on PHP 8.3. The package supports Laravel 12 and PHP 8.x.
+
 ## Product direction
 
 The target platform combines:
@@ -32,6 +40,7 @@ See:
 
 - [Roadmap](docs/ROADMAP.md)
 - [Architecture](docs/ARCHITECTURE.md)
+- [Tenant schema strategy](docs/TENANT-SCHEMA.md)
 
 ## Technology
 
@@ -87,7 +96,7 @@ Run the application test suite with:
 composer test
 ```
 
-CI is defined in `.github/workflows/ci.yml` and must be verified before advancing implementation phases.
+CI is defined in `.github/workflows/ci.yml` and must be verified before advancing implementation phases. At the moment, GitHub is not returning workflow runs/statuses for this repository, so CI is treated as **unverified** rather than green.
 
 ## Docker
 

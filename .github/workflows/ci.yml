@@ -1,13 +1,22 @@
-name: CI
+name: CombosPlus CI
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: combosplus-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   tests:
+    name: Laravel tests
     runs-on: ubuntu-latest
 
     services:
@@ -35,6 +44,25 @@ jobs:
           coverage: none
           tools: composer:v2
 
+      - name: Synchronize Composer lock
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          composer update --with-all-dependencies --no-interaction --prefer-dist --no-progress
+
+          if git diff --quiet -- composer.lock; then
+            echo "Composer lock is already synchronized."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add composer.lock
+          git commit -m "chore: synchronize composer lock"
+          git push --force origin HEAD:${{ github.head_ref }}
+
+      - name: Validate Composer metadata
+        run: composer validate --no-check-publish
+
       - name: Install PHP dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
@@ -50,6 +78,7 @@ jobs:
           DB_DATABASE: combosplus_test
           DB_USERNAME: root
           DB_PASSWORD: root
+          TENANCY_CENTRAL_DOMAINS: localhost
 
       - name: Run tests
         run: php artisan test
@@ -60,3 +89,4 @@ jobs:
           DB_DATABASE: combosplus_test
           DB_USERNAME: root
           DB_PASSWORD: root
+          TENANCY_CENTRAL_DOMAINS: localhost
