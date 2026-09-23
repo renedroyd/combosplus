@@ -7,6 +7,7 @@ use Stancl\Tenancy\TenantDatabaseManagers\SQLiteDatabaseManager;
 
 return [
     'tenant_model' => App\Models\Tenant::class,
+    'id_generator' => Stancl\Tenancy\UUIDGenerator::class,
     'domain_model' => Stancl\Tenancy\Database\Models\Domain::class,
 
     'central_domains' => array_values(array_filter(array_map(
@@ -30,12 +31,14 @@ return [
             'mysql' => MySQLDatabaseManager::class,
             'pgsql' => PostgreSQLDatabaseManager::class,
             'sqlite' => SQLiteDatabaseManager::class,
+            'mariadb' => MySQLDatabaseManager::class,
         ],
     ],
 
     'migration_parameters' => [
         '--force' => true,
         '--path' => [database_path('migrations/tenant')],
+        '--realpath' => true,
     ],
 
     'seeder_parameters' => [
@@ -43,4 +46,5 @@ return [
     ],
 
     'features' => [],
+    'routes' => true,
 ];
