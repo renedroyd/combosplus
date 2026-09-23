@@ -47,7 +47,7 @@ jobs:
       - name: Synchronize Composer lock
         if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
         run: |
-          composer update stancl/tenancy symfony/html-sanitizer --with-all-dependencies --no-interaction --prefer-dist --no-progress
+          composer update stancl/tenancy --with-all-dependencies --no-interaction --prefer-dist --no-progress
 
           if git diff --quiet -- composer.lock; then
             echo "Composer lock is already synchronized."
