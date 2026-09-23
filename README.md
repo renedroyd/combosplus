@@ -28,6 +28,22 @@ For local development, configure `TENANCY_CENTRAL_DOMAINS` and use tenant domain
 
 > Dependency note: `stancl/tenancy` 3.10.x is being used while the project remains on PHP 8.3. The Composer platform is pinned to PHP 8.3 so the lock file cannot resolve PHP 8.4-only Symfony releases. The committed lock file includes the tenancy dependency graph and is generated against the project platform.
 
+## Identity and access foundation
+
+Phase 3 now introduces the platform membership contract. The central database owns `tenant_memberships`, allowing one platform identity to belong to multiple tenants with an explicit role and status.
+
+Supported roles:
+
+- owner
+- admin
+- manager
+- staff
+- customer
+
+Memberships are central and explicitly use the tenancy package's `CentralConnection` concern, so they remain available even after a tenant database has been initialized. The existing tenant-local users are intentionally retained during this staged migration because current commerce relationships still reference them.
+
+See [Identity and access](docs/IDENTITY.md) for the transition and security rules.
+
 ## Product direction
 
 The target platform combines:
@@ -41,6 +57,7 @@ See:
 - [Roadmap](docs/ROADMAP.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Tenant schema strategy](docs/TENANT-SCHEMA.md)
+- [Identity and access](docs/IDENTITY.md)
 
 ## Technology
 
