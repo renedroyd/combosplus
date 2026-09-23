@@ -26,7 +26,7 @@ Phase 2 has started with `stancl/tenancy` 3.x and a database-per-tenant foundati
 
 For local development, configure `TENANCY_CENTRAL_DOMAINS` and use tenant domains such as `shop.localhost`. Production will use real subdomains/custom domains after the tenant schema migration is complete.
 
-> Dependency note: `stancl/tenancy` 3.10.x is being used while the project remains on PHP 8.3. The package supports Laravel 12 and PHP 8.x. citeturn0search0
+> Dependency note: `stancl/tenancy` 3.10.x is being used while the project remains on PHP 8.3. The package supports Laravel 12 and PHP 8.x.
 
 ## Product direction
 
