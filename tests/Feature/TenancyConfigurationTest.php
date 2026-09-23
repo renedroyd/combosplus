@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Tenant;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -39,7 +38,7 @@ class TenancyConfigurationTest extends TestCase
 
         try {
             $this->assertNotSame(
-                DB::connection()->getDatabaseName(),
+                config('database.connections.mysql.database'),
                 $databaseName
             );
 
@@ -51,7 +50,6 @@ class TenancyConfigurationTest extends TestCase
             $this->assertTrue(Schema::connection('tenant')->hasTable('remesas'));
         } finally {
             tenancy()->end();
-            DB::statement('DROP DATABASE IF EXISTS `'.$databaseName.'`');
             $tenant->delete();
         }
     }
