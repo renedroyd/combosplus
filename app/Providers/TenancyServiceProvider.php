@@ -3,18 +3,18 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Stancl\JobPipeline\JobPipeline;
-use Stancl\Tenancy\Events\TenantCreated;
-use Stancl\Tenancy\Events\TenancyEnded;
-use Stancl\Tenancy\Events\TenancyInitialized;
-use Stancl\Tenancy\Jobs\CreateDatabase;
-use Stancl\Tenancy\Jobs\MigrateDatabase;
-use Stancl\Tenancy\Listeners\BootstrapTenancy;
-use Stancl\Tenancy\Listeners\RevertToCentralContext;
+use Stancl\Tenancy\Events;
+use Stancl\Tenancy\Jobs;
+use Stancl\Tenancy\Listeners;
+use Stancl\Tenancy\Middleware;
 
 class TenancyServiceProvider extends ServiceProvider
 {
+    public static string $controllerNamespace = '';
+
     public function register(): void
     {
         //
@@ -22,16 +22,64 @@ class TenancyServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Event::listen(TenantCreated::class, JobPipeline::make([
-            CreateDatabase::class,
-            MigrateDatabase::class,
-        ])->send(function (TenantCreated $event) {
-            return $event->tenant;
-        })->toListener());
+        $this->bootEvents();
+        $this->mapTenantRoutes();
+        $this->prioritizeTenancyMiddleware();
+    }
 
-        // The package's provider supplies configuration and commands, while
-        // application providers own the event-to-listener mapping.
-        Event::listen(TenancyInitialized::class, BootstrapTenancy::class);
-        Event::listen(TenancyEnded::class, RevertToCentralContext::class);
+    protected function bootEvents(): void
+    {
+        Event::listen(Events\TenantCreated::class, JobPipeline::make([
+            Jobs\CreateDatabase::class,
+            Jobs\MigrateDatabase::class,
+        ])->send(function (Events\TenantCreated $event) {
+            return $event->tenant;
+        })->shouldBeQueued(false)->toListener());
+
+        Event::listen(Events\TenantDeleted::class, JobPipeline::make([
+            Jobs\DeleteDatabase::class,
+        ])->send(function (Events\TenantDeleted $event) {
+            return $event->tenant;
+        })->shouldBeQueued(false)->toListener());
+
+        Event::listen(
+            Events\TenancyInitialized::class,
+            Listeners\BootstrapTenancy::class
+        );
+
+        Event::listen(
+            Events\TenancyEnded::class,
+            Listeners\RevertToCentralContext::class
+        );
+    }
+
+    protected function mapTenantRoutes(): void
+    {
+        $this->app->booted(function (): void {
+            if (! file_exists(base_path('routes/tenant.php'))) {
+                return;
+            }
+
+            Route::namespace(static::$controllerNamespace)
+                ->group(base_path('routes/tenant.php'));
+        });
+    }
+
+    protected function prioritizeTenancyMiddleware(): void
+    {
+        $tenancyMiddleware = [
+            Middleware\PreventAccessFromCentralDomains::class,
+            Middleware\InitializeTenancyByDomain::class,
+            Middleware\InitializeTenancyBySubdomain::class,
+            Middleware\InitializeTenancyByDomainOrSubdomain::class,
+            Middleware\InitializeTenancyByPath::class,
+            Middleware\InitializeTenancyByRequestData::class,
+        ];
+
+        $kernel = $this->app->make(\Illuminate\Contracts\Http\Kernel::class);
+
+        foreach (array_reverse($tenancyMiddleware) as $middleware) {
+            $kernel->prependToMiddlewarePriority($middleware);
+        }
     }
 }
