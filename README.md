@@ -46,7 +46,7 @@ Protected tenant routes use auth plus EnsureTenantMembership. The middleware che
 
 The legacy tenant-local User model remains during the staged migration because existing commerce relationships still reference it. Operational user relationships will be migrated incrementally after tenant switching and policy coverage are in place.
 
-See [Identity and access](docs/IDENTITY.md) for the transition and security rules. Tenant switching now exposes only active memberships and resolves the destination domain from central tenant metadata; see [Tenant switching](docs/TENANT-SWITCHING.md). Authorization policies now define tenant-scoped catalog and order permissions; see [Authorization](docs/AUTHORIZATION.md).
+See [Identity and access](docs/IDENTITY.md) for the transition and security rules. Tenant switching now exposes only active memberships and resolves the destination domain from central tenant metadata; see [Tenant switching](docs/TENANT-SWITCHING.md). Authorization policies now define tenant-scoped catalog and order permissions; see [Authorization](docs/AUTHORIZATION.md). The staged customer identity bridge now provisions tenant-local customer records from the central platform identity; see [Customer identity](docs/CUSTOMER-IDENTITY.md).
 
 ## Product direction
 
