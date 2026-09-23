@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: combosplus-ci-${{ github.workflow }}-${{ github.ref }}
@@ -43,6 +43,22 @@ jobs:
           extensions: mbstring, dom, fileinfo, mysql, pdo_mysql
           coverage: none
           tools: composer:v2
+
+      - name: Synchronize Composer lock
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          composer update stancl/tenancy --with-dependencies --no-interaction --prefer-dist --no-progress
+
+          if git diff --quiet -- composer.lock; then
+            echo "Composer lock is already synchronized."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add composer.lock
+          git commit -m "chore: synchronize composer lock"
+          git push origin HEAD:${{ github.head_ref }}
 
       - name: Validate Composer metadata
         run: composer validate --no-check-publish
