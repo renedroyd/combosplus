@@ -42,9 +42,9 @@ The following existing application areas are tenant-owned and are planned for th
 
 ## Transitional migration strategy
 
-The current application still executes its legacy business migrations from `database/migrations`. They will not be deleted or moved in this step.
+The current application still executes its legacy business migrations from `database/migrations`. They are intentionally retained during the staged cutover.
 
-Phase 2 will first make a complete tenant schema available by adding the tenant copies under `database/migrations/tenant`. This lets tenant provisioning create an isolated operational schema before application routes are switched to tenant context.
+Phase 2 now makes a complete tenant schema available through mirrored migrations under `database/migrations/tenant`. This lets tenant provisioning create an isolated operational schema before application routes are switched to tenant context.
 
 After tenant provisioning and isolation tests are green, a dedicated migration cutover will:
 
