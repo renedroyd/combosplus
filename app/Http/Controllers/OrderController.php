@@ -1,23 +1,34 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Enums\TenantRole;
 use App\Models\Order;
 use App\Notifications\OrderCancelatedTelegram;
-use App\Notifications\OrderCreatedTelegram;
-use Illuminate\Http\Request;
+use App\Services\Tenancy\TenantAccessService;
 use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
+    public function __construct(private readonly TenantAccessService $tenantAccess) {}
+
     public function index()
     {
-        $orders = auth()->user()->orders()->with('items.product')->latest()->paginate(10);
+        $user = request()->user();
+        $membership = $this->tenantAccess->membershipForCurrentTenant($user);
+        abort_unless($membership, 403, 'No tienes acceso a este negocio.');
+
+        $query = Order::query()->with('items.product')->latest();
+        if ($membership->role === TenantRole::Customer) {
+            $query->where('user_id', $user->getAuthIdentifier());
+        }
+        $orders = $query->paginate(10);
         return view('orders.index', compact('orders'));
     }
 
     public function show(Order $order)
     {
-        $this->authorize('view', $order); // Policy necesaria
+        $this->authorize('view', $order);
         $order->load('items.product', 'address', 'paymentMethod');
         return view('orders.show', compact('order'));
     }
@@ -25,36 +36,13 @@ class OrderController extends Controller
     public function cancel(Order $order)
     {
         $this->authorize('update', $order);
-        if ($order->status === 'pending') {
-            $order->update(['status' => 'cancelled']);
-
-            try {
-                // NOTIFICACIÓN TELEGRAM
-                
-                // 1. Notificar al administrador (siempre)
-                $adminChatId = env('TELEGRAM_ADMIN_CHAT_ID');
-                Log::info('Admin Chat ID: ' . ($adminChatId ?? 'no definido'));
-
-                if ($adminChatId) {
-                    \Illuminate\Support\Facades\Notification::route('telegram', $adminChatId)
-                        ->notify(new OrderCancelatedTelegram($order, 'admin'));
-                    Log::info('Notificación admin enviada');
-                } else {
-                    Log::warning('TELEGRAM_ADMIN_CHAT_ID no está definido en .env');
-                }
-                
-                // 2. Notificar al cliente (si tiene Telegram configurado)
-                if ($order->user->telegram_chat_id) {
-                    $order->user->notify(new OrderCancelatedTelegram($order, 'customer'));
-                }
-                
-            } catch (\Exception $e) {
-                    Log::error('Error enviando notificación: ' . $e->getMessage());
-                    Log::error($e->getTraceAsString());
-            }
-
-            return back()->with('success', 'Pedido cancelado.');
-        }
-        return back()->with('error', 'No se puede cancelar este pedido.');
+        if ($order->status !== 'pending') return back()->with('error', 'No se puede cancelar este pedido.');
+        $order->update(['status' => 'cancelled']);
+        try {
+            $adminChatId = env('TELEGRAM_ADMIN_CHAT_ID');
+            if ($adminChatId) \Illuminate\Support\Facades\Notification::route('telegram', $adminChatId)->notify(new OrderCancelatedTelegram($order, 'admin'));
+            if ($order->user->telegram_chat_id) $order->user->notify(new OrderCancelatedTelegram($order, 'customer'));
+        } catch (\Exception $e) { Log::error('Error enviando notificación de cancelación: '.$e->getMessage()); }
+        return back()->with('success', 'Pedido cancelado.');
     }
 }

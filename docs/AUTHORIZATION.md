@@ -1,14 +1,23 @@
-# Authorization
+# Tenant-aware authorization
 
-CombosPlus uses two authorization layers:
+Authorization is evaluated against the resolved tenant and the authenticated PlatformUser.
 
-1. tenant resolution and database isolation establish the security boundary;
-2. policies enforce role permissions inside the resolved tenant.
+## Customer data
 
-Catalog management is available to owner, admin and manager roles. Staff and customer roles do not receive product create, update or delete permissions.
+- Customers can only view and manage their own addresses.
+- Customers can only view their own orders.
+- Customers can only cancel their own pending orders.
+- Zelle payment confirmation is protected by the same order authorization boundary.
+- Staff roles can operate tenant orders according to the role matrix.
 
-Order operational actions are available to owner, admin, manager and staff. Destructive order management is limited to owner, admin and manager.
+## Collection boundaries
 
-A membership from tenant A is never treated as permission for tenant B. Policy checks resolve the current tenant from the tenancy context rather than accepting a tenant identifier supplied by the client.
+Order listing is explicitly scoped: customers query only records whose user_id matches the authenticated platform identity. Staff roles can query the tenant's complete order collection. This is separate from object-level policies so list endpoints cannot expose another customer's records.
 
-The authenticated web guard resolves PlatformUser. Customer ownership rules for legacy tenant-local users remain part of the staged identity migration and will be completed when operational customer relationships are migrated.
+## Tenant isolation
+
+All operational queries execute on the resolved tenant connection. Controllers and policies never accept a client-supplied tenant identifier as an authorization decision.
+
+## Next
+
+Continue moving authenticated storefront routes into the tenant route boundary, then migrate remaining customer/order/cart/address assumptions and remove compatibility paths once the tenant boundary is complete.
