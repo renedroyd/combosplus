@@ -44,7 +44,7 @@ Supported roles:
 
 Protected tenant routes use auth plus EnsureTenantMembership. The middleware checks the active membership against the tenant already resolved by the tenancy context. A tenant ID supplied by a request is never accepted as an authorization claim.
 
-The legacy tenant-local User model remains during the staged migration because existing commerce relationships still reference it. Operational user relationships will be migrated incrementally after tenant switching and policy coverage are in place.
+The legacy tenant-local User model remains during the staged migration because existing commerce relationships still reference it. PlatformUser now exposes tenant-context cart, address and order relationships, and tenant authentication provisions the local customer projection. Operational user relationships will be migrated incrementally as storefront routes move into the tenant boundary.
 
 See [Identity and access](docs/IDENTITY.md) for the transition and security rules. Tenant switching now exposes only active memberships and resolves the destination domain from central tenant metadata; see [Tenant switching](docs/TENANT-SWITCHING.md). Authorization policies now define tenant-scoped catalog and order permissions; see [Authorization](docs/AUTHORIZATION.md). The staged customer identity bridge now provisions tenant-local customer records from the central platform identity; see [Customer identity](docs/CUSTOMER-IDENTITY.md).
 

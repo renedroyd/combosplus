@@ -9,46 +9,42 @@ use App\Services\Tenancy\TenantAccessService;
 
 class OrderPolicy
 {
-    public function viewAny(PlatformUser $user, TenantAccessService $access): bool
+    public function __construct(private readonly TenantAccessService $access) {}
+
+    public function viewAny(PlatformUser $user): bool
     {
-        return $access->canAccessCurrentTenant($user);
+        return $this->access->canAccessCurrentTenant($user);
     }
 
-    public function view(PlatformUser $user, Order $order, TenantAccessService $access): bool
+    public function view(PlatformUser $user, Order $order): bool
     {
-        return $this->canOperateOrders($user, $access);
+        if (! $this->access->canAccessCurrentTenant($user)) return false;
+        $role = $this->access->membershipForCurrentTenant($user)?->role;
+
+        if ($role === TenantRole::Customer) {
+            return (string) $order->user_id === (string) $user->getAuthIdentifier();
+        }
+
+        return in_array($role, [TenantRole::Owner, TenantRole::Admin, TenantRole::Manager, TenantRole::Staff], true);
     }
 
-    public function update(PlatformUser $user, Order $order, TenantAccessService $access): bool
+    public function update(PlatformUser $user, Order $order): bool
     {
-        return $this->canOperateOrders($user, $access);
+        if (! $this->access->canAccessCurrentTenant($user)) return false;
+        $role = $this->access->membershipForCurrentTenant($user)?->role;
+
+        if ($role === TenantRole::Customer) {
+            return (string) $order->user_id === (string) $user->getAuthIdentifier()
+                && $order->status === 'pending';
+        }
+
+        return in_array($role, [TenantRole::Owner, TenantRole::Admin, TenantRole::Manager, TenantRole::Staff], true);
     }
 
-    public function delete(PlatformUser $user, Order $order, TenantAccessService $access): bool
+    public function delete(PlatformUser $user, Order $order): bool
     {
-        return $this->canManageOrders($user, $access);
-    }
+        $role = $this->access->membershipForCurrentTenant($user)?->role;
 
-    private function canOperateOrders(PlatformUser $user, TenantAccessService $access): bool
-    {
-        $membership = $access->membershipForCurrentTenant($user);
-
-        return $membership !== null && in_array($membership->role, [
-            TenantRole::Owner,
-            TenantRole::Admin,
-            TenantRole::Manager,
-            TenantRole::Staff,
-        ], true);
-    }
-
-    private function canManageOrders(PlatformUser $user, TenantAccessService $access): bool
-    {
-        $membership = $access->membershipForCurrentTenant($user);
-
-        return $membership !== null && in_array($membership->role, [
-            TenantRole::Owner,
-            TenantRole::Admin,
-            TenantRole::Manager,
-        ], true);
+        return in_array($role, [TenantRole::Owner, TenantRole::Admin, TenantRole::Manager], true);
     }
 }

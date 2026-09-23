@@ -9,34 +9,38 @@ use App\Services\Tenancy\TenantAccessService;
 
 class ProductPolicy
 {
-    public function viewAny(PlatformUser $user, TenantAccessService $access): bool
+    public function __construct(private readonly TenantAccessService $access)
     {
-        return $access->canAccessCurrentTenant($user);
     }
 
-    public function view(PlatformUser $user, Product $product, TenantAccessService $access): bool
+    public function viewAny(PlatformUser $user): bool
     {
-        return $access->canAccessCurrentTenant($user);
+        return $this->access->canAccessCurrentTenant($user);
     }
 
-    public function create(PlatformUser $user, TenantAccessService $access): bool
+    public function view(PlatformUser $user, Product $product): bool
     {
-        return $this->canManageCatalog($user, $access);
+        return $this->access->canAccessCurrentTenant($user);
     }
 
-    public function update(PlatformUser $user, Product $product, TenantAccessService $access): bool
+    public function create(PlatformUser $user): bool
     {
-        return $this->canManageCatalog($user, $access);
+        return $this->canManageCatalog($user);
     }
 
-    public function delete(PlatformUser $user, Product $product, TenantAccessService $access): bool
+    public function update(PlatformUser $user, Product $product): bool
     {
-        return $this->canManageCatalog($user, $access);
+        return $this->canManageCatalog($user);
     }
 
-    private function canManageCatalog(PlatformUser $user, TenantAccessService $access): bool
+    public function delete(PlatformUser $user, Product $product): bool
     {
-        $membership = $access->membershipForCurrentTenant($user);
+        return $this->canManageCatalog($user);
+    }
+
+    private function canManageCatalog(PlatformUser $user): bool
+    {
+        $membership = $this->access->membershipForCurrentTenant($user);
 
         return $membership !== null && in_array($membership->role, [
             TenantRole::Owner,
