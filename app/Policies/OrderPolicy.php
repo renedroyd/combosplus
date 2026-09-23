@@ -9,29 +9,33 @@ use App\Services\Tenancy\TenantAccessService;
 
 class OrderPolicy
 {
-    public function viewAny(PlatformUser $user, TenantAccessService $access): bool
+    public function __construct(private readonly TenantAccessService $access)
     {
-        return $access->canAccessCurrentTenant($user);
     }
 
-    public function view(PlatformUser $user, Order $order, TenantAccessService $access): bool
+    public function viewAny(PlatformUser $user): bool
     {
-        return $this->canOperateOrders($user, $access);
+        return $this->access->canAccessCurrentTenant($user);
     }
 
-    public function update(PlatformUser $user, Order $order, TenantAccessService $access): bool
+    public function view(PlatformUser $user, Order $order): bool
     {
-        return $this->canOperateOrders($user, $access);
+        return $this->canOperateOrders($user);
     }
 
-    public function delete(PlatformUser $user, Order $order, TenantAccessService $access): bool
+    public function update(PlatformUser $user, Order $order): bool
     {
-        return $this->canManageOrders($user, $access);
+        return $this->canOperateOrders($user);
     }
 
-    private function canOperateOrders(PlatformUser $user, TenantAccessService $access): bool
+    public function delete(PlatformUser $user, Order $order): bool
     {
-        $membership = $access->membershipForCurrentTenant($user);
+        return $this->canManageOrders($user);
+    }
+
+    private function canOperateOrders(PlatformUser $user): bool
+    {
+        $membership = $this->access->membershipForCurrentTenant($user);
 
         return $membership !== null && in_array($membership->role, [
             TenantRole::Owner,
@@ -41,9 +45,9 @@ class OrderPolicy
         ], true);
     }
 
-    private function canManageOrders(PlatformUser $user, TenantAccessService $access): bool
+    private function canManageOrders(PlatformUser $user): bool
     {
-        $membership = $access->membershipForCurrentTenant($user);
+        $membership = $this->access->membershipForCurrentTenant($user);
 
         return $membership !== null && in_array($membership->role, [
             TenantRole::Owner,
