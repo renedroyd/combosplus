@@ -22,15 +22,17 @@ The current application includes commerce and operational flows such as:
 
 ## Multi-tenancy foundation
 
-Phase 2 has started with `stancl/tenancy` 3.x and a database-per-tenant foundation. The central database now owns tenant and domain metadata, while tenant databases are provisioned and migrated through the package lifecycle pipeline. Business-domain migrations are now mirrored into `database/migrations/tenant` in dependency order. The legacy central migrations remain temporarily so the existing application continues to boot during the staged cutover. The provisioning test verifies that a tenant receives isolated `users`, `products`, `orders`, and `remesas` tables. Tenant routes now resolve by domain, tenancy bootstrap/revert listeners are registered explicitly, tenant databases are deleted with the tenant lifecycle, and an isolation test verifies that tenant A cannot read tenant B products.
+Phase 2 has started with stancl/tenancy 3.x and a database-per-tenant foundation. The central database now owns tenant and domain metadata, while tenant databases are provisioned and migrated through the package lifecycle pipeline. Business-domain migrations are now mirrored into database/migrations/tenant in dependency order. The legacy central migrations remain temporarily so the existing application continues to boot during the staged cutover. The provisioning test verifies that a tenant receives isolated users, products, orders, and remesas tables. Tenant routes now resolve by domain, tenancy bootstrap/revert listeners are registered explicitly, tenant databases are deleted with the tenant lifecycle, and an isolation test verifies that tenant A cannot read tenant B products.
 
-For local development, configure `TENANCY_CENTRAL_DOMAINS` and use tenant domains such as `shop.localhost`. Production will use real subdomains/custom domains after the tenant schema migration is complete.
+For local development, configure TENANCY_CENTRAL_DOMAINS and use tenant domains such as shop.localhost. Production will use real subdomains/custom domains after the tenant schema migration is complete.
 
-> Dependency note: `stancl/tenancy` 3.10.x is being used while the project remains on PHP 8.3. The Composer platform is pinned to PHP 8.3 so the lock file cannot resolve PHP 8.4-only Symfony releases. The committed lock file includes the tenancy dependency graph and is generated against the project platform.
+> Dependency note: stancl/tenancy 3.10.x is being used while the project remains on PHP 8.3. The Composer platform is pinned to PHP 8.3 so the lock file cannot resolve PHP 8.4-only Symfony releases. The committed lock file includes the tenancy dependency graph and is generated against the project platform.
 
-## Identity and access foundation
+## Identity and tenant access
 
-Phase 3 now introduces the platform membership contract. The central database owns `tenant_memberships`, allowing one platform identity to belong to multiple tenants with an explicit role and status.
+Phase 3 now establishes the platform identity boundary. PlatformUser authenticates against the central users table through an explicit central connection, preventing authentication from switching to a tenant database.
+
+tenant_memberships links a platform identity to one or more tenants with an explicit role and status.
 
 Supported roles:
 
@@ -40,7 +42,9 @@ Supported roles:
 - staff
 - customer
 
-Memberships are central and explicitly use the tenancy package's `CentralConnection` concern, so they remain available even after a tenant database has been initialized. The existing tenant-local users are intentionally retained during this staged migration because current commerce relationships still reference them.
+Protected tenant routes use auth plus EnsureTenantMembership. The middleware checks the active membership against the tenant already resolved by the tenancy context. A tenant ID supplied by a request is never accepted as an authorization claim.
+
+The legacy tenant-local User model remains during the staged migration because existing commerce relationships still reference it. Operational user relationships will be migrated incrementally after tenant switching and policy coverage are in place.
 
 See [Identity and access](docs/IDENTITY.md) for the transition and security rules.
 
@@ -50,7 +54,7 @@ The target platform combines:
 
 **Commerce · CRM · Orders · Payments · Marketing · Analytics**
 
-The architecture is being migrated to **database-per-tenant** multi-tenancy with `stancl/tenancy`. Each business will have isolated operational data while the platform database manages tenants, domains and SaaS-level concerns.
+The architecture is being migrated to **database-per-tenant** multi-tenancy with stancl/tenancy. Each business will have isolated operational data while the platform database manages tenants, domains and SaaS-level concerns.
 
 See:
 
@@ -91,7 +95,7 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-Configure the database in `.env`, then run:
+Configure the database in .env, then run:
 
 ```bash
 php artisan migrate
@@ -113,11 +117,11 @@ Run the application test suite with:
 composer test
 ```
 
-CI is defined in `.github/workflows/ci.yml` and must be verified before advancing implementation phases. CI status is now verified directly from the repository's GitHub Actions runs. The workflow validates Composer metadata, installs the committed lock file, prepares the Laravel application against MySQL 8.4, and runs the test suite.
+CI is defined in .github/workflows/ci.yml and must be verified before advancing implementation phases. CI status is verified directly from the repository's GitHub Actions runs. The workflow validates Composer metadata, installs the committed lock file, prepares the Laravel application against MySQL 8.4, and runs the test suite.
 
 ## Docker
 
-The project includes a FrankenPHP-based Dockerfile. Production container configuration will be hardened and documented as part of Phase 0/Phase 12.
+The project includes a FrankenPHP-based Dockerfile. Production container configuration will be hardened and documented as part of Phase 12.
 
 ## Development workflow
 
