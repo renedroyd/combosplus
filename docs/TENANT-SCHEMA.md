@@ -4,7 +4,7 @@
 
 CombosPlus will use database-per-tenant with `stancl/tenancy` 3.x. Tenant databases will contain operational commerce data, while the central database will contain platform tenancy metadata and infrastructure.
 
-The tenancy package documents `database/migrations/tenant` as the default tenant migration directory and provides `tenants:migrate` for applying those migrations. citeturn1search0
+The tenancy package documents `database/migrations/tenant` as the default tenant migration directory and provides `tenants:migrate` for applying those migrations.
 
 ## Central database
 
