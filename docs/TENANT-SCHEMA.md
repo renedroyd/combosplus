@@ -1,0 +1,109 @@
+# CombosPlus tenant schema strategy
+
+## Goal
+
+CombosPlus will use database-per-tenant with `stancl/tenancy` 3.x. Tenant databases will contain operational commerce data, while the central database will contain platform tenancy metadata and infrastructure.
+
+The tenancy package documents `database/migrations/tenant` as the default tenant migration directory and provides `tenants:migrate` for applying those migrations.
+
+## Central database
+
+Keep these concerns central:
+
+- `tenants`
+- `domains`
+- platform-level subscription/plan data (future)
+- platform-level identity/membership data (Phase 3)
+- queue/cache infrastructure when shared
+- other platform-wide operational metadata
+
+The current `tenants` and `domains` migrations are already central.
+
+## Tenant database
+
+The following existing application areas are tenant-owned and are planned for the tenant migration set:
+
+- users/customers
+- admins for the tenant administration panel
+- categories
+- products
+- addresses
+- orders
+- order items
+- carts
+- cart items
+- payment methods
+- payments
+- Zelle payments
+- remittances
+- Cuba location catalogs
+- shipping methods
+- tenant-specific user notification data such as Telegram chat IDs
+
+## Transitional migration strategy
+
+The current application still executes its legacy business migrations from `database/migrations`. They will not be deleted or moved in this step.
+
+Phase 2 will first make a complete tenant schema available by adding the tenant copies under `database/migrations/tenant`. This lets tenant provisioning create an isolated operational schema before application routes are switched to tenant context.
+
+After tenant provisioning and isolation tests are green, a dedicated migration cutover will:
+
+1. initialize tenant context before tenant-facing application routes;
+2. switch authentication to tenant-local users/admins;
+3. update Filament to operate inside the resolved tenant;
+4. remove the duplicated legacy business migrations from the central migration set;
+5. migrate any existing production data with an explicit tenant assignment strategy.
+
+This staged cutover avoids breaking the current application while the tenancy boundary is being introduced.
+
+## Dependency ordering
+
+The tenant migration order must preserve foreign-key dependencies:
+
+1. users
+2. categories
+3. products
+4. addresses
+5. payment methods
+6. orders
+7. order items
+8. carts
+9. cart items
+10. payments
+11. Zelle payments
+12. Cuba location catalogs
+13. shipping methods
+14. remittances
+15. incremental column migrations
+
+The migration filenames will be renamed when necessary so that their ordering is explicit and maintainable.
+
+## Security invariants
+
+The following must become automated tests before tenancy is considered production-ready:
+
+- tenant A cannot read tenant B products;
+- tenant A cannot read tenant B orders;
+- tenant A cannot access tenant B admin resources;
+- a domain resolves only its assigned tenant;
+- creating a tenant provisions a distinct database;
+- deleting a tenant removes its database only after explicit lifecycle handling;
+- tenant models always use the tenant connection after initialization;
+- central models remain available from central context.
+
+## Identity decision
+
+The current `User` and `Admin` models are application-local. For the first database-per-tenant cutover they will remain tenant-local.
+
+A later platform identity phase will introduce central identity and tenant memberships, allowing one person to belong to multiple tenants without weakening database isolation.
+
+## CI verification
+
+The specialized commit-status/workflow lookup can return empty collections for this repository, so CI verification now uses the repository's GitHub Actions runs endpoint as the source of truth. The latest run on the tenancy branch completed successfully: Composer metadata validation, dependency installation from the committed lock file, database migrations and the Laravel test suite all passed.
+
+The Composer lock is now committed and includes `stancl/tenancy` 3.10.1 plus its dependency graph. The Composer platform is pinned to PHP 8.3 to prevent PHP 8.4-only dependency selections.
+
+## References
+
+- https://tenancyforlaravel.com/docs/v3/migrations/
+- https://tenancyforlaravel.com/docs/v3/quickstart/
