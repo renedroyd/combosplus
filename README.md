@@ -22,7 +22,7 @@ The current application includes commerce and operational flows such as:
 
 ## Multi-tenancy foundation
 
-Phase 2 has started with `stancl/tenancy` 3.x and a database-per-tenant foundation. The central database now owns tenant and domain metadata, while tenant databases are provisioned and migrated through the package lifecycle pipeline. Business-domain migrations remain in the central migration tree temporarily and will be moved into `database/migrations/tenant` in the next migration step; this avoids mixing schema ownership during the transition.
+Phase 2 has started with `stancl/tenancy` 3.x and a database-per-tenant foundation. The central database now owns tenant and domain metadata, while tenant databases are provisioned and migrated through the package lifecycle pipeline. Business-domain migrations remain in the central migration tree temporarily. The tenant-schema migration plan is documented in `docs/TENANT-SCHEMA.md`; the next implementation step is to build the tenant schema in parallel, then perform the application cutover once provisioning and isolation tests are green.
 
 For local development, configure `TENANCY_CENTRAL_DOMAINS` and use tenant domains such as `shop.localhost`. Production will use real subdomains/custom domains after the tenant schema migration is complete.
 
@@ -40,6 +40,7 @@ See:
 
 - [Roadmap](docs/ROADMAP.md)
 - [Architecture](docs/ARCHITECTURE.md)
+- [Tenant schema strategy](docs/TENANT-SCHEMA.md)
 
 ## Technology
 
