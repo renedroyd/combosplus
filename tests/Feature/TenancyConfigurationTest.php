@@ -43,11 +43,14 @@ class TenancyConfigurationTest extends TestCase
                 $databaseName
             );
 
+            tenancy()->initialize($tenant);
+
             $this->assertTrue(Schema::connection('tenant')->hasTable('users'));
             $this->assertTrue(Schema::connection('tenant')->hasTable('products'));
             $this->assertTrue(Schema::connection('tenant')->hasTable('orders'));
             $this->assertTrue(Schema::connection('tenant')->hasTable('remesas'));
         } finally {
+            tenancy()->end();
             DB::statement('DROP DATABASE IF EXISTS `'.$databaseName.'`');
             $tenant->delete();
         }
