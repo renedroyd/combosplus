@@ -34,7 +34,7 @@ class TenantMembership extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(PlatformUser::class, 'user_id');
     }
 
     public function active(): bool
