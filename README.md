@@ -22,7 +22,7 @@ The current application includes commerce and operational flows such as:
 
 ## Multi-tenancy foundation
 
-Phase 2 has started with `stancl/tenancy` 3.x and a database-per-tenant foundation. The central database now owns tenant and domain metadata, while tenant databases are provisioned and migrated through the package lifecycle pipeline. Business-domain migrations are now mirrored into `database/migrations/tenant` in dependency order. The legacy central migrations remain temporarily so the existing application continues to boot during the staged cutover. The new provisioning test verifies that a tenant receives isolated `users`, `products`, `orders`, and `remesas` tables.
+Phase 2 has started with `stancl/tenancy` 3.x and a database-per-tenant foundation. The central database now owns tenant and domain metadata, while tenant databases are provisioned and migrated through the package lifecycle pipeline. Business-domain migrations are now mirrored into `database/migrations/tenant` in dependency order. The legacy central migrations remain temporarily so the existing application continues to boot during the staged cutover. The provisioning test verifies that a tenant receives isolated `users`, `products`, `orders`, and `remesas` tables. Tenant routes now resolve by domain, tenancy bootstrap/revert listeners are registered explicitly, tenant databases are deleted with the tenant lifecycle, and an isolation test verifies that tenant A cannot read tenant B products.
 
 For local development, configure `TENANCY_CENTRAL_DOMAINS` and use tenant domains such as `shop.localhost`. Production will use real subdomains/custom domains after the tenant schema migration is complete.
 
