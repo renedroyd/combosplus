@@ -11,10 +11,10 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - **Phase 2 — Multi-tenancy:** **foundation completed**. stancl/tenancy 3.x, landlord/tenant migrations, tenant provisioning, domain identification and isolation tests are active.
 - **Phase 3 — Identity & access:** **operational identity migration completed** for carts, addresses, orders and remittances. Platform identity is now the sole operational ownership key; legacy tenant-local identity columns have been removed.
 - **Phase 3 payment hardening:** remittance payment submission no longer marks a remittance as paid without trusted provider verification; submissions enter procesando and remain pending verification.
-- **Phase 4 — Premium administration:** **started**. The first dashboard pass establishes a compact three-column KPI hierarchy for sales, orders, customers, products, units sold and operational attention.
-- **Latest CI checkpoint:** Main CI #96 is green on commit 04dbad14550f5c10b8e3e7584402b5f6208df8ec after the first Phase 4 dashboard implementation.
+- **Phase 4 — Premium administration:** **active**. Dashboard KPI hierarchy and the first operational table UX pass are implemented.
+- **Latest implementation checkpoint:** PR #35 passed CI #99 and was merged into main at commit 23db837907bb7cb7e0d83e216a2d324eeb68bfee.
 - **Current hardening:** remaining Phase 3 work is focused on replacing transitional remittance payment-state behavior with a provider-backed transaction abstraction and completing behavior-level payment audits.
-- **Next gate:** continue Phase 4 administration with navigation, tables, filters, actions, responsive/dark-mode refinements and tenant branding while maintaining tenant isolation and security coverage.
+- **Next gate:** continue Phase 4 with navigation/information architecture, consistent table actions, responsive/dark-mode refinements and tenant branding while maintaining tenant isolation and security coverage.
 
 ## Delivery rules
 
@@ -46,6 +46,7 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 
 ### Phase 4 — Premium administration
 - [x] First premium dashboard KPI hierarchy.
+- [x] First operational table UX pass with filters for orders, products and customers.
 - [ ] Redesign Filament navigation and administration information architecture.
 - [ ] KPIs, sales, orders, customers, products and operational alerts.
 - [ ] Consistent design system.
@@ -82,6 +83,8 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 
 ## CI checkpoints
 
+- Main CI #99: success for Phase 4 operational table UX before merge.
+- PR #35: merged after CI #99 success.
 - Main CI #96: success after Phase 4 dashboard KPI implementation.
 - PR CI #95: success for the first Phase 4 dashboard implementation.
 - Main CI #94: success after removal of legacy operational identity fields.
