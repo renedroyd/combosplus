@@ -8,6 +8,8 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 class ProductsTable
@@ -27,14 +29,12 @@ class ProductsTable
                     ->searchable(),
                 TextColumn::make('category.name')
                     ->label('Categoria')
-                    ->numeric()
-                    ->sortable(),               
+                    ->sortable(),
                 TextColumn::make('slug')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('price')
                     ->label('Precio')
-                    ->prefix('$')
                     ->money('CUP')
                     ->sortable(),
                 TextColumn::make('compare_price')
@@ -49,6 +49,7 @@ class ProductsTable
                     ->label('Visible')
                     ->boolean(),
                 IconColumn::make('featured')
+                    ->label('Destacado')
                     ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
@@ -61,7 +62,13 @@ class ProductsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('category_id')
+                    ->label('Categoria')
+                    ->relationship('category', 'name'),
+                TernaryFilter::make('is_visible')
+                    ->label('Visibilidad'),
+                TernaryFilter::make('featured')
+                    ->label('Destacados'),
             ])
             ->recordActions([
                 EditAction::make(),
