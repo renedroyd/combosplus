@@ -87,24 +87,11 @@
                 </div>
 
                 <!-- PayPal -->
-                <div class="border rounded-lg p-4" :class="{ 'border-green-500 bg-green-50': metodo === 'paypal' }">
-                    <label class="flex items-center cursor-pointer">
-                        <input type="radio" name="metodo_pago" value="paypal" x-model="metodo" class="mr-3">
-                        <div class="flex-1">
-                            <div class="flex items-center justify-between">
-                                <span class="font-medium">PayPal</span>
-                                <i class="fab fa-paypal text-2xl text-blue-800"></i>
-                            </div>
-                            <p class="text-sm text-gray-500">Paga con tu cuenta de PayPal</p>
-                        </div>
-                    </label>
-                    <div x-show="metodo === 'paypal'" x-transition class="mt-4">
-                        <a href="{{ route('remesas.paypal', $remesa->codigo) }}" 
-                           class="block w-full bg-yellow-400 hover:bg-yellow-500 text-center text-gray-800 font-semibold py-3 rounded-lg transition">
-                            <i class="fab fa-paypal mr-2"></i>
-                            Continuar con PayPal
-                        </a>
+                <div class="border rounded-lg p-4 bg-gray-50">
+                    <div class="flex items-center">
+                        <span class="font-medium">PayPal</span>
                     </div>
+                    <p class="text-sm text-gray-500 mt-1">Este método estará disponible cuando se configure el proveedor de pagos.</p>
                 </div>
 
                 <!-- Transferencia bancaria -->
