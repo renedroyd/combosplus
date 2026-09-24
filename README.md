@@ -12,7 +12,8 @@ CombosPlus is evolving into a premium multi-tenant commerce platform for busines
 - Orders and order history
 - Addresses and profiles
 - Payment methods and Zelle payment flow
-- Remittances
+- Remittances with platform identity tracking
+- Tenant membership and role-based access
 - Telegram notifications
 - Filament administration
 - Laravel Octane
@@ -30,7 +31,9 @@ Supported roles: owner, admin, manager, staff, customer.
 
 Protected tenant routes use auth plus EnsureTenantMembership. The middleware checks the active membership against the tenant already resolved by tenancy. A tenant ID supplied by a request is never accepted as an authorization claim.
 
-The legacy tenant-local User model remains as an operational compatibility projection while dependent foreign keys are migrated. Profile email validation is anchored to the central PlatformUser connection so tenant-local schema state cannot create duplicate platform identities. Profile updates now synchronize the projection through TenantCustomerProvisioner, address creation is policy-authorized in the current tenant, and order ownership remains tenant-local while being keyed from the central platform identity. Order numbers use collision-safe random identifiers instead of `uniqid()`. Order shipping and billing relationships now explicitly use `shipping_address_id` and `billing_address_id`, with the legacy `address()` accessor retained as a shipping-address compatibility alias. The tenant cart schema now stores price snapshots and enforces one authenticated cart per customer; checkout rejects inactive payment methods, scopes addresses to the authenticated tenant customer, and locks the customer cart during order creation to prevent concurrent checkout races.
+Operational ownership for carts, addresses, orders and remittances now uses platform_user_id. Legacy tenant-local user_id fields remain only during the compatibility migration and are scheduled for removal after dependent reads/writes are eliminated. Profile email validation is anchored to the central PlatformUser connection. Checkout scopes addresses and payment methods to the current tenant identity, and order creation locks the customer cart to prevent concurrent checkout races.
+
+Remittance payment submission is explicitly treated as a payment request: it transitions to procesando and does not mark the remittance pagado until a trusted provider transaction can be verified.
 
 See [Identity and access](docs/IDENTITY.md), [Customer identity](docs/CUSTOMER-IDENTITY.md), [Tenant switching](docs/TENANT-SWITCHING.md), [Authorization](docs/AUTHORIZATION.md), [Tenant routes](docs/TENANT-ROUTES.md), and [Tenant controller audit](docs/TENANT-CONTROLLER-AUDIT.md).
 
@@ -90,7 +93,3 @@ CI is defined in .github/workflows/ci.yml and must be verified before advancing 
 4. Verify GitHub Actions.
 5. Update this README as part of the merge.
 6. Continue only after the previous change is stable.
-
-## License
-
-MIT.
