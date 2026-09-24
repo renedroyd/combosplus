@@ -25,7 +25,6 @@ class Remesa extends Model
         'moneda_origen',
         'estado',
         'platform_user_id',
-        'user_id',
         'comprobante_pago',
         'pagado_en',
         'entregado_en',

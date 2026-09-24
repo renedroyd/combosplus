@@ -123,7 +123,6 @@ class TenantCheckoutCartIsolationTest extends TestCase
 
             $foreignAddress = Address::create([
                 'platform_user_id' => $other->id,
-                'user_id' => $other->id,
                 'type' => 'shipping',
                 'name' => 'Other Customer',
                 'address_line1' => 'Foreign street 1',
@@ -214,6 +213,9 @@ class TenantCheckoutCartIsolationTest extends TestCase
             $this->assertTrue(Schema::hasColumn('orders', 'platform_user_id'));
             $this->assertTrue(Schema::hasColumn('payment_methods', 'is_active'));
             $this->assertTrue(Schema::hasColumn('payment_methods', 'sort_order'));
+            $this->assertFalse(Schema::hasColumn('carts', 'user_id'));
+            $this->assertFalse(Schema::hasColumn('addresses', 'user_id'));
+            $this->assertFalse(Schema::hasColumn('orders', 'user_id'));
 
             $indexes = collect(Schema::getIndexes('carts'));
 

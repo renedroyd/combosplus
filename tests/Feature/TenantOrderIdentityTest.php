@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Order;
 use App\Models\PlatformUser;
 use App\Models\Tenant;
-use App\Models\User;
 use App\Services\Tenancy\TenantCustomerProvisioner;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -28,13 +27,13 @@ class TenantOrderIdentityTest extends TestCase
                 app(TenantCustomerProvisioner::class)->ensure($platformUser);
 
                 $order = Order::create([
-                    'user_id' => $platformUser->id,
+                    'platform_user_id' => $platformUser->id,
                     'subtotal' => 10,
                     'total' => 10,
                 ]);
 
                 $this->assertMatchesRegularExpression('/^ORD-[A-Z0-9]{12}$/', $order->order_number);
-                $this->assertSame($platformUser->id, $order->user_id);
+                $this->assertSame($platformUser->id, $order->platform_user_id);
                 $this->assertSame($platformUser->id, $order->user->id);
             });
         } finally {
@@ -58,7 +57,7 @@ class TenantOrderIdentityTest extends TestCase
             $tenantB->run(fn () => app(TenantCustomerProvisioner::class)->ensure($platformUser));
 
             $orderA = $tenantA->run(fn () => Order::create([
-                'user_id' => $platformUser->id,
+                'platform_user_id' => $platformUser->id,
                 'subtotal' => 20,
                 'total' => 20,
             ]));

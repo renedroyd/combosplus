@@ -38,6 +38,6 @@ class AddressPolicy
     private function ownsAddress(PlatformUser $user, Address $address): bool
     {
         return $this->access->canAccessCurrentTenant($user)
-            && (string) $address->user_id === (string) $user->getAuthIdentifier();
+            && (string) $address->platform_user_id === (string) $user->getAuthIdentifier();
     }
 }

@@ -14,7 +14,7 @@ class OrderForm
     {
         return $schema
             ->components([
-                TextInput::make('user_id')
+                TextInput::make('platform_user_id')
                     ->numeric(),
                 TextInput::make('order_number')
                     ->required(),
@@ -50,7 +50,10 @@ class OrderForm
                     ->options(['pending' => 'Pending', 'paid' => 'Paid', 'failed' => 'Failed'])
                     ->default('pending')
                     ->required(),
-                TextInput::make('payment_method'),
+                Select::make('payment_method_id')
+                    ->relationship('paymentMethod', 'name')
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('shipping_address_id')
                     ->numeric(),
                 TextInput::make('billing_address_id')

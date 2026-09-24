@@ -12,20 +12,21 @@ class Address extends Model
         'is_default' => 'boolean',
     ];
 
-        public function user()
+    public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'platform_user_id');
     }
 
     protected static function booted()
     {
-        static::saved(function ($address) {
-            if ($address->is_default) {
-                // asegurar que solo una dirección sea default por usuario
-                $address->user->addresses()
-                    ->where('id', '!=', $address->id)
-                    ->update(['is_default' => false]);
+        static::saved(function (Address $address): void {
+            if (! $address->is_default) {
+                return;
             }
+
+            $address->user?->addresses()
+                ->whereKeyNot($address->getKey())
+                ->update(['is_default' => false]);
         });
     }
 }

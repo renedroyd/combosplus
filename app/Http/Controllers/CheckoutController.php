@@ -130,7 +130,7 @@ class CheckoutController extends Controller
         } catch (\Throwable $e) {
             Log::error('Error al procesar orden.', [
                 'message' => $e->getMessage(),
-                'user_id' => $user?->getAuthIdentifier(),
+                'platform_user_id' => $user?->getAuthIdentifier(),
             ]);
 
             return back()->with('error', 'Hubo un problema al procesar tu pedido. Intenta nuevamente.');

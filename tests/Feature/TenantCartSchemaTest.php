@@ -21,7 +21,7 @@ class TenantCartSchemaTest extends TestCase
                 $this->assertTrue(
                     $indexes->contains(fn (array $index): bool =>
                         ($index['unique'] ?? false) === true
-                        && $index['columns'] === ['user_id']
+                        && $index['columns'] === ['platform_user_id']
                     )
                 );
             });

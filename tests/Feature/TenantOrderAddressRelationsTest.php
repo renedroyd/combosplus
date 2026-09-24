@@ -28,7 +28,7 @@ class TenantOrderAddressRelationsTest extends TestCase
                 app(TenantCustomerProvisioner::class)->ensure($platformUser);
 
                 $shipping = Address::create([
-                    'user_id' => $platformUser->id,
+                    'platform_user_id' => $platformUser->id,
                     'type' => 'shipping',
                     'name' => 'Shipping Address',
                     'address_line1' => '123 Main Street',
@@ -39,7 +39,7 @@ class TenantOrderAddressRelationsTest extends TestCase
                 ]);
 
                 $billing = Address::create([
-                    'user_id' => $platformUser->id,
+                    'platform_user_id' => $platformUser->id,
                     'type' => 'billing',
                     'name' => 'Billing Address',
                     'address_line1' => '456 Second Street',
@@ -50,7 +50,7 @@ class TenantOrderAddressRelationsTest extends TestCase
                 ]);
 
                 $order = Order::create([
-                    'user_id' => $platformUser->id,
+                    'platform_user_id' => $platformUser->id,
                     'shipping_address_id' => $shipping->id,
                     'billing_address_id' => $billing->id,
                     'subtotal' => 20,
