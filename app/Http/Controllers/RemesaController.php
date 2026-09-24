@@ -6,11 +6,16 @@ use App\Models\MetodoEnvio;
 use App\Models\Pais;
 use App\Models\Provincia;
 use App\Models\Remesa;
+use App\Services\RemittancePaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class RemesaController extends Controller
 {
+    public function __construct(
+        private readonly RemittancePaymentService $remittancePayments,
+    ) {}
+
     public function index()
     {
         $paises = Pais::where('activo', true)->get();
@@ -106,12 +111,7 @@ class RemesaController extends Controller
             'payment_method_id' => ['nullable', 'string', 'max:255'],
         ]);
 
-        // This endpoint records a payment submission only. It must not mark
-        // the remittance as paid until a trusted provider transaction is verified.
-        $remesa->update([
-            'estado' => 'procesando',
-            'pagado_en' => null,
-        ]);
+        $this->remittancePayments->submit($remesa);
 
         return redirect()->route('remesas.seguimiento', $remesa->codigo)
             ->with('success', 'Solicitud de pago recibida. El pago queda pendiente de verificación.');
