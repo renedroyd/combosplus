@@ -15,7 +15,7 @@ CombosPlus is evolving into a premium multi-tenant commerce platform for busines
 - Remittances with platform identity tracking
 - Tenant membership and role-based access
 - Telegram notifications
-- Filament administration
+- Filament administration with a premium KPI dashboard foundation
 - Laravel Octane
 - Docker/FrankenPHP deployment foundation
 
@@ -34,6 +34,10 @@ Protected tenant routes use auth plus EnsureTenantMembership. The middleware che
 Operational ownership for carts, addresses, orders and remittances now uses platform_user_id exclusively. Legacy tenant-local user_id fields and the legacy orders.payment_method field have been removed from the tenant schema after dependent reads/writes were eliminated. Profile email validation is anchored to the central PlatformUser connection. Checkout scopes addresses and payment methods to the current tenant identity, and order creation locks the customer cart to prevent concurrent checkout races.
 
 Remittance payment submission is explicitly treated as a payment request and delegated to a dedicated application service. It transitions to procesando and does not mark the remittance pagado until a trusted provider transaction can be verified. Provider verification remains a separate integration boundary.
+
+## Premium administration
+
+Phase 4 has started with a compact dashboard KPI foundation covering sales, orders, customers, products, units sold and operational attention. The dashboard keeps the information hierarchy dense but lightweight and uses a three-column KPI layout as the base for the next administration refinements.
 
 See [Identity and access](docs/IDENTITY.md), [Customer identity](docs/CUSTOMER-IDENTITY.md), [Tenant switching](docs/TENANT-SWITCHING.md), [Authorization](docs/AUTHORIZATION.md), [Tenant routes](docs/TENANT-ROUTES.md), and [Tenant controller audit](docs/TENANT-CONTROLLER-AUDIT.md).
 
