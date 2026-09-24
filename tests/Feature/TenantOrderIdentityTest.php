@@ -57,7 +57,7 @@ class TenantOrderIdentityTest extends TestCase
             $tenantB->run(fn () => app(TenantCustomerProvisioner::class)->ensure($platformUser));
 
             $orderA = $tenantA->run(fn () => Order::create([
-                'user_id' => $platformUser->id,
+                'platform_user_id' => $platformUser->id,
                 'subtotal' => 20,
                 'total' => 20,
             ]));
