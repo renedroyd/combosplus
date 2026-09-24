@@ -36,7 +36,7 @@ class AddressController extends Controller
             'is_default' => 'boolean',
         ]);
 
-        $data['user_id'] = $request->user()->getAuthIdentifier();
+        $data['platform_user_id'] = $request->user()->getAuthIdentifier();
         $data['country'] = $data['country'] ?? 'Chile';
 
         if ($data['is_default'] ?? false) {
