@@ -62,7 +62,7 @@ class RemesaController extends Controller
             'moneda_origen' => 'required|in:USD,EUR',
         ]);
 
-        $remesa = Remesa::create([
+        $attributes = [
             'codigo' => $this->generarCodigoUnico(),
             'remitente_nombre' => $request->remitente_nombre,
             'remitente_email' => $request->remitente_email,
@@ -78,7 +78,10 @@ class RemesaController extends Controller
             'moneda_origen' => $request->moneda_origen,
             'estado' => 'pendiente',
             'user_id' => auth()->id(),
-        ]);
+            'platform_user_id' => auth()->id(),
+        ];
+
+        $remesa = Remesa::create($attributes);
 
         return redirect()->route('remesas.pago', $remesa->codigo);
     }
@@ -103,13 +106,15 @@ class RemesaController extends Controller
             'payment_method_id' => ['nullable', 'string', 'max:255'],
         ]);
 
+        // This endpoint records a payment submission only. It must not mark
+        // the remittance as paid until a trusted provider transaction is verified.
         $remesa->update([
-            'estado' => 'pagado',
-            'pagado_en' => now(),
+            'estado' => 'procesando',
+            'pagado_en' => null,
         ]);
 
         return redirect()->route('remesas.seguimiento', $remesa->codigo)
-            ->with('success', 'Pago registrado correctamente.');
+            ->with('success', 'Solicitud de pago recibida. El pago queda pendiente de verificación.');
     }
 
     public function buscarSeguimiento(Request $request)
