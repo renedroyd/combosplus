@@ -13,15 +13,17 @@ class ExampleTest extends TestCase
     public function test_the_tenant_application_returns_a_successful_response(): void
     {
         $tenant = Tenant::create(['id' => 'example-tenant']);
-        $tenant->domains()->create(['domain' => 'example.test']);
 
         try {
-            $response = $this->withServerVariables([
-                'HTTP_HOST' => 'example.test',
-            ])->get('/');
+            $domain = $tenant->domains()->create(['domain' => 'example.test']);
+            $response = $this->get('http://' . $domain->domain . '/tenant/health');
 
-            $response->assertOk();
+            $response->assertOk()->assertJson([
+                'status' => 'ok',
+                'tenant_id' => $tenant->id,
+            ]);
         } finally {
+            tenancy()->end();
             $tenant->delete();
         }
     }
