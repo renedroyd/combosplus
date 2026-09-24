@@ -113,7 +113,7 @@ class TenantCheckoutCartIsolationTest extends TestCase
                 'sku' => 'CHECKOUT-ISO-001',
             ]);
 
-            Cart::create(['user_id' => $owner->id])
+            Cart::create(['platform_user_id' => $owner->id])
                 ->items()
                 ->create([
                     'product_id' => $product->id,
@@ -122,7 +122,7 @@ class TenantCheckoutCartIsolationTest extends TestCase
                 ]);
 
             $foreignAddress = Address::create([
-                'user_id' => $other->id,
+                'platform_user_id' => $other->id,
                 'type' => 'shipping',
                 'name' => 'Other Customer',
                 'address_line1' => 'Foreign street 1',
@@ -172,7 +172,7 @@ class TenantCheckoutCartIsolationTest extends TestCase
                 'sku' => 'PAYMENT-ISO-001',
             ]);
 
-            Cart::create(['user_id' => $owner->id])
+            Cart::create(['platform_user_id' => $owner->id])
                 ->items()
                 ->create([
                     'product_id' => $product->id,
@@ -219,7 +219,7 @@ class TenantCheckoutCartIsolationTest extends TestCase
             $this->assertTrue(
                 $indexes->contains(fn (array $index): bool =>
                     ($index['unique'] ?? false) === true
-                    && ($index['columns'] ?? []) === ['user_id']
+                    && ($index['columns'] ?? []) === ['platform_user_id']
                 )
             );
         });
