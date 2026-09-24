@@ -29,6 +29,8 @@ class AdminResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Seguridad';
 
+    protected static ?int $navigationSort = 10;
+
     public static function form(Schema $schema): Schema
     {
         return AdminForm::configure($schema);
