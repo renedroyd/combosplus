@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Remesa;
-use App\Models\Pais;
 use App\Models\MetodoEnvio;
+use App\Models\Pais;
 use App\Models\Provincia;
+use App\Models\Remesa;
+use Illuminate\Http\Request;
 
 class RemesaController extends Controller
 {
@@ -14,7 +14,7 @@ class RemesaController extends Controller
     {
         $paises = Pais::where('activo', true)->get();
         $metodosEnvio = MetodoEnvio::where('activo', true)->get();
-        
+
         return view('remesas.index', compact('paises', 'metodosEnvio'));
     }
 
@@ -26,7 +26,6 @@ class RemesaController extends Controller
             'metodo_envio' => 'required|exists:metodos_envio,id',
         ]);
 
-        // Aquí iría la lógica de cálculo con tu proveedor
         $costoEnvio = $this->calcularCostoEnvio($request->monto, $request->metodo_envio);
         $tasaCambio = $this->obtenerTasaCambio();
         $montoFinal = $request->monto - $costoEnvio;
@@ -37,8 +36,13 @@ class RemesaController extends Controller
             'costo_envio' => $costoEnvio,
             'monto_final' => number_format($montoFinal, 2),
             'monto_en_cup' => number_format($montoEnCUP, 2),
-            'tasa_cambio' => $tasaCambio
+            'tasa_cambio' => $tasaCambio,
         ]);
+    }
+
+    public function calcularCosto(Request $request)
+    {
+        return $this->calcular($request);
     }
 
     public function enviar(Request $request)
@@ -57,7 +61,6 @@ class RemesaController extends Controller
             'moneda_origen' => 'required|in:USD,EUR',
         ]);
 
-        // Crear la remesa
         $remesa = Remesa::create([
             'codigo' => $this->generarCodigoUnico(),
             'remitente_nombre' => $request->remitente_nombre,
@@ -76,13 +79,13 @@ class RemesaController extends Controller
             'user_id' => auth()->id(),
         ]);
 
-        // Redirigir a pago
         return redirect()->route('remesas.pago', $remesa->codigo);
     }
 
     public function seguimiento($codigo)
     {
         $remesa = Remesa::where('codigo', $codigo)->firstOrFail();
+
         return view('remesas.seguimiento', compact('remesa'));
     }
 
@@ -93,40 +96,24 @@ class RemesaController extends Controller
 
     private function calcularCostoEnvio($monto, $metodoEnvioId)
     {
-        // Lógica según tu proveedor
-        if ($monto > 500) {
-            return 5; // Descuento para montos grandes
-        }
-        return 8; // Costo base
+        return $monto > 500 ? 5 : 8;
     }
 
     private function obtenerTasaCambio()
     {
-        // Aquí conectarías con una API de tasa de cambio
-        // Por ahora, valor aproximado
-        return 120; // 1 USD ≈ 120 CUP
+        return 120;
     }
 
     private function calcularMontoRecibir($monto, $metodoEnvioId)
     {
-        $costo = $this->calcularCostoEnvio($monto, $metodoEnvioId);
-        $tasa = $this->obtenerTasaCambio();
-        return ($monto - $costo) * $tasa;
+        return ($monto - $this->calcularCostoEnvio($monto, $metodoEnvioId)) * $this->obtenerTasaCambio();
     }
 
     public function create()
     {
-        // Obtener todas las provincias activas (para el selector de provincia/municipio)
-        $provincias = Provincia::where('activo', true)
-                                ->orderBy('nombre')
-                                ->get();
+        $provincias = Provincia::where('activo', true)->orderBy('nombre')->get();
+        $metodosEnvio = MetodoEnvio::where('activo', true)->orderBy('costo_base')->get();
 
-        // Obtener todos los métodos de envío activos, ordenados por costo (opcional)
-        $metodosEnvio = MetodoEnvio::where('activo', true)
-                                    ->orderBy('costo_base')
-                                    ->get();
-
-        // Retornar la vista con los datos necesarios
         return view('remesas.nueva', compact('provincias', 'metodosEnvio'));
     }
 }

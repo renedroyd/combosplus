@@ -8,70 +8,59 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    /**
-     * Muestra la lista de productos con filtros y ordenamiento.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\View\View
-     */
     public function index(Request $request)
     {
         $query = Product::query();
 
-        
-        // Filtro por categorías
         if ($request->has('categorias')) {
-            $query->whereIn('category_id', $request->categorias);
+            $query->whereIn('category_id', (array) $request->input('categorias'));
         }
 
-        // Filtro por rango de precio
         if ($request->filled('min_price')) {
-            $query->where('price', '>=', $request->min_price);
-        }
-        if ($request->filled('max_price')) {
-            $query->where('price', '<=', $request->max_price);
-        }
-        
-        // Filtro por etiquetas (si tienes una relación o campo)
-        if ($request->has('tags')) {
-            $query->whereIn('tag', $request->tags); // Ajusta según tu modelo
+            $query->where('price', '>=', $request->input('min_price'));
         }
 
-        // Filtro por valoración
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->input('max_price'));
+        }
+
+        if ($request->has('tags')) {
+            $query->whereIn('tag', (array) $request->input('tags'));
+        }
+
         if ($request->filled('rating')) {
-            $rating = $request->rating;
-            if ($rating == 5) {
-                $query->where('rating', '>=', 5);
-            } elseif ($rating == 4) {
-                $query->where('rating', '>=', 4);
-            } elseif ($rating == 3) {
-                $query->where('rating', '>=', 3);
+            $rating = (int) $request->input('rating');
+            if (in_array($rating, [3, 4, 5], true)) {
+                $query->where('rating', '>=', $rating);
             }
         }
 
-        // Ordenamiento
         switch ($request->get('orden', 'relevancia')) {
             case 'price_asc':
-                $query->orderBy('price', 'asc');
+                $query->orderBy('price');
                 break;
             case 'price_desc':
-                $query->orderBy('price', 'desc');
+                $query->orderByDesc('price');
                 break;
             case 'rating':
-                $query->orderBy('rating', 'desc');
+                $query->orderByDesc('rating');
                 break;
             case 'newest':
-                $query->orderBy('created_at', 'desc');
+                $query->latest();
                 break;
             default:
-                $query->orderBy('id', 'desc'); // o como definas relevancia
+                $query->orderByDesc('id');
+                break;
         }
 
-        $products = $query->paginate(12);
-        
-        // Categorías para el filtro (conteo de productos)
+        $products = $query->paginate(12)->withQueryString();
         $categories = Category::withCount('products')->get();
 
         return view('store.index', compact('products', 'categories'));
+    }
+
+    public function show(Product $product)
+    {
+        return view('store.product', compact('product'));
     }
 }
