@@ -24,6 +24,7 @@ class Remesa extends Model
         'metodo_envio_id',
         'moneda_origen',
         'estado',
+        'platform_user_id',
         'user_id',
         'comprobante_pago',
         'pagado_en',
@@ -47,7 +48,7 @@ class Remesa extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'platform_user_id');
     }
 
     public function getEstadoColorAttribute()
