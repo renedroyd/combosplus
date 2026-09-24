@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Address;
-use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\PaymentMethod;
@@ -141,7 +140,7 @@ class CheckoutController extends Controller
     protected function sendOrderNotifications(Order $order): void
     {
         try {
-            $adminChatId = config('services.telegram.admin_chat_id');
+            $adminChatId = env('TELEGRAM_ADMIN_CHAT_ID');
 
             if ($adminChatId) {
                 Notification::route('telegram', $adminChatId)
