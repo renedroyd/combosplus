@@ -14,7 +14,7 @@ class CartController extends Controller
     private function getCart()
     {
         if (Auth::check()) {
-            return Cart::firstOrCreate(['user_id' => Auth::id()]);
+            return Cart::firstOrCreate(['platform_user_id' => Auth::id()]);
         }
 
         $sessionId = session()->get('cart_session_id');
@@ -114,7 +114,7 @@ class CartController extends Controller
     public static function getCartItemsCount()
     {
         if (Auth::check()) {
-            return Cart::where('user_id', Auth::id())->with('items')->first()?->items->sum('quantity') ?? 0;
+            return Cart::where('platform_user_id', Auth::id())->with('items')->first()?->items->sum('quantity') ?? 0;
         }
 
         $sessionId = session()->get('cart_session_id');
