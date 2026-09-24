@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Categories\Tables;
 
+use App\Filament\Tables\PremiumTableDefaults;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -15,45 +16,21 @@ class CategoriesTable
 {
     public static function configure(Table $table): Table
     {
-        return $table
+        return PremiumTableDefaults::apply($table, 'Buscar categorías...')
             ->columns([
-                TextColumn::make('name')
-                    ->label('Nombre')
-                    ->searchable(),
-                TextColumn::make('slug')
-                    ->searchable(),
-                TextColumn::make('parent_id')
-                    ->label('Padre')
-                    ->numeric()
-                    ->sortable(),
-                IconColumn::make('is_visible')
-                    ->label('Visible')
-                    ->boolean(),
-                TextColumn::make('sort_order')
-                    ->label('Orden')
-                    ->numeric()
-                    ->sortable(),
-                ImageColumn::make('image')
-                    ->label('Imagen'),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('name')->label('Nombre')->searchable(),
+                TextColumn::make('slug')->searchable(),
+                TextColumn::make('parent_id')->label('Padre')->numeric()->sortable(),
+                IconColumn::make('is_visible')->label('Visible')->boolean(),
+                TextColumn::make('sort_order')->label('Orden')->numeric()->sortable(),
+                ImageColumn::make('image')->label('Imagen'),
+                TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->recordActions([
-                EditAction::make()
-                    ->iconButton()
-                    ->tooltip('Editar categoria'),
-                DeleteAction::make()
-                    ->iconButton()
-                    ->tooltip('Eliminar categoria'),
+                EditAction::make()->iconButton()->tooltip('Editar categoria'),
+                DeleteAction::make()->iconButton()->tooltip('Eliminar categoria'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
