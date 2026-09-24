@@ -33,7 +33,7 @@ Protected tenant routes use auth plus EnsureTenantMembership. The middleware che
 
 Operational ownership for carts, addresses, orders and remittances now uses platform_user_id. Legacy tenant-local user_id fields remain only during the compatibility migration and are scheduled for removal after dependent reads/writes are eliminated. Profile email validation is anchored to the central PlatformUser connection. Checkout scopes addresses and payment methods to the current tenant identity, and order creation locks the customer cart to prevent concurrent checkout races.
 
-Remittance payment submission is explicitly treated as a payment request: it transitions to procesando and does not mark the remittance pagado until a trusted provider transaction can be verified.
+Remittance payment submission is explicitly treated as a payment request and delegated to a dedicated application service. It transitions to procesando and does not mark the remittance pagado until a trusted provider transaction can be verified. Provider verification remains a separate integration boundary.
 
 See [Identity and access](docs/IDENTITY.md), [Customer identity](docs/CUSTOMER-IDENTITY.md), [Tenant switching](docs/TENANT-SWITCHING.md), [Authorization](docs/AUTHORIZATION.md), [Tenant routes](docs/TENANT-ROUTES.md), and [Tenant controller audit](docs/TENANT-CONTROLLER-AUDIT.md).
 
