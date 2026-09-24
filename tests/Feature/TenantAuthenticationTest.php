@@ -18,14 +18,12 @@ class TenantAuthenticationTest extends TestCase
     public function test_authenticated_platform_user_is_provisioned_when_logging_into_a_tenant(): void
     {
         $tenant = Tenant::create(['id' => 'auth-login-tenant']);
-        $tenant->domains()->create(['domain' => 'auth-login.test']);
+        $domain = $tenant->domains()->create(['domain' => 'auth-login.test']);
         $user = PlatformUser::create(['name' => 'Tenant Customer', 'email' => 'tenant-login@example.test', 'password' => 'password']);
         TenantMembership::create(['tenant_id' => $tenant->id, 'user_id' => $user->id, 'role' => TenantRole::Customer, 'status' => 'active', 'is_owner' => false]);
 
         try {
-            $response = $this->withServerVariables([
-                'HTTP_HOST' => 'auth-login.test',
-            ])->post('/login', ['email' => $user->email, 'password' => 'password']);
+            $response = $this->post('http://' . $domain->domain . '/login', ['email' => $user->email, 'password' => 'password']);
 
             $response->assertRedirect('/');
             $this->assertTrue(Auth::check());
@@ -41,13 +39,11 @@ class TenantAuthenticationTest extends TestCase
     public function test_tenant_login_requires_an_active_membership(): void
     {
         $tenant = Tenant::create(['id' => 'auth-membership-tenant']);
-        $tenant->domains()->create(['domain' => 'auth-membership.test']);
+        $domain = $tenant->domains()->create(['domain' => 'auth-membership.test']);
         $user = PlatformUser::create(['name' => 'Unauthorized', 'email' => 'tenant-denied@example.test', 'password' => 'password']);
 
         try {
-            $response = $this->withServerVariables([
-                'HTTP_HOST' => 'auth-membership.test',
-            ])->post('/login', ['email' => $user->email, 'password' => 'password']);
+            $response = $this->post('http://' . $domain->domain . '/login', ['email' => $user->email, 'password' => 'password']);
 
             $response->assertForbidden();
             $this->assertFalse(Auth::check());
@@ -61,12 +57,10 @@ class TenantAuthenticationTest extends TestCase
     public function test_registration_creates_platform_identity_membership_and_customer_projection_in_tenant(): void
     {
         $tenant = Tenant::create(['id' => 'auth-register-tenant']);
-        $tenant->domains()->create(['domain' => 'auth-register.test']);
+        $domain = $tenant->domains()->create(['domain' => 'auth-register.test']);
 
         try {
-            $response = $this->withServerVariables([
-                'HTTP_HOST' => 'auth-register.test',
-            ])->post('/register', [
+            $response = $this->post('http://' . $domain->domain . '/register', [
                 'name' => 'New Customer',
                 'email' => 'tenant-register@example.test',
                 'password' => 'password',
