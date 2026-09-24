@@ -11,10 +11,10 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - **Phase 2 — Multi-tenancy:** **foundation completed**. stancl/tenancy 3.x, landlord/tenant migrations, tenant provisioning, domain identification and isolation tests are active.
 - **Phase 3 — Identity & access:** **operational identity migration completed** for carts, addresses, orders and remittances. Platform identity is now the sole operational ownership key; legacy tenant-local identity columns have been removed.
 - **Phase 3 payment hardening:** remittance payment submission no longer marks a remittance as paid without trusted provider verification; submissions enter procesando and remain pending verification.
-- **Phase 4 — Premium administration:** **active**. Dashboard KPI hierarchy, operational table filters, task-oriented navigation, compact record actions and the first admin layout-density refinement are implemented.
-- **Latest implementation checkpoint:** PR #40 passed PR CI #110 and was merged into main at commit 7a79d3d8e6b7ef63f2a00411babb20ca67229ddd; main CI #111 is green.
+- **Phase 4 — Premium administration:** **active**. Dashboard KPI hierarchy, operational table filters, task-oriented navigation, compact record actions, admin shell density refinement and a lightweight cross-table design-system foundation are implemented.
+- **Latest implementation checkpoint:** PR #42 passed PR CI #114 and was merged into main at commit d0ca605face0e457b006ffa3035e01f3fc18c5c5; main CI #115 is running.
 - **Current hardening:** remaining Phase 3 work is focused on replacing transitional remittance payment-state behavior with a provider-backed transaction abstraction and completing behavior-level payment audits.
-- **Next gate:** continue Phase 4 with a coherent design-system pass, then responsive/dark-mode refinements and tenant branding while maintaining tenant isolation and security coverage.
+- **Next gate:** after main CI #115 is green, continue Phase 4 with responsive/dark-mode refinements and tenant branding while maintaining tenant isolation and security coverage.
 
 ## Delivery rules
 
@@ -50,8 +50,8 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - [x] Redesign Filament navigation and administration information architecture.
 - [x] Standardize compact record actions with accessible tooltips.
 - [x] Refine admin shell density: brand/header footprint, full-width content workspace and standardized sidebar width.
+- [x] Establish lightweight table design-system defaults for search, pagination and mobile behavior.
 - [ ] KPIs, sales, orders, customers, products and operational alerts.
-- [ ] Consistent design system.
 - [ ] Responsive and dark-mode friendly interface.
 - [ ] Tenant branding/settings.
 
@@ -85,6 +85,9 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 
 ## CI checkpoints
 
+- Main CI #115: running after merging Phase 4 table design-system defaults.
+- PR CI #114: success for standardized premium table UX.
+- PR #42: merged after PR CI #114 success.
 - Main CI #111: success after merging Phase 4 admin layout density refinement.
 - PR CI #110: success for premium admin layout density.
 - PR #40: merged after PR CI #110 success.
