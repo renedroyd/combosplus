@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class OrdersTable
@@ -19,7 +20,6 @@ class OrdersTable
                     ->searchable(),
                 TextColumn::make('user.name')
                     ->label('Cliente')
-                    ->numeric()
                     ->sortable(),
                 TextColumn::make('status')
                     ->label('Estado')
@@ -46,7 +46,6 @@ class OrdersTable
                     ->badge(),
                 TextColumn::make('paymentMethod.name')
                     ->label('Metodo de pago')
-                    ->color('yellow')
                     ->badge()
                     ->searchable(),
                 TextColumn::make('shipping_address_id')
@@ -71,7 +70,15 @@ class OrdersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->label('Estado')
+                    ->options(fn (): array => static::distinctOptions('status')),
+                SelectFilter::make('payment_status')
+                    ->label('Pago')
+                    ->options(fn (): array => static::distinctOptions('payment_status')),
+                SelectFilter::make('payment_method_id')
+                    ->label('Metodo de pago')
+                    ->relationship('paymentMethod', 'name'),
             ])
             ->recordActions([
                 EditAction::make(),
@@ -81,5 +88,16 @@ class OrdersTable
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    private static function distinctOptions(string $column): array
+    {
+        return App\Models\Order::query()
+            ->whereNotNull($column)
+            ->distinct()
+            ->orderBy($column)
+            ->pluck($column, $column)
+            ->mapWithKeys(fn ($value, $key): array => [(string) $key => ucfirst((string) $value)])
+            ->all();
     }
 }

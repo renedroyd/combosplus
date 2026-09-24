@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 class UsersTable
@@ -41,7 +42,11 @@ class UsersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                TernaryFilter::make('newsletter')
+                    ->label('Noticias'),
+                TernaryFilter::make('email_verified_at')
+                    ->label('Correo verificado')
+                    ->nullable(),
             ])
             ->recordActions([
                 EditAction::make(),
