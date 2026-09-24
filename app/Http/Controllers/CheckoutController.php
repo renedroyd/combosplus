@@ -63,7 +63,10 @@ class CheckoutController extends Controller
                               ->firstOrFail();
         }
 
-        $paymentMethod = PaymentMethod::findOrFail($data['payment_method_id']);
+        $paymentMethod = PaymentMethod::query()
+            ->whereKey($data['payment_method_id'])
+            ->where('is_active', true)
+            ->firstOrFail();
         $subtotal = $cart->items->sum(fn($item) => $item->price * $item->quantity);
         $shippingCost = $data['delivery_type'] === 'delivery' ? 5.00 : 0.00;
         $total = $subtotal + $shippingCost;
