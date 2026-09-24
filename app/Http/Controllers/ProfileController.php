@@ -28,7 +28,11 @@ class ProfileController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
+            'email' => [
+                'required',
+                'email',
+                Rule::unique(($user->getConnectionName() ?: config('database.default')) . '.users')->ignore($user->getAuthIdentifier()),
+            ],
             'current_password' => ['nullable', 'required_with:new_password', 'current_password'],
             'new_password' => ['nullable', 'confirmed', 'min:8'],
         ]);
