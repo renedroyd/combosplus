@@ -9,9 +9,9 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - **Phase 0 — Foundation:** substantially completed; CI baseline, architecture docs and project documentation are established. Remaining hardening includes smoke coverage, artifact cleanup and production configuration.
 - **Phase 1 — Application architecture:** partially implemented opportunistically while securing the existing application. Policies, tenant services, safer identifiers and structured error logging are already present; formal domain boundaries and auditability remain.
 - **Phase 2 — Multi-tenancy:** **foundation completed**. `stancl/tenancy 3.x`, landlord/tenant migrations, tenant provisioning, domain identification and isolation tests are active.
-- **Phase 3 — Identity & access:** **advanced / active**. Platform identity, memberships, roles, tenant switching, tenant middleware, policies, authentication bridge and cross-tenant protections are implemented. Operational customer projection remains a staged compatibility boundary.
-- **Current hardening:** checkout/cart/address/order flows are being aligned with tenant schemas and protected against cross-user/cross-tenant access. Recent fixes include transaction-safe checkout, cart price snapshots, unique authenticated carts, explicit order address relations, and address contact fields.
-- **Next gate:** finish Phase 3 operational identity and checkout isolation, then begin Phase 4 premium administration while continuing security/schema audits.
+- **Phase 3 — Identity & access:** **operational identity migration completed for carts, addresses and orders**. Platform identity is now the primary ownership key for these flows, while legacy tenant-local identity columns remain temporarily for compatibility. Checkout/cart isolation coverage is in place.
+- **Current hardening:** remaining Phase 3 work is focused on legacy schema cleanup, remittance ownership/payment-state audit and completing the compatibility migration without weakening tenant isolation.
+- **Next gate:** finish the remaining Phase 3 schema/payment audits, then begin Phase 4 premium administration while continuing security/schema audits.
 
 ## Delivery rules
 
@@ -59,8 +59,9 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - [x] Harden order/cart/checkout identity and transaction boundaries.
 - [x] Align order address relationships with tenant schema.
 - [x] Align tenant address schema with storefront/controller fields.
-- [ ] Complete operational customer FK migration away from the legacy tenant-local identity projection.
-- [ ] Complete checkout isolation regression matrix (cross-user address/payment/cart cases).
+- [x] Migrate operational ownership to `platform_user_id` for carts, addresses and orders.
+- [x] Add checkout/cart cross-user and cross-tenant isolation regression coverage.
+- [ ] Complete removal of legacy operational `user_id` columns after all compatibility reads/writes are eliminated.
 - [ ] Normalize remaining legacy order/payment fields and relationships.
 - [ ] Audit remittance ownership/payment state transitions.
 
@@ -141,8 +142,9 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 
 ## CI checkpoints
 
-- Main CI #69: success after order-address relation hardening.
+- Main CI #81: success after operational identity migration.
+- Main CI #77: success after checkout/cart isolation fixes.
+- Main CI #73: success after roadmap/status update.
 - Main CI #71: success after address schema alignment.
-- Pull-request CI #68: success.
-- Pull-request CI #70: success.
+- Pull-request CI #79: failed during the operational identity migration and was corrected before merge.
 - The GitHub Actions runs endpoint is the operational source of truth when specialized status/check wrappers return empty arrays.
