@@ -9,10 +9,10 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - **Phase 0 — Foundation:** substantially completed; CI baseline, architecture docs and project documentation are established. Remaining hardening includes smoke coverage, artifact cleanup and production configuration.
 - **Phase 1 — Application architecture:** partially implemented opportunistically while securing the existing application. Policies, tenant services, safer identifiers and structured error logging are already present; formal domain boundaries and auditability remain.
 - **Phase 2 — Multi-tenancy:** **foundation completed**. stancl/tenancy 3.x, landlord/tenant migrations, tenant provisioning, domain identification and isolation tests are active.
-- **Phase 3 — Identity & access:** **operational identity migration completed for carts, addresses, orders and remittances**. Platform identity is now the primary ownership key for these flows, while legacy tenant-local identity columns remain temporarily for compatibility.
+- **Phase 3 — Identity & access:** **operational identity migration completed for carts, addresses, orders and remittances**. Platform identity is now the sole operational ownership key; legacy tenant-local identity columns have been removed.
 - **Phase 3 payment hardening:** remittance payment submission no longer marks a remittance as paid without trusted provider verification; submissions enter procesando and remain pending verification.
 - **Latest CI checkpoint:** PR #29 passed CI and was merged; Main CI #87 is green on commit bb65c73435c34b67e6c04104293b9b0dc1ed7c4a.
-- **Current hardening:** remaining Phase 3 work is focused on eliminating legacy operational reads/writes, normalizing remaining payment relationships and replacing transitional payment-state behavior with a provider-backed transaction abstraction.
+- **Current hardening:** remaining Phase 3 work is focused on replacing transitional remittance payment-state behavior with a provider-backed transaction abstraction and completing behavior-level payment audits.
 - **Next gate:** finish the remaining Phase 3 schema/payment audits, then continue Phase 4 premium administration while maintaining tenant isolation and security coverage.
 
 ## Delivery rules
@@ -38,8 +38,8 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - [x] Normalize legacy order payment method data into payment_method_id.
 - [x] Prevent unverified remittance submissions from transitioning directly to pagado.
 - [x] Isolate remittance payment submission state transitions behind an application service.
-- [ ] Complete removal of legacy operational user_id columns after all compatibility reads/writes are eliminated.
-- [ ] Normalize remaining legacy payment fields and relationships.
+- [x] Complete removal of legacy operational user_id columns after eliminating compatibility reads/writes.
+- [x] Normalize remaining legacy order payment fields and Filament administration references.
 - [ ] Replace remittance payment-state placeholder with verified provider transactions.
 - [ ] Audit remittance ownership and payment-state transitions with behavior-level tests.
 
