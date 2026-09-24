@@ -30,7 +30,7 @@ Supported roles: owner, admin, manager, staff, customer.
 
 Protected tenant routes use auth plus EnsureTenantMembership. The middleware checks the active membership against the tenant already resolved by tenancy. A tenant ID supplied by a request is never accepted as an authorization claim.
 
-The legacy tenant-local User model remains as an operational compatibility projection while dependent foreign keys are migrated. Profile updates now synchronize the projection through TenantCustomerProvisioner, and address creation is policy-authorized in the current tenant.
+The legacy tenant-local User model remains as an operational compatibility projection while dependent foreign keys are migrated. Profile updates now synchronize the projection through TenantCustomerProvisioner, address creation is policy-authorized in the current tenant, and order ownership remains tenant-local while being keyed from the central platform identity. Order numbers use collision-safe random identifiers instead of `uniqid()`.
 
 See [Identity and access](docs/IDENTITY.md), [Customer identity](docs/CUSTOMER-IDENTITY.md), [Tenant switching](docs/TENANT-SWITCHING.md), [Authorization](docs/AUTHORIZATION.md), [Tenant routes](docs/TENANT-ROUTES.md), and [Tenant controller audit](docs/TENANT-CONTROLLER-AUDIT.md).
 
