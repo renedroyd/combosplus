@@ -82,7 +82,6 @@ class RemesaController extends Controller
             'metodo_envio_id' => $request->metodo_envio_id,
             'moneda_origen' => $request->moneda_origen,
             'estado' => 'pendiente',
-            'user_id' => auth()->id(),
             'platform_user_id' => auth()->id(),
         ];
 
