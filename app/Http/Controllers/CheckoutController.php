@@ -1,10 +1,8 @@
 <?php
-// app/Http/Controllers/CheckoutController.php
 
 namespace App\Http\Controllers;
 
 use App\Models\Address;
-use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\PaymentMethod;
@@ -12,150 +10,161 @@ use App\Notifications\OrderCreatedTelegram;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class CheckoutController extends Controller
 {
     public function index()
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             session()->put('intended_checkout', true);
+
             return view('checkout.guest');
         }
 
         $cart = auth()->user()->cart()->with('items.product')->first();
 
-        if (!$cart || $cart->items->isEmpty()) {
+        if (! $cart || $cart->items->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío.');
         }
 
         $addresses = auth()->user()->addresses;
-        $paymentMethods = PaymentMethod::where('is_active', true)->orderBy('sort_order')->get();
-        $subtotal = $cart->items->sum(fn($item) => $item->price * $item->quantity);
+        $paymentMethods = PaymentMethod::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get();
+        $subtotal = $cart->items->sum(fn ($item) => $item->price * $item->quantity);
         $shippingCost = 5.00;
         $total = $subtotal + $shippingCost;
 
-        return view('checkout.index', compact('cart', 'addresses', 'paymentMethods', 'subtotal', 'shippingCost', 'total'));
+        return view('checkout.index', compact(
+            'cart',
+            'addresses',
+            'paymentMethods',
+            'subtotal',
+            'shippingCost',
+            'total',
+        ));
     }
 
     public function process(Request $request)
     {
-        $cart = auth()->user()->cart()->with('items.product')->first();
-
-        if (!$cart || $cart->items->isEmpty()) {
-            return redirect()->route('cart.index')->with('error', 'Carrito vacío.');
-        }
-
         $rules = [
             'delivery_type' => 'required|in:pickup,delivery',
             'payment_method_id' => 'required|integer',
             'notes' => 'nullable|string|max:500',
         ];
 
-        if ($request->delivery_type === 'delivery') {
-            $rules['address_id'] = 'required|exists:addresses,id';
+        if ($request->input('delivery_type') === 'delivery') {
+            $rules['address_id'] = 'required|integer';
         }
 
         $data = $request->validate($rules);
+        $user = $request->user();
 
-        if ($data['delivery_type'] === 'delivery') {
-            $address = Address::query()
-                ->whereKey($data['address_id'])
-                ->where('user_id', auth()->id())
-                ->firstOrFail();
-        }
-
-        $paymentMethod = PaymentMethod::query()
-            ->whereKey($data['payment_method_id'])
-            ->where('is_active', true)
-            ->firstOrFail();
-        $subtotal = $cart->items->sum(fn($item) => $item->price * $item->quantity);
-        $shippingCost = $data['delivery_type'] === 'delivery' ? 5.00 : 0.00;
-        $total = $subtotal + $shippingCost;
-
-        DB::beginTransaction();
         try {
-            $order = Order::create([
-                'user_id' => auth()->id(),
-                'shipping_address_id' => $data['delivery_type'] === 'delivery' ? $data['address_id'] : null,
-                'payment_method_id' => $paymentMethod->id,
-                'delivery_type' => $data['delivery_type'],
-                'status' => 'pending',
-                'payment_status' => 'pending',
-                'subtotal' => $subtotal,
-                'shipping_cost' => $shippingCost,
-                'total' => $total,
-                'notes' => $data['notes'] ?? null,
-                'tax' => 0,
-                'discount' => 0,
+            [$order, $paymentMethod] = DB::transaction(function () use ($data, $user): array {
+                $cart = $user->cart()->lockForUpdate()->first();
+
+                if (! $cart) {
+                    abort(422, 'Carrito vacío.');
+                }
+
+                $cart->load('items.product');
+
+                if ($cart->items->isEmpty()) {
+                    abort(422, 'Carrito vacío.');
+                }
+
+                if ($data['delivery_type'] === 'delivery') {
+                    Address::query()
+                        ->whereKey($data['address_id'])
+                        ->where('user_id', $user->getAuthIdentifier())
+                        ->lockForUpdate()
+                        ->firstOrFail();
+                }
+
+                $paymentMethod = PaymentMethod::query()
+                    ->whereKey($data['payment_method_id'])
+                    ->where('is_active', true)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                $subtotal = $cart->items->sum(fn ($item) => $item->price * $item->quantity);
+                $shippingCost = $data['delivery_type'] === 'delivery' ? 5.00 : 0.00;
+                $total = $subtotal + $shippingCost;
+
+                $order = Order::create([
+                    'user_id' => $user->getAuthIdentifier(),
+                    'shipping_address_id' => $data['delivery_type'] === 'delivery' ? $data['address_id'] : null,
+                    'payment_method_id' => $paymentMethod->id,
+                    'delivery_type' => $data['delivery_type'],
+                    'status' => 'pending',
+                    'payment_status' => 'pending',
+                    'subtotal' => $subtotal,
+                    'shipping_cost' => $shippingCost,
+                    'total' => $total,
+                    'notes' => $data['notes'] ?? null,
+                    'tax' => 0,
+                    'discount' => 0,
+                ]);
+
+                foreach ($cart->items as $item) {
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $item->product_id,
+                        'quantity' => $item->quantity,
+                        'price' => $item->price,
+                        'total' => $item->quantity * $item->price,
+                    ]);
+                }
+
+                $cart->items()->delete();
+
+                return [$order->fresh(), $paymentMethod];
+            });
+
+            $this->sendOrderNotifications($order);
+
+            return $this->redirectToPayment($order, $paymentMethod);
+        } catch (\Throwable $e) {
+            Log::error('Error al procesar orden.', [
+                'message' => $e->getMessage(),
+                'user_id' => $user?->getAuthIdentifier(),
             ]);
 
-            
-
-            foreach ($cart->items as $item) {
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $item->product_id,
-                    'quantity' => $item->quantity,
-                    'price' => $item->price,
-                    'total' => $item->quantity * $item->price,
-                ]);
-            }
-
-            
-            $cart->items()->delete();
-
-            
-            DB::commit();
-
-            // 📱 ENVIAR NOTIFICACIONES
-            try {
-                // NOTIFICACIÓN TELEGRAM
-                
-                // 1. Notificar al administrador (siempre)
-                $adminChatId = env('TELEGRAM_ADMIN_CHAT_ID');
-                Log::info('Admin Chat ID: ' . ($adminChatId ?? 'no definido'));
-
-                if ($adminChatId) {
-                    \Illuminate\Support\Facades\Notification::route('telegram', $adminChatId)
-                        ->notify(new OrderCreatedTelegram($order, 'admin'));
-                    Log::info('Notificación admin enviada');
-                } else {
-                    Log::warning('TELEGRAM_ADMIN_CHAT_ID no está definido en .env');
-                }
-                
-                // 2. Notificar al cliente (si tiene Telegram configurado)
-                if ($order->user->telegram_chat_id) {
-                    $order->user->notify(new OrderCreatedTelegram($order, 'customer'));
-                }
-                
-            } catch (\Exception $e) {
-                    Log::error('Error enviando notificación: ' . $e->getMessage());
-                    Log::error($e->getTraceAsString());
-            }
-
-            
-            return $this->redirectToPayment($order, $paymentMethod);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error al procesar orden: ' . $e->getMessage());
             return back()->with('error', 'Hubo un problema al procesar tu pedido. Intenta nuevamente.');
         }
     }
 
-    protected function redirectToPayment($order, $paymentMethod)
+    protected function sendOrderNotifications(Order $order): void
     {
-        
-        switch ($paymentMethod->code) {
-            case 'cash':
-                return redirect()->route('orders.show', $order)
-                    ->with('success', 'Pedido registrado. Por favor, realiza el pago en efectivo al recibir/retirar.');
-            case 'transfer':
-                $order->update(['payment_status' => 'pending']);
+        try {
+            $adminChatId = env('TELEGRAM_ADMIN_CHAT_ID');
 
-                return redirect()->route('zelle.pay', $order);
-            default:
-                return redirect()->route('orders.show', $order);
+            if ($adminChatId) {
+                Notification::route('telegram', $adminChatId)
+                    ->notify(new OrderCreatedTelegram($order, 'admin'));
+            }
+
+            if ($order->user?->telegram_chat_id) {
+                $order->user->notify(new OrderCreatedTelegram($order, 'customer'));
+            }
+        } catch (\Throwable $e) {
+            Log::error('Error enviando notificación de pedido.', [
+                'order_id' => $order->id,
+                'message' => $e->getMessage(),
+            ]);
         }
+    }
+
+    protected function redirectToPayment(Order $order, PaymentMethod $paymentMethod)
+    {
+        return match ($paymentMethod->code) {
+            'cash' => redirect()->route('orders.show', $order)
+                ->with('success', 'Pedido registrado. Por favor, realiza el pago en efectivo al recibir/retirar.'),
+            'transfer' => redirect()->route('zelle.pay', $order),
+            default => redirect()->route('orders.show', $order),
+        };
     }
 }
