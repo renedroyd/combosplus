@@ -13,6 +13,7 @@ use App\Models\Product;
 use App\Models\Tenant;
 use App\Services\Tenancy\TenantCustomerProvisioner;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
@@ -65,9 +66,14 @@ class TenantCheckoutCartIsolationTest extends TestCase
             Auth::guard('web')->setUser($owner);
 
             $request = Request::create('/cart/item/'.$item->id, 'PATCH', ['quantity' => 9]);
-            $response = app(CartController::class)->update($request, $item);
 
-            $this->assertSame(403, $response->getStatusCode());
+            try {
+                app(CartController::class)->update($request, $item);
+                $this->fail('A cart mutation for another user must be rejected.');
+            } catch (HttpException $exception) {
+                $this->assertSame(403, $exception->getStatusCode());
+            }
+
             $this->assertSame(2, $item->refresh()->quantity);
         });
     }
