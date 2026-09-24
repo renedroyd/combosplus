@@ -22,7 +22,7 @@ class TenantCustomerProvisioner
             return $customer;
         }
 
-        return User::query()->create($this->attributesFor($platformUser));
+        return User::query()->forceCreate($this->attributesFor($platformUser));
     }
 
     public function sync(PlatformUser $platformUser): User
