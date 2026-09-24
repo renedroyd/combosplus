@@ -4,6 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\Remesa;
 use App\Models\Tenant;
+use App\Services\RemittancePaymentService;
+use DomainException;
+use Mockery;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -36,12 +39,25 @@ class TenantRemittanceIdentityTest extends TestCase
         }
     }
 
-    public function test_payment_submission_does_not_mark_a_remittance_as_paid(): void
+    public function test_payment_submission_transitions_pending_remittance_to_processing_without_marking_it_paid(): void
     {
-        $source = file_get_contents(app_path('Http/Controllers/RemesaController.php'));
+        $remesa = Mockery::mock(Remesa::class)->makePartial();
+        $remesa->setAttribute('estado', 'pendiente');
+        $remesa->shouldReceive('save')->once()->andReturnTrue();
+        $remesa->shouldReceive('refresh')->once()->andReturnSelf();
 
-        $this->assertStringContainsString("'estado' => 'procesando'", $source);
-        $this->assertStringNotContainsString("'estado' => 'pagado'", $source);
-        $this->assertStringContainsString("'pagado_en' => null", $source);
+        $result = app(RemittancePaymentService::class)->submit($remesa);
+
+        $this->assertSame('procesando', $result->getAttribute('estado'));
+        $this->assertNull($result->getAttribute('pagado_en'));
+    }
+
+    public function test_payment_submission_rejects_a_remittance_that_is_not_pending(): void
+    {
+        $remesa = new Remesa(['estado' => 'procesando']);
+
+        $this->expectException(DomainException::class);
+
+        app(RemittancePaymentService::class)->submit($remesa);
     }
 }

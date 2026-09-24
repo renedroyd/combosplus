@@ -37,6 +37,7 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - [x] Add checkout/cart cross-user and cross-tenant isolation regression coverage.
 - [x] Normalize legacy order payment method data into payment_method_id.
 - [x] Prevent unverified remittance submissions from transitioning directly to pagado.
+- [x] Isolate remittance payment submission state transitions behind an application service.
 - [ ] Complete removal of legacy operational user_id columns after all compatibility reads/writes are eliminated.
 - [ ] Normalize remaining legacy payment fields and relationships.
 - [ ] Replace remittance payment-state placeholder with verified provider transactions.
