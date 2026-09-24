@@ -17,19 +17,38 @@ class TenantCustomerProvisioner
         $customer = User::query()->find($platformUser->getAuthIdentifier());
 
         if ($customer) {
-            if (strcasecmp((string) $customer->email, (string) $platformUser->email) !== 0) {
-                throw new RuntimeException('Tenant customer identity conflicts with the platform identity.');
-            }
+            $this->assertCompatible($customer, $platformUser);
 
             return $customer;
         }
 
-        return User::query()->create([
+        return User::query()->create($this->attributesFor($platformUser));
+    }
+
+    public function sync(PlatformUser $platformUser): User
+    {
+        $customer = $this->ensure($platformUser);
+
+        $customer->forceFill($this->attributesFor($platformUser))->save();
+
+        return $customer->refresh();
+    }
+
+    private function assertCompatible(User $customer, PlatformUser $platformUser): void
+    {
+        if (strcasecmp((string) $customer->email, (string) $platformUser->email) !== 0) {
+            throw new RuntimeException('Tenant customer identity conflicts with the platform identity.');
+        }
+    }
+
+    private function attributesFor(PlatformUser $platformUser): array
+    {
+        return [
             'id' => $platformUser->getAuthIdentifier(),
             'name' => $platformUser->name,
             'email' => $platformUser->email,
             'password' => $platformUser->getAuthPassword(),
             'telegram_chat_id' => $platformUser->telegram_chat_id,
-        ]);
+        ];
     }
 }
