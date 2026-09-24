@@ -47,7 +47,7 @@ class CheckoutController extends Controller
 
         $rules = [
             'delivery_type' => 'required|in:pickup,delivery',
-            'payment_method_id' => 'required|exists:payment_methods,id',
+            'payment_method_id' => 'required|integer',
             'notes' => 'nullable|string|max:500',
         ];
 
@@ -58,9 +58,10 @@ class CheckoutController extends Controller
         $data = $request->validate($rules);
 
         if ($data['delivery_type'] === 'delivery') {
-            $address = Address::where('id', $data['address_id'])
-                              ->where('user_id', auth()->id())
-                              ->firstOrFail();
+            $address = Address::query()
+                ->whereKey($data['address_id'])
+                ->where('user_id', auth()->id())
+                ->firstOrFail();
         }
 
         $paymentMethod = PaymentMethod::query()
@@ -151,9 +152,6 @@ class CheckoutController extends Controller
                     ->with('success', 'Pedido registrado. Por favor, realiza el pago en efectivo al recibir/retirar.');
             case 'transfer':
                 $order->update(['payment_status' => 'pending']);
-
-                $config = $paymentMethod->settings;
-                $account = $config['account_number'] ?? 'no especificada';
 
                 return redirect()->route('zelle.pay', $order);
             default:
