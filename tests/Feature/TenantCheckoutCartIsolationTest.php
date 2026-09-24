@@ -123,6 +123,7 @@ class TenantCheckoutCartIsolationTest extends TestCase
 
             $foreignAddress = Address::create([
                 'platform_user_id' => $other->id,
+                'user_id' => $other->id,
                 'type' => 'shipping',
                 'name' => 'Other Customer',
                 'address_line1' => 'Foreign street 1',
