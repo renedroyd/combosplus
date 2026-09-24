@@ -15,7 +15,7 @@ CombosPlus is evolving into a premium multi-tenant commerce platform for busines
 - Remittances with platform identity tracking
 - Tenant membership and role-based access
 - Telegram notifications
-- Filament administration with a premium KPI dashboard, operational filters, task-oriented navigation and compact table actions
+- Filament administration with a premium KPI dashboard, operational filters, task-oriented navigation, compact table actions and refined layout density
 - Laravel Octane
 - Docker/FrankenPHP deployment foundation
 
@@ -37,7 +37,7 @@ Remittance payment submission is explicitly treated as a payment request and del
 
 ## Premium administration
 
-Phase 4 includes a compact dashboard KPI foundation, operational filters for orders, products and customers, task-oriented navigation groups and compact record actions with accessible tooltips. The administration tables prioritize searchable business identifiers, relevant status filters and a dense column hierarchy that keeps secondary metadata available without making the interface visually heavy.
+Phase 4 includes a compact dashboard KPI foundation, operational filters for orders, products and customers, task-oriented navigation groups, compact record actions with accessible tooltips and a refined admin shell. The latest layout pass reduces brand/header footprint, gives content a full-width workspace and uses a standardized sidebar width while preserving desktop collapsing. The administration tables prioritize searchable business identifiers, relevant status filters and a dense column hierarchy that keeps secondary metadata available without making the interface visually heavy.
 
 See [Identity and access](docs/IDENTITY.md), [Customer identity](docs/CUSTOMER-IDENTITY.md), [Tenant switching](docs/TENANT-SWITCHING.md), [Authorization](docs/AUTHORIZATION.md), [Tenant routes](docs/TENANT-ROUTES.md), and [Tenant controller audit](docs/TENANT-CONTROLLER-AUDIT.md).
 
