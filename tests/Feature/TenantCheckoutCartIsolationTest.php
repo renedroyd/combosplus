@@ -56,7 +56,7 @@ class TenantCheckoutCartIsolationTest extends TestCase
                 'sku' => 'CART-ISO-001',
             ]);
 
-            $otherCart = Cart::create(['user_id' => $other->id]);
+            $otherCart = Cart::create(['platform_user_id' => $other->id]);
             $item = $otherCart->items()->create([
                 'product_id' => $product->id,
                 'quantity' => 2,
@@ -86,12 +86,12 @@ class TenantCheckoutCartIsolationTest extends TestCase
 
         $tenantA->run(function () use ($customer): void {
             app(TenantCustomerProvisioner::class)->ensure($customer);
-            Cart::create(['user_id' => $customer->id]);
+            Cart::create(['platform_user_id' => $customer->id]);
         });
 
         $tenantB->run(function () use ($customer): void {
             app(TenantCustomerProvisioner::class)->ensure($customer);
-            $this->assertNull(Cart::where('user_id', $customer->id)->first());
+            $this->assertNull(Cart::where('platform_user_id', $customer->id)->first());
         });
     }
 
@@ -113,7 +113,7 @@ class TenantCheckoutCartIsolationTest extends TestCase
                 'sku' => 'CHECKOUT-ISO-001',
             ]);
 
-            Cart::create(['user_id' => $owner->id])
+            Cart::create(['platform_user_id' => $owner->id])
                 ->items()
                 ->create([
                     'product_id' => $product->id,
@@ -122,6 +122,7 @@ class TenantCheckoutCartIsolationTest extends TestCase
                 ]);
 
             $foreignAddress = Address::create([
+                'platform_user_id' => $other->id,
                 'user_id' => $other->id,
                 'type' => 'shipping',
                 'name' => 'Other Customer',
@@ -151,7 +152,7 @@ class TenantCheckoutCartIsolationTest extends TestCase
 
             $this->assertSame(302, $response->getStatusCode());
             $this->assertSame(0, Order::count());
-            $this->assertSame(1, Cart::where('user_id', $owner->id)->first()->items()->count());
+            $this->assertSame(1, Cart::where('platform_user_id', $owner->id)->first()->items()->count());
         });
     }
 
@@ -172,7 +173,7 @@ class TenantCheckoutCartIsolationTest extends TestCase
                 'sku' => 'PAYMENT-ISO-001',
             ]);
 
-            Cart::create(['user_id' => $owner->id])
+            Cart::create(['platform_user_id' => $owner->id])
                 ->items()
                 ->create([
                     'product_id' => $product->id,
@@ -198,7 +199,7 @@ class TenantCheckoutCartIsolationTest extends TestCase
 
             $this->assertSame(302, $response->getStatusCode());
             $this->assertSame(0, Order::count());
-            $this->assertSame(1, Cart::where('user_id', $owner->id)->first()->items()->count());
+            $this->assertSame(1, Cart::where('platform_user_id', $owner->id)->first()->items()->count());
         });
     }
 
@@ -208,6 +209,9 @@ class TenantCheckoutCartIsolationTest extends TestCase
 
         $tenant->run(function (): void {
             $this->assertTrue(Schema::hasColumn('cart_items', 'price'));
+            $this->assertTrue(Schema::hasColumn('carts', 'platform_user_id'));
+            $this->assertTrue(Schema::hasColumn('addresses', 'platform_user_id'));
+            $this->assertTrue(Schema::hasColumn('orders', 'platform_user_id'));
             $this->assertTrue(Schema::hasColumn('payment_methods', 'is_active'));
             $this->assertTrue(Schema::hasColumn('payment_methods', 'sort_order'));
 
@@ -216,7 +220,7 @@ class TenantCheckoutCartIsolationTest extends TestCase
             $this->assertTrue(
                 $indexes->contains(fn (array $index): bool =>
                     ($index['unique'] ?? false) === true
-                    && ($index['columns'] ?? []) === ['user_id']
+                    && ($index['columns'] ?? []) === ['platform_user_id']
                 )
             );
         });

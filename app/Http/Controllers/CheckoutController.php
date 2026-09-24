@@ -79,7 +79,7 @@ class CheckoutController extends Controller
                 if ($data['delivery_type'] === 'delivery') {
                     Address::query()
                         ->whereKey($data['address_id'])
-                        ->where('user_id', $user->getAuthIdentifier())
+                        ->where('platform_user_id', $user->getAuthIdentifier())
                         ->lockForUpdate()
                         ->firstOrFail();
                 }
@@ -95,7 +95,7 @@ class CheckoutController extends Controller
                 $total = $subtotal + $shippingCost;
 
                 $order = Order::create([
-                    'user_id' => $user->getAuthIdentifier(),
+                    'platform_user_id' => $user->getAuthIdentifier(),
                     'shipping_address_id' => $data['delivery_type'] === 'delivery' ? $data['address_id'] : null,
                     'payment_method_id' => $paymentMethod->id,
                     'delivery_type' => $data['delivery_type'],
