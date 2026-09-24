@@ -71,7 +71,9 @@ class ProductsTable
                     ->label('Destacados'),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->iconButton()
+                    ->tooltip('Editar producto'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
