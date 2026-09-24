@@ -19,7 +19,7 @@ class TenantRemittanceIdentityTest extends TestCase
         try {
             $tenant->run(function (): void {
                 $this->assertTrue(Schema::hasColumn('remesas', 'platform_user_id'));
-                $this->assertTrue(Schema::hasColumn('remesas', 'user_id'));
+                $this->assertFalse(Schema::hasColumn('remesas', 'user_id'));
 
                 $indexes = collect(Schema::getIndexes('remesas'));
 
