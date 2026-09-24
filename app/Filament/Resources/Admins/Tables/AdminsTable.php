@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Admins\Tables;
 
+use App\Filament\Tables\PremiumTableDefaults;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -12,36 +13,17 @@ class AdminsTable
 {
     public static function configure(Table $table): Table
     {
-        return $table
+        return PremiumTableDefaults::apply($table, 'Buscar administradores...')
             ->columns([
-                TextColumn::make('name')
-                    ->label('Nombre')
-                    ->searchable(),
-                TextColumn::make('email')
-                    ->label('Correo')
-                    ->searchable(),
-                TextColumn::make('email_verified_at')
-                    ->label('Correo verificado')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->label('Creado')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->label('Modificado')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('name')->label('Nombre')->searchable(),
+                TextColumn::make('email')->label('Correo')->searchable(),
+                TextColumn::make('email_verified_at')->label('Correo verificado')->dateTime()->sortable(),
+                TextColumn::make('created_at')->label('Creado')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')->label('Modificado')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->recordActions([
-                EditAction::make()
-                    ->iconButton()
-                    ->tooltip('Editar administrador'),
+                EditAction::make()->iconButton()->tooltip('Editar administrador'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

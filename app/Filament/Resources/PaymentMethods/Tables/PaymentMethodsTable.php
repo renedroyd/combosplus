@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PaymentMethods\Tables;
 
+use App\Filament\Tables\PremiumTableDefaults;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -13,33 +14,17 @@ class PaymentMethodsTable
 {
     public static function configure(Table $table): Table
     {
-        return $table
+        return PremiumTableDefaults::apply($table, 'Buscar métodos de pago...')
             ->columns([
-                TextColumn::make('name')
-                    ->label('Nombre')
-                    ->searchable(),
-                TextColumn::make('code')
-                    ->label('Codigo')
-                    ->searchable(),
-                IconColumn::make('is_active')
-                    ->label('Activo')
-                    ->boolean(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('name')->label('Nombre')->searchable(),
+                TextColumn::make('code')->label('Codigo')->searchable(),
+                IconColumn::make('is_active')->label('Activo')->boolean(),
+                TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->recordActions([
-                EditAction::make()
-                    ->iconButton()
-                    ->tooltip('Editar metodo de pago'),
+                EditAction::make()->iconButton()->tooltip('Editar metodo de pago'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

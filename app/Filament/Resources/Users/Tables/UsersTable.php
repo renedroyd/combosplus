@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Filament\Tables\PremiumTableDefaults;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -14,44 +15,22 @@ class UsersTable
 {
     public static function configure(Table $table): Table
     {
-        return $table
+        return PremiumTableDefaults::apply($table, 'Buscar clientes...')
             ->columns([
-                TextColumn::make('name')
-                    ->label('Nombre')
-                    ->searchable(),
-                TextColumn::make('email')
-                    ->label('Correo')
-                    ->searchable(),
-                TextColumn::make('phone')
-                    ->label('Telefono')
-                    ->searchable(),
-                IconColumn::make('newsletter')
-                    ->label('Noticias')
-                    ->boolean(),
-                TextColumn::make('email_verified_at')
-                    ->label('Correo verificado')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('name')->label('Nombre')->searchable(),
+                TextColumn::make('email')->label('Correo')->searchable(),
+                TextColumn::make('phone')->label('Telefono')->searchable(),
+                IconColumn::make('newsletter')->label('Noticias')->boolean(),
+                TextColumn::make('email_verified_at')->label('Correo verificado')->dateTime()->sortable(),
+                TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                TernaryFilter::make('newsletter')
-                    ->label('Noticias'),
-                TernaryFilter::make('email_verified_at')
-                    ->label('Correo verificado')
-                    ->nullable(),
+                TernaryFilter::make('newsletter')->label('Noticias'),
+                TernaryFilter::make('email_verified_at')->label('Correo verificado')->nullable(),
             ])
             ->recordActions([
-                EditAction::make()
-                    ->iconButton()
-                    ->tooltip('Editar cliente'),
+                EditAction::make()->iconButton()->tooltip('Editar cliente'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
