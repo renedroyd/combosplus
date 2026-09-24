@@ -14,9 +14,22 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function shippingAddress()
+    {
+        return $this->belongsTo(Address::class, 'shipping_address_id');
+    }
+
+    public function billingAddress()
+    {
+        return $this->belongsTo(Address::class, 'billing_address_id');
+    }
+
+    /**
+     * @deprecated Use shippingAddress() instead.
+     */
     public function address()
     {
-        return $this->belongsTo(Address::class);
+        return $this->shippingAddress();
     }
 
     public function paymentMethod()
