@@ -40,8 +40,8 @@ class AdminsTable
             ])
             ->recordActions([
                 EditAction::make()
-                    ->label('')
-                    ->tooltip('Editar'),
+                    ->iconButton()
+                    ->tooltip('Editar administrador'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
