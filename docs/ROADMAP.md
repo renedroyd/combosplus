@@ -4,6 +4,15 @@
 
 CombosPlus is evolving from a Laravel commerce application into a multi-tenant Commerce & Business Platform. The target is a premium, fast and maintainable SaaS where each business operates in an isolated tenant database.
 
+## Current status — 2026-09-24
+
+- **Phase 0 — Foundation:** substantially completed; CI baseline, architecture docs and project documentation are established. Remaining hardening includes smoke coverage, artifact cleanup and production configuration.
+- **Phase 1 — Application architecture:** partially implemented opportunistically while securing the existing application. Policies, tenant services, safer identifiers and structured error logging are already present; formal domain boundaries and auditability remain.
+- **Phase 2 — Multi-tenancy:** **foundation completed**. `stancl/tenancy 3.x`, landlord/tenant migrations, tenant provisioning, domain identification and isolation tests are active.
+- **Phase 3 — Identity & access:** **advanced / active**. Platform identity, memberships, roles, tenant switching, tenant middleware, policies, authentication bridge and cross-tenant protections are implemented. Operational customer projection remains a staged compatibility boundary.
+- **Current hardening:** checkout/cart/address/order flows are being aligned with tenant schemas and protected against cross-user/cross-tenant access. Recent fixes include transaction-safe checkout, cart price snapshots, unique authenticated carts, explicit order address relations, and address contact fields.
+- **Next gate:** finish Phase 3 operational identity and checkout isolation, then begin Phase 4 premium administration while continuing security/schema audits.
+
 ## Delivery rules
 
 - Every merge must include an updated `README.md` when the product or architecture changes.
@@ -24,27 +33,36 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - [ ] Normalize production configuration and Docker workflow.
 
 ### Phase 1 — Application architecture
-- [ ] Introduce clear domain/application boundaries.
-- [ ] Extract business operations into Actions/Services where useful.
-- [ ] Add Policies, Events and Jobs for cross-cutting workflows.
-- [ ] Replace fragile identifiers such as `uniqid()` with ULID/UUID-based identifiers where appropriate.
-- [ ] Add auditability and structured logging.
+- [~] Introduce clear domain/application boundaries.
+- [~] Extract business operations into Actions/Services where useful.
+- [~] Add Policies, Events and Jobs for cross-cutting workflows.
+- [x] Replace fragile order/remittance identifiers such as `uniqid()` with collision-safe random identifiers.
+- [~] Add auditability and structured logging.
 
 ### Phase 2 — Multi-tenancy
-- [ ] Install and configure `stancl/tenancy`.
-- [ ] Create landlord/platform database.
-- [ ] Create tenant database provisioning lifecycle.
-- [ ] Configure tenant identification by domain/subdomain.
-- [ ] Separate landlord and tenant migrations.
-- [ ] Migrate products, catalog, carts, orders, payments and operational data into tenant databases.
-- [ ] Add tenant isolation and provisioning tests.
+- [x] Install and configure `stancl/tenancy`.
+- [x] Create landlord/platform database.
+- [x] Create tenant database provisioning lifecycle.
+- [x] Configure tenant identification by domain.
+- [x] Separate landlord and tenant migrations.
+- [x] Establish tenant commerce schema for products, catalog, carts, orders, payments and operational data.
+- [x] Add tenant isolation and provisioning tests.
 
 ### Phase 3 — Identity and access
-- [ ] Platform users and tenant memberships.
-- [ ] Tenant roles: owner, admin, manager, staff and customer.
-- [ ] Tenant switching.
-- [ ] Policies and permissions.
-- [ ] Secure cross-tenant URL/object access.
+- [x] Platform users and tenant memberships.
+- [x] Tenant roles: owner, admin, manager, staff and customer.
+- [x] Tenant switching foundation.
+- [x] Policies and permissions for products, orders and addresses.
+- [x] Secure cross-tenant URL/object access.
+- [x] Move storefront/customer routes behind tenant resolution and membership middleware where authentication is required.
+- [x] Central platform identity with tenant-local customer compatibility projection.
+- [x] Harden order/cart/checkout identity and transaction boundaries.
+- [x] Align order address relationships with tenant schema.
+- [x] Align tenant address schema with storefront/controller fields.
+- [ ] Complete operational customer FK migration away from the legacy tenant-local identity projection.
+- [ ] Complete checkout isolation regression matrix (cross-user address/payment/cart cases).
+- [ ] Normalize remaining legacy order/payment fields and relationships.
+- [ ] Audit remittance ownership/payment state transitions.
 
 ### Phase 4 — Premium administration
 - [ ] Redesign Filament dashboard.
@@ -76,6 +94,7 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - [ ] Payment gateway abstraction.
 - [ ] Zelle adapter.
 - [ ] Additional gateway adapters without coupling the domain to a provider.
+- [ ] Replace remittance's current payment-state placeholder with verified provider transactions.
 
 ### Phase 9 — Analytics
 - [ ] Revenue and order KPIs.
@@ -119,3 +138,11 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - PHPUnit
 - Docker
 - GitHub Actions
+
+## CI checkpoints
+
+- Main CI #69: success after order-address relation hardening.
+- Main CI #71: success after address schema alignment.
+- Pull-request CI #68: success.
+- Pull-request CI #70: success.
+- The GitHub Actions runs endpoint is the operational source of truth when specialized status/check wrappers return empty arrays.
