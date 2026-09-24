@@ -43,8 +43,10 @@ class TenantCheckoutCartIsolationTest extends TestCase
         [$owner, $other] = $this->platformUsers('cart-owner', 'cart-other');
 
         $tenant->run(function () use ($owner, $other): void {
-            app(TenantCustomerProvisioner::class)->ensure($owner);
-            app(TenantCustomerProvisioner::class)->ensure($other);
+            $ownerCustomer = app(TenantCustomerProvisioner::class)->ensure($owner);
+            $otherCustomer = app(TenantCustomerProvisioner::class)->ensure($other);
+            $this->assertSame($owner->id, $ownerCustomer->id);
+            $this->assertSame($other->id, $otherCustomer->id);
 
             $product = Product::create([
                 'name' => 'Isolation Product',
