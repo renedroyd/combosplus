@@ -37,7 +37,9 @@ class PaymentMethodsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->iconButton()
+                    ->tooltip('Editar metodo de pago'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

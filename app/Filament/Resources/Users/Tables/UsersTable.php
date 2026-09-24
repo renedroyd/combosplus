@@ -49,7 +49,9 @@ class UsersTable
                     ->nullable(),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->iconButton()
+                    ->tooltip('Editar cliente'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

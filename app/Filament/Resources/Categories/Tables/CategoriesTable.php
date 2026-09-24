@@ -49,11 +49,11 @@ class CategoriesTable
             ])
             ->recordActions([
                 EditAction::make()
-                    ->label('')
-                    ->tooltip('Modificar'),
+                    ->iconButton()
+                    ->tooltip('Editar categoria'),
                 DeleteAction::make()
-                    ->label('')
-                    ->tooltip('Eliminar'),
+                    ->iconButton()
+                    ->tooltip('Eliminar categoria'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
