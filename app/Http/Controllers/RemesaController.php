@@ -7,6 +7,7 @@ use App\Models\Pais;
 use App\Models\Provincia;
 use App\Models\Remesa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class RemesaController extends Controller
 {
@@ -67,6 +68,7 @@ class RemesaController extends Controller
             'remitente_email' => $request->remitente_email,
             'remitente_telefono' => $request->remitente_telefono,
             'destinatario_nombre' => $request->destinatario_nombre,
+            'destinatario_ci' => $request->destinatario_nombre,
             'destinatario_ci' => $request->destinatario_ci,
             'destinatario_telefono' => $request->destinatario_telefono,
             'destinatario_direccion' => $request->destinatario_direccion,
@@ -82,16 +84,62 @@ class RemesaController extends Controller
         return redirect()->route('remesas.pago', $remesa->codigo);
     }
 
-    public function seguimiento($codigo)
+    public function pago(string $codigo)
+    {
+        $remesa = Remesa::where('codigo', $codigo)->with('metodoEnvio')->firstOrFail();
+
+        return view('remesas.pago', compact('remesa'));
+    }
+
+    public function procesarPago(Request $request, string $codigo)
+    {
+        $remesa = Remesa::where('codigo', $codigo)->firstOrFail();
+
+        if ($remesa->estado !== 'pendiente') {
+            return redirect()->route('remesas.pago', $remesa->codigo)
+                ->with('error', 'Esta remesa ya no está pendiente de pago.');
+        }
+
+        $request->validate([
+            'payment_method_id' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $remesa->update([
+            'estado' => 'pagado',
+            'pagado_en' => now(),
+        ]);
+
+        return redirect()->route('remesas.seguimiento', $remesa->codigo)
+            ->with('success', 'Pago registrado correctamente.');
+    }
+
+    public function buscarSeguimiento(Request $request)
+    {
+        $codigo = trim((string) $request->query('codigo'));
+
+        if ($codigo === '') {
+            return view('remesas.buscar');
+        }
+
+        $remesa = Remesa::where('codigo', $codigo)->first();
+
+        return view('remesas.buscar', compact('remesa'));
+    }
+
+    public function seguimiento(string $codigo)
     {
         $remesa = Remesa::where('codigo', $codigo)->firstOrFail();
 
         return view('remesas.seguimiento', compact('remesa'));
     }
 
-    private function generarCodigoUnico()
+    private function generarCodigoUnico(): string
     {
-        return 'CUB-' . strtoupper(uniqid()) . '-' . rand(100, 999);
+        do {
+            $codigo = 'CUB-' . strtoupper(Str::random(10)) . '-' . random_int(100, 999);
+        } while (Remesa::where('codigo', $codigo)->exists());
+
+        return $codigo;
     }
 
     private function calcularCostoEnvio($monto, $metodoEnvioId)
