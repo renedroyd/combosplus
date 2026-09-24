@@ -27,7 +27,9 @@ class UserResource extends Resource
 
     protected static ?string $modelLabel = 'Cliente';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Tienda';
+    protected static string|UnitEnum|null $navigationGroup = 'Clientes';
+
+    protected static ?int $navigationSort = 10;
 
     public static function form(Schema $schema): Schema
     {
