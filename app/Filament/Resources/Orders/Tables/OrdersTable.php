@@ -81,7 +81,9 @@ class OrdersTable
                     ->relationship('paymentMethod', 'name'),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->iconButton()
+                    ->tooltip('Editar orden'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
