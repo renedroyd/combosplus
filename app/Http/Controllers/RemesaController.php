@@ -68,7 +68,6 @@ class RemesaController extends Controller
             'remitente_email' => $request->remitente_email,
             'remitente_telefono' => $request->remitente_telefono,
             'destinatario_nombre' => $request->destinatario_nombre,
-            'destinatario_ci' => $request->destinatario_nombre,
             'destinatario_ci' => $request->destinatario_ci,
             'destinatario_telefono' => $request->destinatario_telefono,
             'destinatario_direccion' => $request->destinatario_direccion,
