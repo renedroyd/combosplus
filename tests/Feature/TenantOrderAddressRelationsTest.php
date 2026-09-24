@@ -28,7 +28,6 @@ class TenantOrderAddressRelationsTest extends TestCase
                 app(TenantCustomerProvisioner::class)->ensure($platformUser);
 
                 $shipping = Address::create([
-                    'user_id' => $platformUser->id,
                     'type' => 'shipping',
                     'name' => 'Shipping Address',
                     'address_line1' => '123 Main Street',
