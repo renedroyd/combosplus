@@ -15,7 +15,7 @@ CombosPlus is evolving into a premium multi-tenant commerce platform for busines
 - Remittances with platform identity tracking
 - Tenant membership and role-based access
 - Telegram notifications
-- Filament administration with a premium KPI dashboard, operational filters, task-oriented navigation, compact table actions, refined layout density and standardized lightweight table UX
+- Filament administration with a premium KPI dashboard, operational filters, task-oriented navigation, compact table actions, refined layout density and standardized lightweight table UX and responsive dark-mode support
 - Laravel Octane
 - Docker/FrankenPHP deployment foundation
 
@@ -39,7 +39,7 @@ Remittance payment submission is explicitly treated as a payment request and del
 
 Phase 4 includes a compact dashboard KPI foundation, operational filters for orders, products and customers, task-oriented navigation groups, compact record actions with accessible tooltips and a refined admin shell. The latest layout pass reduces brand/header footprint, gives content a full-width workspace and uses a standardized sidebar width while preserving desktop collapsing.
 
-The table design-system pass now centralizes lightweight defaults across the administration tables: contextual search placeholders, a short search debounce, consistent pagination options and mobile stacking. This keeps the interface dense and predictable without custom CSS or JavaScript weight. Business-specific filters, actions and status semantics remain local to each resource.
+The table design-system pass now centralizes lightweight defaults across the administration tables: contextual search placeholders, a short search debounce, consistent pagination options and mobile stacking. The responsive/dark-mode pass enables Filament dark mode with the system theme as the default, without adding custom CSS or JavaScript weight. Business-specific filters, actions and status semantics remain local to each resource.
 
 See [Identity and access](docs/IDENTITY.md), [Customer identity](docs/CUSTOMER-IDENTITY.md), [Tenant switching](docs/TENANT-SWITCHING.md), [Authorization](docs/AUTHORIZATION.md), [Tenant routes](docs/TENANT-ROUTES.md), and [Tenant controller audit](docs/TENANT-CONTROLLER-AUDIT.md).
 
