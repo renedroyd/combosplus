@@ -4,7 +4,7 @@
 
 CombosPlus is evolving from a Laravel commerce application into a multi-tenant Commerce & Business Platform. The target is a premium, fast and maintainable SaaS where each business operates in an isolated tenant database.
 
-## Current status — 2026-09-24
+## Current status — 2026-09-25
 
 - **Phase 0 — Foundation:** substantially completed; CI baseline, architecture docs and project documentation are established. Remaining hardening includes smoke coverage, artifact cleanup and production configuration.
 - **Phase 1 — Application architecture:** partially implemented opportunistically while securing the existing application. Policies, tenant services, safer identifiers and structured error logging are already present; formal domain boundaries and auditability remain.
@@ -14,7 +14,8 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - **Phase 4 — Premium administration:** **active**. Dashboard KPI hierarchy, operational table filters, task-oriented navigation, compact record actions, admin shell density refinement, lightweight table design-system defaults and responsive/dark-mode support are implemented.
 - **Latest implementation checkpoint:** PR #44 passed PR CI #118 and was merged into main at commit 3986ec6d119634151274d0932c75306541774d49.
 - **Current hardening:** remaining Phase 3 work is focused on replacing transitional remittance payment-state behavior with a provider-backed transaction abstraction and completing behavior-level payment audits.
-- **Next gate:** verify the post-merge main CI, then continue Phase 4 with tenant branding/settings and operational KPI/alert refinement while maintaining tenant isolation and security coverage.
+- **Marketplace migration:** **active**. Marketplace Core, Reputation, seller registration, tenant domain provisioning, seller authentication/session bridging and store settings are implemented. The seller catalog onboarding flow now has automated coverage for category/product creation, publishing visibility and tenant isolation.
+- **Next gate:** merge the catalog onboarding regression coverage after CI success, verify post-merge main CI, then continue with seller-facing catalog UX and marketplace discovery while maintaining tenant isolation and security coverage.
 
 ## Delivery rules
 
@@ -53,7 +54,8 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - [x] Establish lightweight table design-system defaults for search, pagination and mobile behavior.
 - [ ] KPIs, sales, orders, customers, products and operational alerts.
 - [x] Enable responsive/dark-mode friendly administration behavior without custom CSS/JS weight.
-- [ ] Tenant branding/settings.
+- [x] Tenant branding/settings: store profile, public slug/domain synchronization and seller-facing store settings.
+- [x] Seller onboarding: store creation, owner access, domain provisioning and catalog onboarding regression coverage.
 
 ## Later phases
 
