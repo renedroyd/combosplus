@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\Tenancy\TenantAccessService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class TenantSwitchController
@@ -30,13 +31,22 @@ class TenantSwitchController
 
     public function switch(Request $request, string $tenantId): RedirectResponse
     {
-        $tenant = $this->tenantAccess->tenantForUser($request->user(), $tenantId);
+        $user = $request->user();
+        $tenant = $this->tenantAccess->tenantForUser($user, $tenantId);
 
         abort_unless($tenant, 403, 'No tienes acceso a este negocio.');
 
         $domain = $tenant->domains()->orderBy('id')->first();
 
         abort_unless($domain, 409, 'El negocio no tiene un dominio configurado.');
+
+        // Seller onboarding authenticates the new owner through the web guard.
+        // Filament uses the admin guard, so mirror the authenticated identity
+        // before crossing into the tenant domain. Both guards share the session
+        // cookie, but maintain independent authentication keys.
+        if ($user && ! Auth::guard('admin')->check()) {
+            Auth::guard('admin')->login($user);
+        }
 
         return redirect()->away(
             $request->getScheme() . '://' . $domain->domain . '/tenant/secure'
