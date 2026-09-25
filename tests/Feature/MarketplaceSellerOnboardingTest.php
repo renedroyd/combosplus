@@ -27,6 +27,10 @@ class MarketplaceSellerOnboardingTest extends TestCase
             'name' => 'Tienda Demo',
             'status' => 'active',
         ]);
+        $this->assertDatabaseHas('domains', [
+            'tenant_id' => \App\Models\Tenant::where('slug', 'tienda-demo')->value('id'),
+            'domain' => 'tienda-demo.localhost',
+        ]);
         $this->assertDatabaseHas('tenant_memberships', [
             'role' => 'owner',
             'is_owner' => true,
