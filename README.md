@@ -83,20 +83,122 @@ See [Roadmap](docs/ROADMAP.md) and [Architecture](docs/ARCHITECTURE.md).
 
 ## Local development
 
-```bash
+### Option A — native development
+
+~~~bash
 composer install
 cp .env.example .env
 php artisan key:generate
 php artisan migrate
 npm install
 npm run build
-```
+~~~
 
-For development:
+For the local development server:
 
-```bash
+~~~bash
 composer run dev
-```
+~~~
+
+### Option B — Docker + FrankenPHP (recommended local container setup)
+
+The repository includes a Docker/FrankenPHP foundation. The `compose.yaml` development stack runs MySQL in Docker and starts Laravel Octane with the FrankenPHP server.
+
+1. Install Docker Engine/Docker Compose and make sure Docker is running.
+2. Install PHP/Composer dependencies on the host so the existing Compose/Sail runtime can be built:
+
+~~~bash
+composer install
+~~~
+
+3. Create the local environment:
+
+~~~bash
+cp .env.example .env
+php artisan key:generate
+~~~
+
+4. Configure `.env` for the Docker MySQL service:
+
+~~~dotenv
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=combosplus
+DB_USERNAME=sail
+DB_PASSWORD=password
+
+TENANCY_CENTRAL_DOMAINS=localhost
+~~~
+
+The exact database credentials can be changed together with the MySQL variables used by `compose.yaml`.
+
+5. Start the containers:
+
+~~~bash
+./vendor/bin/sail up -d
+~~~
+
+The application is exposed on `http://localhost` by default. The container starts Octane using **FrankenPHP** rather than PHP's built-in development server.
+
+6. Run migrations and create the storage link:
+
+~~~bash
+./vendor/bin/sail artisan migrate
+./vendor/bin/sail artisan storage:link
+~~~
+
+7. Install/build frontend assets. For the simplest local workflow, run Vite on the host:
+
+~~~bash
+npm install
+npm run dev
+~~~
+
+Or generate a production-like asset build:
+
+~~~bash
+npm run build
+~~~
+
+8. Useful Docker commands:
+
+~~~bash
+./vendor/bin/sail ps
+./vendor/bin/sail logs -f laravel.test
+./vendor/bin/sail artisan about
+./vendor/bin/sail artisan test
+./vendor/bin/sail down
+~~~
+
+### Multi-tenant local domains
+
+CombosPlus provisions public tenant domains using the configured central domain. With `TENANCY_CENTRAL_DOMAINS=localhost`, a store with slug `demo` is intended to use:
+
+~~~text
+http://demo.localhost
+~~~
+
+Modern browsers normally resolve `*.localhost` to the local machine. If your environment does not, add the required tenant hostname to `/etc/hosts` pointing to `127.0.0.1`.
+
+When testing seller administration, first register a store from the Marketplace, then use the generated tenant URL/session bridge to enter its Filament back office.
+
+### FrankenPHP image directly
+
+The repository also contains a `Dockerfile` based on `dunglas/frankenphp`. It can be built independently when testing the image itself:
+
+~~~bash
+docker build -t combosplus-frankenphp .
+docker run --rm -p 8000:8000 --env-file .env combosplus-frankenphp
+~~~
+
+For normal development, prefer `compose.yaml` because it also provisions the MySQL service and persistent Docker volume.
+
+> **Important:** the Docker image is not a substitute for application configuration. The `.env` values, central domain configuration and database availability must match the selected local deployment mode.
 
 ## Tests
 
