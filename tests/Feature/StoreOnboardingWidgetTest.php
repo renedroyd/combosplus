@@ -15,7 +15,11 @@ class StoreOnboardingWidgetTest extends TestCase
 
     public function test_owner_onboarding_widget_can_calculate_progress_from_tenant_catalog(): void
     {
-        $tenant = Tenant::create(['id' => 'onboarding-widget']);
+        $tenant = Tenant::create([
+            'id' => 'onboarding-widget',
+            'name' => 'Onboarding Store',
+            'slug' => 'onboarding-widget',
+        ]);
         $tenant->domains()->create(['domain' => 'onboarding-widget.localhost']);
 
         $user = PlatformUser::create([
