@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Enums\CatalogStatus;
 use App\Enums\TenantRole;
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Resources\Products\ProductResource;
@@ -21,7 +22,7 @@ class StoreOnboarding extends Widget
         $user = Auth::guard('admin')->user() ?? Auth::user();
 
         if (! $user instanceof PlatformUser) {
-            return ['steps' => [], 'progress' => 0];
+            return ['steps' => [], 'progress' => 0, 'catalogStatus' => null];
         }
 
         $membership = TenantMembership::query()
@@ -32,29 +33,22 @@ class StoreOnboarding extends Widget
             ->first();
 
         if (! $membership) {
-            return ['steps' => [], 'progress' => 0];
+            return ['steps' => [], 'progress' => 0, 'catalogStatus' => null];
         }
 
         $tenant = $membership->tenant;
         $hasProfile = filled($tenant?->name) && filled($tenant?->slug);
-        $productCount = $tenant
-            ? $tenant->run(fn () => \App\Models\Product::query()->count())
-            : 0;
-        $visibleProductCount = $tenant
-            ? $tenant->run(fn () => \App\Models\Product::query()->where('is_visible', true)->count())
-            : 0;
-        $categoryCount = $tenant
-            ? $tenant->run(fn () => \App\Models\Category::query()->count())
-            : 0;
+        $productCount = $tenant ? $tenant->run(fn () => \App\Models\Product::query()->count()) : 0;
+        $visibleProductCount = $tenant ? $tenant->run(fn () => \App\Models\Product::query()->where('is_visible', true)->count()) : 0;
+        $categoryCount = $tenant ? $tenant->run(fn () => \App\Models\Category::query()->count()) : 0;
+        $catalogStatus = $tenant?->catalog_status ?? CatalogStatus::Draft->value;
 
         $steps = [
             [
                 'title' => 'Completa tu tienda',
                 'description' => 'Nombre y URL pública listos.',
                 'done' => $hasProfile,
-                'url' => $hasProfile
-                    ? route('marketplace.store', ['tenant' => $tenant->slug])
-                    : '/admin',
+                'url' => $hasProfile ? route('marketplace.store', ['tenant' => $tenant->slug]) : '/admin',
             ],
             [
                 'title' => 'Crea una categoría',
@@ -64,14 +58,18 @@ class StoreOnboarding extends Widget
             ],
             [
                 'title' => 'Añade tu primer producto',
-                'description' => 'Publica algo para tus clientes.',
+                'description' => 'Carga al menos un producto.',
                 'done' => $productCount > 0,
                 'url' => ProductResource::getUrl('create'),
             ],
             [
                 'title' => 'Publica tu catálogo',
-                'description' => 'Haz visibles tus productos.',
-                'done' => $visibleProductCount > 0,
+                'description' => match ($catalogStatus) {
+                    CatalogStatus::Published->value => 'Tu catálogo ya está visible en el Marketplace.',
+                    CatalogStatus::Unpublished->value => 'Tu catálogo está listo para publicar.',
+                    default => 'Completa tu catálogo y publícalo cuando esté listo.',
+                },
+                'done' => $catalogStatus === CatalogStatus::Published->value,
                 'url' => ProductResource::getUrl('index'),
             ],
         ];
@@ -81,6 +79,8 @@ class StoreOnboarding extends Widget
         return [
             'steps' => $steps,
             'progress' => (int) round(($completed / count($steps)) * 100),
+            'catalogStatus' => $catalogStatus,
+            'catalogStatusLabel' => CatalogStatus::tryFrom($catalogStatus)?->label() ?? CatalogStatus::Draft->label(),
         ];
     }
 }
