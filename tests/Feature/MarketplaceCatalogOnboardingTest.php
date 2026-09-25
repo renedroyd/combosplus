@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\MarketplaceController;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Tenant;
@@ -55,18 +56,28 @@ class MarketplaceCatalogOnboardingTest extends TestCase
                 ]);
             });
 
-            $this->get(route('marketplace.store', ['tenant' => $tenant->slug]))
-                ->assertOk()
-                ->assertSee('Catálogo Demo')
-                ->assertSee('Laptop Demo');
+            $storeView = app(MarketplaceController::class)->store($tenant);
 
-            $this->get(route('marketplace.product', [
-                'tenant' => $tenant->slug,
-                'product' => $product->getKey(),
-            ]))
-                ->assertOk()
-                ->assertSee('Laptop Demo')
-                ->assertSee('Producto publicado de prueba.');
+            $this->assertSame('marketplace.store', $storeView->name);
+            $this->assertSame('Catálogo Demo', $storeView->getData()['tenant']->name);
+            $this->assertTrue(
+                $storeView->getData()['products']->contains(
+                    fn (Product $item): bool => $item->getKey() === $product->getKey()
+                        && $item->name === 'Laptop Demo',
+                ),
+            );
+
+            $productView = app(MarketplaceController::class)->product(
+                $tenant,
+                (string) $product->getKey(),
+            );
+
+            $this->assertSame('marketplace.product', $productView->name);
+            $this->assertSame('Laptop Demo', $productView->getData()['product']->name);
+            $this->assertSame(
+                'Producto publicado de prueba.',
+                $productView->getData()['product']->description,
+            );
         } finally {
             $tenant->delete();
         }
