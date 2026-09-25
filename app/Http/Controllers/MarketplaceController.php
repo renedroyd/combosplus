@@ -283,6 +283,7 @@ class MarketplaceController extends Controller
         return $tenants->flatMap(
             fn (Tenant $tenant) => $tenant->run(
                 fn () => Product::query()
+                    ->with('category')
                     ->where('is_visible', true)
                     ->get()
                     ->each(fn (Product $product) => $product->setAttribute('marketplace_tenant_id', $tenant->getKey()))
