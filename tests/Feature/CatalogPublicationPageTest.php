@@ -23,7 +23,7 @@ class CatalogPublicationPageTest extends TestCase
         [$tenant, $user] = $this->createStore();
 
         $tenant->run(function (): void {
-            $category = Category::query()->create(['name' => 'Combos']);
+            $category = Category::query()->create(['name' => 'Combos', 'slug' => 'combos']);
 
             Product::query()->create([
                 'category_id' => $category->id,
