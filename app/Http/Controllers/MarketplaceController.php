@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\CatalogStatus;
 use App\Models\PlatformReview;
 use App\Models\Product;
 use App\Models\ProductReview;
@@ -19,12 +20,12 @@ class MarketplaceController extends Controller
 {
     public function home()
     {
-        $stores = $this->activeTenants()
+        $stores = $this->publishedTenants()
             ->sortByDesc(fn (Tenant $tenant) => $this->storeScore($tenant))
             ->take(8)
             ->values();
 
-        $products = $this->collectProducts($this->activeTenants())
+        $products = $this->collectProducts($this->publishedTenants())
             ->sortByDesc(fn (Product $product) => (float) ($product->rating ?? 0))
             ->take(8)
             ->values();
@@ -78,8 +79,6 @@ class MarketplaceController extends Controller
                     'id' => (string) Str::uuid(),
                 ]);
 
-                // Persist Marketplace fields directly on the central record because
-                // Stancl's tenant model controls its own guarded attribute set.
                 Tenant::query()
                     ->whereKey($tenant->getTenantKey())
                     ->update([
@@ -87,6 +86,7 @@ class MarketplaceController extends Controller
                         'slug' => Str::lower($data['slug']),
                         'description' => $data['description'] ?? null,
                         'status' => 'active',
+                        'catalog_status' => CatalogStatus::Draft->value,
                     ]);
 
                 $tenant->refresh();
@@ -119,7 +119,7 @@ class MarketplaceController extends Controller
         }
 
         return redirect()->route('tenant.switch', ['tenantId' => $tenant->getTenantKey()])
-            ->with('status', 'Tu tienda fue creada. Ahora puedes configurar tu catálogo.');
+            ->with('status', 'Tu tienda fue creada. Ahora puedes configurar y publicar tu catálogo.');
     }
 
     public function stores(Request $request)
@@ -127,7 +127,7 @@ class MarketplaceController extends Controller
         $query = trim((string) $request->query('q'));
         $needle = mb_strtolower($query);
 
-        $stores = $this->activeTenants()
+        $stores = $this->publishedTenants()
             ->filter(fn (Tenant $tenant) => $query === ''
                 || str_contains(mb_strtolower((string) $tenant->name), $needle))
             ->sortByDesc(fn (Tenant $tenant) => $this->storeScore($tenant))
@@ -138,7 +138,7 @@ class MarketplaceController extends Controller
 
     public function store(Tenant $tenant)
     {
-        abort_unless($tenant->status === 'active', 404);
+        abort_unless($tenant->status === 'active' && $tenant->catalog_status === CatalogStatus::Published->value, 404);
 
         $products = $tenant->run(
             fn () => Product::query()
@@ -160,11 +160,13 @@ class MarketplaceController extends Controller
 
     public function product(Tenant $tenant, string $product)
     {
-        abort_unless($tenant->status === 'active', 404);
+        abort_unless($tenant->status === 'active' && $tenant->catalog_status === CatalogStatus::Published->value, 404);
 
         $product = $tenant->run(
             fn () => Product::query()->findOrFail($product)
         );
+
+        abort_unless($product->is_visible, 404);
 
         $reviews = ProductReview::approved()
             ->where('tenant_id', $tenant->getTenantKey())
@@ -177,10 +179,11 @@ class MarketplaceController extends Controller
         return view('marketplace.product', compact('tenant', 'product', 'reviews'));
     }
 
-    private function activeTenants()
+    private function publishedTenants()
     {
         return Tenant::query()
             ->where('status', 'active')
+            ->where('catalog_status', CatalogStatus::Published->value)
             ->whereNotNull('name')
             ->get();
     }
