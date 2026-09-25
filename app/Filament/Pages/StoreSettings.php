@@ -12,7 +12,9 @@ use Filament\Pages\Page;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class StoreSettings extends Page
 {
@@ -113,16 +115,54 @@ class StoreSettings extends Page
             'logo' => ['nullable', 'string'],
         ])->validate();
 
-        DB::connection(config('tenancy.database.central_connection', config('database.default')))
-            ->table('tenants')
-            ->where('id', $tenant->getTenantKey())
-            ->update([
-                'name' => $data['name'],
-                'slug' => $data['slug'],
-                'description' => $data['description'] ?? null,
-                'logo' => $data['logo'] ?? null,
-                'updated_at' => now(),
+        $centralConnection = config(
+            'tenancy.database.central_connection',
+            config('database.default'),
+        );
+        $publicDomain = Str::lower($data['slug']) . '.' . config(
+            'tenancy.central_domains.0',
+            'localhost',
+        );
+
+        $domainExistsForAnotherTenant = DB::connection($centralConnection)
+            ->table('domains')
+            ->where('domain', $publicDomain)
+            ->where('tenant_id', '!=', $tenant->getTenantKey())
+            ->exists();
+
+        if ($domainExistsForAnotherTenant) {
+            throw ValidationException::withMessages([
+                'slug' => 'La URL pública seleccionada ya está en uso.',
             ]);
+        }
+
+        DB::connection($centralConnection)->transaction(function () use (
+            $centralConnection,
+            $tenant,
+            $data,
+            $publicDomain,
+        ): void {
+            DB::connection($centralConnection)
+                ->table('tenants')
+                ->where('id', $tenant->getTenantKey())
+                ->update([
+                    'name' => $data['name'],
+                    'slug' => $data['slug'],
+                    'description' => $data['description'] ?? null,
+                    'logo' => $data['logo'] ?? null,
+                    'updated_at' => now(),
+                ]);
+
+            DB::connection($centralConnection)
+                ->table('domains')
+                ->where('tenant_id', $tenant->getTenantKey())
+                ->orderBy('id')
+                ->limit(1)
+                ->update([
+                    'domain' => $publicDomain,
+                    'updated_at' => now(),
+                ]);
+        });
 
         $this->form->fill($data);
 

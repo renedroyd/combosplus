@@ -24,6 +24,13 @@ class StoreSettingsPageTest extends TestCase
             'slug' => 'tienda-inicial',
         ]);
 
+        DB::table('domains')->insert([
+            'domain' => 'tienda-inicial.localhost',
+            'tenant_id' => $tenant->getTenantKey(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         $user = PlatformUser::query()->create([
             'name' => 'Seller',
             'email' => 'seller-settings@example.com',
@@ -61,6 +68,14 @@ class StoreSettingsPageTest extends TestCase
                     'slug' => 'tienda-actualizada',
                     'description' => 'Una descripción pública.',
                 ])
+                ->exists(),
+        );
+
+        $this->assertTrue(
+            DB::connection(config('tenancy.database.central_connection', config('database.default')))
+                ->table('domains')
+                ->where('tenant_id', $tenant->getTenantKey())
+                ->where('domain', 'tienda-actualizada.localhost')
                 ->exists(),
         );
     }
