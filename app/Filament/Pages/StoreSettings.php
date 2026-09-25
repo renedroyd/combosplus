@@ -57,7 +57,11 @@ class StoreSettings extends Page
                     ->required()
                     ->alphaDash()
                     ->maxLength(80)
-                    ->unique(table: 'tenants', column: 'slug', ignoreRecord: true),
+                    ->unique(
+                        table: config('tenancy.database.central_connection', config('database.default')) . '.tenants',
+                        column: 'slug',
+                        ignoreRecord: true,
+                    ),
                 Textarea::make('description')
                     ->label('Descripción')
                     ->rows(4)
@@ -101,7 +105,8 @@ class StoreSettings extends Page
                 'required',
                 'alpha_dash',
                 'max:80',
-                Rule::unique('tenants', 'slug')->ignore($tenant->getTenantKey(), 'id'),
+                Rule::unique(config('tenancy.database.central_connection', config('database.default')) . '.tenants', 'slug')
+                    ->ignore($tenant->getTenantKey(), 'id'),
             ],
             'description' => ['nullable', 'string', 'max:500'],
             'logo' => ['nullable', 'string'],
