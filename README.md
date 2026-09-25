@@ -53,7 +53,7 @@ CombosPlus is now evolving from a tenant storefront/back-office foundation into 
 2. **Reputation** — store, product, and platform reviews with moderation and verified-purchase signals.
 3. **Discovery** — best-rated stores, popular stores, new stores, featured products, offers, categories and richer search.
 4. **Seller onboarding** — guided store creation, branding, catalog setup and progressive completion. Store registration, tenant-domain provisioning, seller authentication, store settings and catalog onboarding coverage are implemented. Seller catalog forms now provide assisted URL generation, clearer publication controls, searchable categories, lightweight product validation and an explicit catalog publication lifecycle.
-5. **Marketplace commerce** — cart, checkout, orders, payments and customer notifications across tenants.
+5. **Marketplace commerce** — public product pages now provide a safe entry point into the owning tenant storefront/cart flow; unified cross-tenant cart, checkout, orders, payments and customer notifications remain pending.
 6. **Growth** — favorites, follows, promotions, recommendations and seller analytics.
 
 The Marketplace visual system will follow the **IntegralTec product-family direction**: professional, modern, lightweight and consistent, while keeping CombosPlus recognizable as a commerce product.
