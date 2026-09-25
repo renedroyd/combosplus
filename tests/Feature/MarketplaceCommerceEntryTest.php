@@ -6,6 +6,7 @@ use App\Http\Controllers\MarketplaceController;
 use App\Models\Product;
 use App\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
