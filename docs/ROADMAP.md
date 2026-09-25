@@ -13,7 +13,7 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - **Phase 3 payment hardening:** remittance payment submission no longer marks a remittance as paid without trusted provider verification; submissions enter procesando and remain pending verification.
 - **Phase 4 — Premium administration:** **active**. Dashboard KPI hierarchy, operational table filters, task-oriented navigation, compact record actions, admin shell density refinement, lightweight table design-system defaults and responsive/dark-mode support are implemented.
 - **Marketplace migration:** **active**. Marketplace Core, Reputation, seller registration, tenant domain provisioning, seller authentication/session bridging and store settings are implemented. Seller catalog onboarding has automated coverage for category/product creation, marketplace visibility and tenant isolation. Seller catalog forms now include assisted slug generation, searchable category selection, clearer publication/inventory controls and an explicit catalog publication lifecycle.
-- **Current implementation gate:** catalog publication lifecycle is implemented; verify its CI, merge only when green, verify post-merge main CI, then continue with Marketplace Discovery.
+- **Current implementation gate:** Marketplace Discovery is implemented on the working branch; verify its CI, merge only when green, verify post-merge main CI, then continue with Marketplace search/filtering.
 
 ## Delivery rules
 
@@ -67,8 +67,9 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - [x] Catalog onboarding regression coverage and tenant isolation.
 - [x] Seller catalog form UX refinement.
 - [x] Explicit draft/unpublished/published catalog state model.
-- [ ] Marketplace discovery: featured/new stores, featured products, offers and categories.
-- [ ] Marketplace search and filtering.
+- [x] Marketplace discovery: featured/new stores, featured products and popular categories; offers remain pending the promotion model.
+- [x] Marketplace search by store name/description.
+- [ ] Marketplace category/filter navigation and richer product search.
 - [ ] Marketplace commerce across tenants.
 
 ## Later phases
@@ -99,6 +100,14 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - Docker
 - GitHub Actions
 
+## Local Docker + FrankenPHP development
+
+- `compose.yaml` provides the local MySQL service and starts Laravel Octane with the FrankenPHP server.
+- `.env` should use `DB_CONNECTION=mysql` and `DB_HOST=mysql` when the application runs inside the Compose network.
+- Start with `./vendor/bin/sail up -d`, then run migrations and tests through `./vendor/bin/sail artisan ...`.
+- `Dockerfile` is based on `dunglas/frankenphp` for direct image builds when needed.
+- Detailed commands and tenant-domain testing notes are documented in the README.
+
 ## CI checkpoints
 
 - Main CI #146 / run 36165705593: success after Marketplace catalog onboarding merge.
@@ -107,4 +116,5 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - PR #55: merged after correcting Filament 5 navigation type and central-connection persistence/notification handling.
 - PR #56: merged after tenant slug/domain synchronization and collision validation.
 - PR #57: merged after catalog onboarding regression coverage and tenant isolation tests.
+- PR #61 Marketplace Discovery: CI check run 108229444897 / workflow 36182941739: success.
 - The direct GitHub Check Runs endpoint is the operational source of truth when specialized status/check wrappers return empty arrays.
