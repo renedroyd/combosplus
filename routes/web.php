@@ -11,6 +11,8 @@ foreach ((array) config('tenancy.central_domains', []) as $centralDomain) {
         Route::get('/registrar-tienda', [MarketplaceController::class, 'register'])->name('marketplace.register');
         Route::post('/registrar-tienda', [MarketplaceController::class, 'registerStore'])->name('marketplace.register.store');
         Route::get('/tiendas/{tenant:slug}', [MarketplaceController::class, 'store'])->name('marketplace.store');
+        Route::get('/tiendas/{tenant:slug}/productos/{product}/comprar', [MarketplaceController::class, 'buy'])
+            ->name('marketplace.product.buy');
         Route::get('/tiendas/{tenant:slug}/productos/{product}', [MarketplaceController::class, 'product'])
             ->name('marketplace.product');
 
