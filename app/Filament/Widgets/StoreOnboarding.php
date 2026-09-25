@@ -3,9 +3,8 @@
 namespace App\Filament\Widgets;
 
 use App\Enums\TenantRole;
-use App\Models\TenantMembership;
 use App\Models\PlatformUser;
-use Filament\Actions\Action;
+use App\Models\TenantMembership;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Auth;
 
@@ -39,15 +38,40 @@ class StoreOnboarding extends Widget
         $productCount = $tenant
             ? $tenant->run(fn () => \App\Models\Product::query()->count())
             : 0;
+        $visibleProductCount = $tenant
+            ? $tenant->run(fn () => \App\Models\Product::query()->where('is_visible', true)->count())
+            : 0;
         $categoryCount = $tenant
             ? $tenant->run(fn () => \App\Models\Category::query()->count())
             : 0;
 
         $steps = [
-            ['title' => 'Completa tu tienda', 'description' => 'Nombre y URL pública listos.', 'done' => $hasProfile, 'url' => route('marketplace.store', ['tenant' => $tenant?->slug])],
-            ['title' => 'Crea una categoría', 'description' => 'Organiza tu catálogo.', 'done' => $categoryCount > 0, 'url' => '/admin/categories/create'],
-            ['title' => 'Añade tu primer producto', 'description' => 'Publica algo para tus clientes.', 'done' => $productCount > 0, 'url' => '/admin/products/create'],
-            ['title' => 'Publica tu catálogo', 'description' => 'Haz visibles tus productos.', 'done' => $productCount > 0, 'url' => '/admin/products'],
+            [
+                'title' => 'Completa tu tienda',
+                'description' => 'Nombre y URL pública listos.',
+                'done' => $hasProfile,
+                'url' => $hasProfile
+                    ? route('marketplace.store', ['tenant' => $tenant->slug])
+                    : '/admin',
+            ],
+            [
+                'title' => 'Crea una categoría',
+                'description' => 'Organiza tu catálogo.',
+                'done' => $categoryCount > 0,
+                'url' => '/admin/categories/create',
+            ],
+            [
+                'title' => 'Añade tu primer producto',
+                'description' => 'Publica algo para tus clientes.',
+                'done' => $productCount > 0,
+                'url' => '/admin/products/create',
+            ],
+            [
+                'title' => 'Publica tu catálogo',
+                'description' => 'Haz visibles tus productos.',
+                'done' => $visibleProductCount > 0,
+                'url' => '/admin/products',
+            ],
         ];
 
         $completed = collect($steps)->where('done', true)->count();
