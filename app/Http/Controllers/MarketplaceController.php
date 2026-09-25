@@ -215,13 +215,13 @@ class MarketplaceController extends Controller
                 return $product->category && mb_strtolower((string) $product->category->name) === $categoryNeedle;
             });
 
-        $products = match ($sort) {
+        $products = (match ($sort) {
             'price_low' => $products->sortBy(fn (Product $product) => (float) $product->price),
             'price_high' => $products->sortByDesc(fn (Product $product) => (float) $product->price),
             'newest' => $products->sortByDesc(fn (Product $product) => $product->created_at),
             'rating' => $products->sortByDesc(fn (Product $product) => $this->productScore($product)),
             default => $products->sortByDesc(fn (Product $product) => $this->productRelevance($product, $needle)),
-        }->values();
+        })->values();
 
         return view('marketplace.products', compact('products', 'query', 'category', 'sort', 'categories'));
     }
