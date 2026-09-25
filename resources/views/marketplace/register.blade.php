@@ -1,12 +1,19 @@
 @extends('layouts.marketplace')
 @section('title','Registra tu tienda — CombosPlus')
 @section('content')
-<section class="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
-<div class="rounded-3xl border border-blue-100 bg-blue-50 p-8 sm:p-12">
-<p class="text-sm font-semibold uppercase tracking-wider text-blue-700">Para negocios</p>
-<h1 class="mt-2 text-4xl font-semibold tracking-tight text-slate-900">Registra tu tienda en CombosPlus.</h1>
-<p class="mt-5 max-w-2xl text-lg leading-8 text-slate-600">Estamos preparando un alta simple: cuenta, datos básicos del negocio, identidad visual y catálogo inicial. La complejidad de la multi-tenancy queda detrás de la plataforma.</p>
-<div class="mt-8 grid gap-4 sm:grid-cols-3"><div class="rounded-2xl bg-white p-5"><b>1. Cuenta</b><p class="mt-2 text-sm text-slate-500">Crea tu identidad de acceso.</p></div><div class="rounded-2xl bg-white p-5"><b>2. Tienda</b><p class="mt-2 text-sm text-slate-500">Nombre, descripción y presentación.</p></div><div class="rounded-2xl bg-white p-5"><b>3. Catálogo</b><p class="mt-2 text-sm text-slate-500">Publica tus primeros productos.</p></div></div>
-<div class="mt-8 flex flex-wrap gap-3"><a href="{{ route('marketplace.home') }}" class="rounded-xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700">Volver al Marketplace</a><a href="{{ route('marketplace.stores') }}" class="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white">Explorar tiendas</a></div>
-</div></section>
+<section class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+<div class="mb-8"><p class="text-sm font-semibold uppercase tracking-wider text-blue-600">Paso 1 · Alta de tienda</p><h1 class="mt-2 text-4xl font-semibold tracking-tight text-slate-900">Pon tu negocio en CombosPlus.</h1><p class="mt-4 text-lg leading-7 text-slate-600">Crea tu cuenta y tu espacio comercial en un solo paso. Después podrás completar el catálogo desde el panel de tu tienda.</p></div>
+@if($errors->any())<div class="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"><p class="font-semibold">Revisa los datos indicados.</p><ul class="mt-2 list-disc pl-5">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+<form method="POST" action="{{ route('marketplace.register.store') }}" class="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">@csrf
+<div class="grid gap-5 sm:grid-cols-2"><div class="sm:col-span-2"><label for="store_name" class="text-sm font-semibold text-slate-700">Nombre de la tienda</label><input id="store_name" name="store_name" value="{{ old('store_name') }}" required maxlength="120" class="mt-2 min-h-12 w-full rounded-xl border border-slate-300 px-4" placeholder="Ej. Mi Tienda"></div>
+<div class="sm:col-span-2"><label for="slug" class="text-sm font-semibold text-slate-700">Dirección pública</label><div class="mt-2 flex items-center rounded-xl border border-slate-300 px-4"><span class="text-sm text-slate-400">/tiendas/</span><input id="slug" name="slug" value="{{ old('slug') }}" required pattern="[A-Za-z0-9_-]+" maxlength="80" class="min-h-12 min-w-0 flex-1 border-0 px-2 outline-none" placeholder="mi-tienda"></div><p class="mt-1 text-xs text-slate-500">Usa letras, números, guiones o guiones bajos.</p></div>
+<div class="sm:col-span-2"><label for="description" class="text-sm font-semibold text-slate-700">Descripción <span class="font-normal text-slate-400">(opcional)</span></label><textarea id="description" name="description" rows="4" maxlength="1000" class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3" placeholder="Cuéntales a tus clientes qué ofrece tu negocio.">{{ old('description') }}</textarea></div>
+@if(!auth()->check())
+<div><label for="name" class="text-sm font-semibold text-slate-700">Tu nombre</label><input id="name" name="name" value="{{ old('name') }}" required class="mt-2 min-h-12 w-full rounded-xl border border-slate-300 px-4"></div>
+<div><label for="email" class="text-sm font-semibold text-slate-700">Correo electrónico</label><input id="email" name="email" type="email" value="{{ old('email') }}" required class="mt-2 min-h-12 w-full rounded-xl border border-slate-300 px-4"></div>
+<div><label for="password" class="text-sm font-semibold text-slate-700">Contraseña</label><input id="password" name="password" type="password" required minlength="8" class="mt-2 min-h-12 w-full rounded-xl border border-slate-300 px-4"></div>
+<div><label for="password_confirmation" class="text-sm font-semibold text-slate-700">Confirmar contraseña</label><input id="password_confirmation" name="password_confirmation" type="password" required minlength="8" class="mt-2 min-h-12 w-full rounded-xl border border-slate-300 px-4"></div>
+@else<div class="sm:col-span-2 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">Crearás la tienda con tu cuenta actual.</div>@endif
+</div><button type="submit" class="min-h-12 w-full rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-500">Crear mi tienda</button>
+</form></section>
 @endsection

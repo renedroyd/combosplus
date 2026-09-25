@@ -7,6 +7,12 @@ use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\StoreReview;
 use App\Models\Tenant;
+use App\Models\PlatformUser;
+use App\Models\TenantMembership;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class MarketplaceController extends Controller
@@ -32,6 +38,84 @@ class MarketplaceController extends Controller
     public function register()
     {
         return view('marketplace.register');
+    }
+
+    public function registerStore(Request $request)
+    {
+        $rules = [
+            'store_name' => ['required', 'string', 'max:120'],
+            'slug' => ['required', 'string', 'alpha_dash', 'min:3', 'max:80', 'unique:tenants,slug'],
+            'description' => ['nullable', 'string', 'max:1000'],
+        ];
+
+        if (! $request->user()) {
+            $rules += [
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+                'password' => ['required', 'string', 'min:8', 'confirmed'],
+            ];
+        }
+
+        $data = $request->validate($rules);
+        $user = $request->user();
+        $tenant = null;
+        $createdUser = null;
+
+        try {
+            $tenant = DB::transaction(function () use ($data, $user, &$createdUser): Tenant {
+                $owner = $user;
+
+                if (! $owner) {
+                    $owner = PlatformUser::create([
+                        'name' => $data['name'],
+                        'email' => $data['email'],
+                        'password' => Hash::make($data['password']),
+                    ]);
+                    $createdUser = $owner;
+                }
+
+                $tenant = Tenant::create([
+                    'id' => (string) Str::uuid(),
+                ]);
+
+                // Persist Marketplace fields directly on the central record because
+                // Stancl's tenant model controls its own guarded attribute set.
+                Tenant::query()
+                    ->whereKey($tenant->getTenantKey())
+                    ->update([
+                        'name' => $data['store_name'],
+                        'slug' => Str::lower($data['slug']),
+                        'description' => $data['description'] ?? null,
+                        'status' => 'active',
+                    ]);
+
+                $tenant->refresh();
+
+                TenantMembership::create([
+                    'tenant_id' => $tenant->getTenantKey(),
+                    'user_id' => $owner->getAuthIdentifier(),
+                    'role' => 'owner',
+                    'status' => 'active',
+                    'is_owner' => true,
+                ]);
+
+                return $tenant;
+            });
+        } catch (\Throwable $e) {
+            if ($tenant) {
+                $tenant->delete();
+            }
+
+            throw $e;
+        }
+
+        if (! $user && $createdUser) {
+            Auth::login($createdUser);
+            $request->session()->regenerate();
+        }
+
+        return redirect()->route('tenant.switch', ['tenantId' => $tenant->getTenantKey()])
+            ->with('status', 'Tu tienda fue creada. Ahora puedes configurar tu catálogo.');
     }
 
     public function stores(Request $request)
