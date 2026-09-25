@@ -44,9 +44,13 @@ class TenantSwitchTest extends TestCase
             'tenantId' => $tenant->getTenantKey(),
         ]));
 
-        $scheme = parse_url(config('app.url'), PHP_URL_SCHEME) ?: 'http';
+        $expectedUrl = str_replace(
+            '://localhost',
+            '://store.localhost',
+            url('/tenant/secure'),
+        );
 
-        $response->assertRedirect("{$scheme}://store.localhost/tenant/secure");
+        $response->assertRedirect($expectedUrl);
         $this->assertTrue(Auth::guard('web')->check());
         $this->assertTrue(Auth::guard('admin')->check());
         $this->assertSame($user->getAuthIdentifier(), Auth::guard('admin')->id());
