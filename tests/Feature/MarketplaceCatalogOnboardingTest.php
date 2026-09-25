@@ -58,7 +58,7 @@ class MarketplaceCatalogOnboardingTest extends TestCase
 
             $storeView = app(MarketplaceController::class)->store($tenant);
 
-            $this->assertSame('marketplace.store', $storeView->name);
+            $this->assertSame('marketplace.store', $storeView->getName());
             $this->assertSame('Catálogo Demo', $storeView->getData()['tenant']->name);
             $this->assertTrue(
                 $storeView->getData()['products']->contains(
@@ -72,7 +72,7 @@ class MarketplaceCatalogOnboardingTest extends TestCase
                 (string) $product->getKey(),
             );
 
-            $this->assertSame('marketplace.product', $productView->name);
+            $this->assertSame('marketplace.product', $productView->getName());
             $this->assertSame('Laptop Demo', $productView->getData()['product']->name);
             $this->assertSame(
                 'Producto publicado de prueba.',
