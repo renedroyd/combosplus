@@ -70,7 +70,8 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - [x] Marketplace discovery: featured/new stores, featured products and popular categories; offers remain pending the promotion model.
 - [x] Marketplace search by store name/description.
 - [ ] Marketplace category/filter navigation and richer product search.
-- [ ] Marketplace commerce across tenants.
+- [x] Marketplace commerce entry point from public product pages into the owning tenant storefront flow.
+- [ ] Marketplace commerce across tenants with a unified cart/checkout experience.
 
 ## Later phases
 
