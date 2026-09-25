@@ -2,10 +2,11 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\StoreOnboarding;
+use App\Http\Middleware\EnsureTenantMembership;
 use App\Livewire\OrderStat;
 use App\Livewire\SalesChart;
 use App\Livewire\StoreStat;
-use App\Filament\Widgets\StoreOnboarding;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -22,6 +23,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -65,12 +68,15 @@ class AdminPanelProvider extends PanelProvider
                 AuthenticateSession::class,
                 ShareErrorsFromSession::class,
                 VerifyCsrfToken::class,
+                InitializeTenancyByDomain::class,
+                PreventAccessFromCentralDomains::class,
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
+                EnsureTenantMembership::class,
             ]);
     }
 }

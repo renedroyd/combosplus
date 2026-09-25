@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -9,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Stancl\Tenancy\Database\Concerns\CentralConnection;
 
-class PlatformUser extends Authenticatable
+class PlatformUser extends Authenticatable implements FilamentUser
 {
     use CentralConnection;
     use HasFactory;
@@ -35,6 +37,12 @@ class PlatformUser extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $panel->getId() === 'admin'
+            && $this->memberships()->where('status', 'active')->exists();
     }
 
     public function memberships(): HasMany
