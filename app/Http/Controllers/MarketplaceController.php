@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PlatformReview;
 use App\Models\Product;
+use App\Models\ProductReview;
+use App\Models\StoreReview;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 
@@ -20,7 +23,10 @@ class MarketplaceController extends Controller
             ->take(8)
             ->values();
 
-        return view('marketplace.home', compact('stores', 'products'));
+        $storeReviews = StoreReview::approved()->with('tenant')->latest()->take(4)->get();
+        $platformReviews = PlatformReview::approved()->with('user')->latest()->take(3)->get();
+
+        return view('marketplace.home', compact('stores', 'products', 'storeReviews', 'platformReviews'));
     }
 
     public function register()
@@ -54,7 +60,14 @@ class MarketplaceController extends Controller
                 ->get()
         );
 
-        return view('marketplace.store', compact('tenant', 'products'));
+        $reviews = StoreReview::approved()
+            ->where('tenant_id', $tenant->getTenantKey())
+            ->with('user')
+            ->latest()
+            ->take(12)
+            ->get();
+
+        return view('marketplace.store', compact('tenant', 'products', 'reviews'));
     }
 
     public function product(Tenant $tenant, string $product)
@@ -65,7 +78,15 @@ class MarketplaceController extends Controller
             fn () => Product::query()->findOrFail($product)
         );
 
-        return view('marketplace.product', compact('tenant', 'product'));
+        $reviews = ProductReview::approved()
+            ->where('tenant_id', $tenant->getTenantKey())
+            ->where('product_id', $product->getKey())
+            ->with('user')
+            ->latest()
+            ->take(12)
+            ->get();
+
+        return view('marketplace.product', compact('tenant', 'product', 'reviews'));
     }
 
     private function activeTenants()
@@ -92,7 +113,14 @@ class MarketplaceController extends Controller
     {
         $rating = (float) ($tenant->rating ?? 0);
         $reviews = (int) ($tenant->review_count ?? 0);
+        $priorRating = 4.0;
+        $minimumReviews = 5;
 
-        return $rating * min(1, $reviews / 10);
+        if ($reviews === 0 || $rating <= 0) {
+            return 0.0;
+        }
+
+        return (($reviews / ($reviews + $minimumReviews)) * $rating)
+            + (($minimumReviews / ($reviews + $minimumReviews)) * $priorRating);
     }
 }
