@@ -43,6 +43,21 @@ The table design-system pass now centralizes lightweight defaults across the adm
 
 See [Identity and access](docs/IDENTITY.md), [Customer identity](docs/CUSTOMER-IDENTITY.md), [Tenant switching](docs/TENANT-SWITCHING.md), [Authorization](docs/AUTHORIZATION.md), [Tenant routes](docs/TENANT-ROUTES.md), and [Tenant controller audit](docs/TENANT-CONTROLLER-AUDIT.md).
 
+## Marketplace direction
+
+CombosPlus is now evolving from a tenant storefront/back-office foundation into a **multi-tenant Marketplace**. The public Marketplace is the primary discovery surface; tenant administration remains the operational back office.
+
+### Marketplace roadmap
+
+1. **Marketplace Core** — public Marketplace home, store discovery, public store pages, public product pages, lightweight search, and a simple store-registration entry point.
+2. **Reputation** — store, product, and platform reviews with moderation and verified-purchase signals.
+3. **Discovery** — best-rated stores, popular stores, new stores, featured products, offers, categories and richer search.
+4. **Seller onboarding** — guided store creation, branding, catalog setup and progressive completion.
+5. **Marketplace commerce** — cart, checkout, orders, payments and customer notifications across tenants.
+6. **Growth** — favorites, follows, promotions, recommendations and seller analytics.
+
+The Marketplace visual system will follow the **IntegralTec product-family direction**: professional, modern, lightweight and consistent, while keeping CombosPlus recognizable as a commerce product.
+
 ## Product direction
 
 **Commerce · CRM · Orders · Payments · Marketing · Analytics**
