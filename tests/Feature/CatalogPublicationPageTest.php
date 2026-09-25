@@ -98,7 +98,9 @@ class CatalogPublicationPageTest extends TestCase
     {
         $tenant = Tenant::create(['id' => 'publication-'.uniqid()]);
 
-        DB::connection(config('tenancy.database.central_connection', config('database.default')))\n            ->table('tenants')->where('id', $tenant->getTenantKey())->update([\n            'name' => 'Tienda de prueba',
+        DB::connection(config('tenancy.database.central_connection', config('database.default')))
+            ->table('tenants')->where('id', $tenant->getTenantKey())->update([
+            'name' => 'Tienda de prueba',
             'slug' => 'tienda-'.uniqid(),
             'catalog_status' => $catalogStatus,
         ]);
