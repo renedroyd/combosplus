@@ -311,6 +311,29 @@ class MarketplaceController extends Controller
             ]);
     }
 
+    private function productRelevance(Product $product, string $needle): float
+    {
+        if ($needle === '') {
+            return $this->productScore($product);
+        }
+
+        $name = mb_strtolower((string) $product->name);
+        $description = mb_strtolower((string) $product->description);
+        $score = 0.0;
+
+        if ($name === $needle) {
+            $score += 100;
+        } elseif (str_contains($name, $needle)) {
+            $score += 60;
+        }
+
+        if (str_contains($description, $needle)) {
+            $score += 20;
+        }
+
+        return $score + $this->productScore($product);
+    }
+
     private function productScore(Product $product): float
     {
         $rating = (float) ($product->rating ?? 0);
