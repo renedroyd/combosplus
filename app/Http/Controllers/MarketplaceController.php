@@ -23,6 +23,11 @@ class MarketplaceController extends Controller
         return view('marketplace.home', compact('stores', 'products'));
     }
 
+    public function register()
+    {
+        return view('marketplace.register');
+    }
+
     public function stores(Request $request)
     {
         $query = trim((string) $request->query('q'));
