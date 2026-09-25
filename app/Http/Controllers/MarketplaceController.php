@@ -10,30 +10,57 @@ use App\Models\StoreReview;
 use App\Models\Tenant;
 use App\Models\PlatformUser;
 use App\Models\TenantMembership;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class MarketplaceController extends Controller
 {
     public function home()
     {
-        $stores = $this->publishedTenants()
+        $publishedTenants = $this->publishedTenants();
+
+        $stores = $publishedTenants
             ->sortByDesc(fn (Tenant $tenant) => $this->storeScore($tenant))
             ->take(8)
             ->values();
 
-        $products = $this->collectProducts($this->publishedTenants())
-            ->sortByDesc(fn (Product $product) => (float) ($product->rating ?? 0))
+        $newStores = $publishedTenants
+            ->sortByDesc(fn (Tenant $tenant) => $tenant->created_at)
+            ->take(6)
+            ->values();
+
+        $products = $this->collectProducts($publishedTenants);
+
+        $featuredProducts = $products
+            ->sortByDesc(fn (Product $product) => $this->productScore($product))
             ->take(8)
             ->values();
 
-        $storeReviews = StoreReview::approved()->with('tenant')->latest()->take(4)->get();
+        $recentProducts = $products
+            ->sortByDesc(fn (Product $product) => $product->created_at)
+            ->take(8)
+            ->values();
+
+        $categories = $this->collectCategories($publishedTenants)
+            ->sortByDesc('product_count')
+            ->take(10)
+            ->values();
+
+        $storeReviews = StoreReview::approved()->with('tenant', 'user')->latest()->take(4)->get();
         $platformReviews = PlatformReview::approved()->with('user')->latest()->take(3)->get();
 
-        return view('marketplace.home', compact('stores', 'products', 'storeReviews', 'platformReviews'));
+        return view('marketplace.home', compact(
+            'stores',
+            'newStores',
+            'featuredProducts',
+            'recentProducts',
+            'categories',
+            'storeReviews',
+            'platformReviews',
+        ));
     }
 
     public function register()
@@ -129,7 +156,8 @@ class MarketplaceController extends Controller
 
         $stores = $this->publishedTenants()
             ->filter(fn (Tenant $tenant) => $query === ''
-                || str_contains(mb_strtolower((string) $tenant->name), $needle))
+                || str_contains(mb_strtolower((string) $tenant->name), $needle)
+                || str_contains(mb_strtolower((string) $tenant->description), $needle))
             ->sortByDesc(fn (Tenant $tenant) => $this->storeScore($tenant))
             ->values();
 
@@ -198,6 +226,40 @@ class MarketplaceController extends Controller
                     ->each(fn (Product $product) => $product->setAttribute('marketplace_tenant_id', $tenant->getKey()))
             )
         );
+    }
+
+    private function collectCategories($tenants)
+    {
+        return $tenants->flatMap(
+            fn (Tenant $tenant) => $tenant->run(
+                fn () => \App\Models\Category::query()
+                    ->withCount(['products' => fn ($query) => $query->where('is_visible', true)])
+                    ->get()
+                    ->each(function ($category) use ($tenant): void {
+                        $category->setAttribute('marketplace_tenant_id', $tenant->getKey());
+                    })
+            )
+        )->map(fn ($category) => (object) [
+            'name' => $category->name,
+            'product_count' => (int) $category->products_count,
+        ])->groupBy(fn ($category) => mb_strtolower($category->name))
+            ->map(fn ($group) => (object) [
+                'name' => $group->first()->name,
+                'product_count' => $group->sum('product_count'),
+            ]);
+    }
+
+    private function productScore(Product $product): float
+    {
+        $rating = (float) ($product->rating ?? 0);
+        $reviews = (int) ($product->review_count ?? 0);
+
+        if ($rating <= 0) {
+            return 0.0;
+        }
+
+        return (($reviews / ($reviews + 5)) * $rating)
+            + ((5 / ($reviews + 5)) * 4.0);
     }
 
     private function storeScore(Tenant $tenant): float
