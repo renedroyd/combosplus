@@ -40,12 +40,14 @@ class CatalogPublication extends Page
             ];
         }
 
+        $profile = $this->centralTenantProfile($tenant);
+
         return [
-            'status' => CatalogStatus::tryFrom((string) $tenant->catalog_status) ?? CatalogStatus::Draft,
+            'status' => CatalogStatus::tryFrom((string) ($profile->catalog_status ?? CatalogStatus::Draft->value)) ?? CatalogStatus::Draft,
             'categoryCount' => $tenant->run(fn () => Category::query()->count()),
             'productCount' => $tenant->run(fn () => Product::query()->count()),
             'visibleProductCount' => $tenant->run(fn () => Product::query()->where('is_visible', true)->count()),
-            'profileComplete' => filled($tenant->name) && filled($tenant->slug),
+            'profileComplete' => filled($profile->name ?? null) && filled($profile->slug ?? null),
         ];
     }
 
@@ -60,8 +62,9 @@ class CatalogPublication extends Page
         $productCount = $tenant->run(fn () => Product::query()->count());
         $visibleProductCount = $tenant->run(fn () => Product::query()->where('is_visible', true)->count());
 
+        $profile = $this->centralTenantProfile($tenant);
         $errors = [];
-        if (blank($tenant->name) || blank($tenant->slug)) {
+        if (blank($profile->name ?? null) || blank($profile->slug ?? null)) {
             $errors['name'] = 'Completa el nombre y la URL pública de tu tienda antes de publicar.';
         }
         if ($categoryCount < 1) {
@@ -100,6 +103,16 @@ class CatalogPublication extends Page
             ->body('Tu tienda dejó de mostrarse públicamente en el Marketplace.')
             ->success()
             ->send();
+    }
+
+    private function centralTenantProfile(Tenant $tenant): object
+    {
+        $connection = config('tenancy.database.central_connection', config('database.default'));
+
+        return DB::connection($connection)
+            ->table('tenants')
+            ->where('id', $tenant->getTenantKey())
+            ->first() ?? (object) [];
     }
 
     private function setStatus(CatalogStatus $status): void
