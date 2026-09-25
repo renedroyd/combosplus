@@ -40,10 +40,13 @@ class CatalogPublicationPageTest extends TestCase
 
         app(CatalogPublication::class)->publish();
 
-        $this->assertDatabaseHas('tenants', [
-            'id' => $tenant->getTenantKey(),
-            'catalog_status' => 'published',
-        ]);
+        $this->assertSame(
+            'published',
+            DB::connection(config('tenancy.database.central_connection', config('database.default')))
+                ->table('tenants')
+                ->where('id', $tenant->getTenantKey())
+                ->value('catalog_status'),
+        );
     }
 
     public function test_catalog_cannot_be_published_without_visible_products(): void
@@ -80,10 +83,13 @@ class CatalogPublicationPageTest extends TestCase
 
         app(CatalogPublication::class)->unpublish();
 
-        $this->assertDatabaseHas('tenants', [
-            'id' => $tenant->getTenantKey(),
-            'catalog_status' => 'unpublished',
-        ]);
+        $this->assertSame(
+            'unpublished',
+            DB::connection(config('tenancy.database.central_connection', config('database.default')))
+                ->table('tenants')
+                ->where('id', $tenant->getTenantKey())
+                ->value('catalog_status'),
+        );
     }
 
     private function createStore(string $catalogStatus = 'draft'): array
