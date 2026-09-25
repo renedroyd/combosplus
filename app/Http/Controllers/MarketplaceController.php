@@ -49,7 +49,6 @@ class MarketplaceController extends Controller
         ];
 
         if ($request->user()) {
-            $rules['store_name'][] = 'not_in:'.$request->user()->name;
         } else {
             $rules += [
                 'name' => ['required', 'string', 'max:255'],
@@ -61,9 +60,10 @@ class MarketplaceController extends Controller
         $data = $request->validate($rules);
         $user = $request->user();
         $tenant = null;
+        $createdUser = null;
 
         try {
-            $tenant = DB::transaction(function () use ($data, $user): Tenant {
+            $tenant = DB::transaction(function () use ($data, $user, &$createdUser): Tenant {
                 $owner = $user;
 
                 if (! $owner) {
@@ -72,6 +72,7 @@ class MarketplaceController extends Controller
                         'email' => $data['email'],
                         'password' => Hash::make($data['password']),
                     ]);
+                    $createdUser = $owner;
                 }
 
                 $tenant = Tenant::create([
@@ -103,8 +104,8 @@ class MarketplaceController extends Controller
             throw $e;
         }
 
-        if (! $user) {
-            Auth::login($owner);
+        if (! $user && $createdUser) {
+            Auth::login($createdUser);
             $request->session()->regenerate();
         }
 
