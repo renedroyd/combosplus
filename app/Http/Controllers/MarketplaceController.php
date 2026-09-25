@@ -189,6 +189,43 @@ class MarketplaceController extends Controller
         return view('marketplace.stores', compact('stores', 'query', 'category', 'sort', 'categories'));
     }
 
+    public function products(Request $request)
+    {
+        $query = trim((string) $request->query('q'));
+        $category = trim((string) $request->query('category'));
+        $sort = (string) $request->query('sort', 'relevance');
+        $needle = mb_strtolower($query);
+        $categoryNeedle = mb_strtolower($category);
+
+        $publishedTenants = $this->publishedTenants();
+        $categories = $this->collectCategories($publishedTenants)
+            ->sortByDesc('product_count')
+            ->values();
+
+        $products = $this->collectProducts($publishedTenants)
+            ->filter(function (Product $product) use ($query, $needle, $categoryNeedle): bool {
+                $matchesText = $query === ''
+                    || str_contains(mb_strtolower((string) $product->name), $needle)
+                    || str_contains(mb_strtolower((string) $product->description), $needle);
+
+                if (! $matchesText || $categoryNeedle === '') {
+                    return $matchesText;
+                }
+
+                return $product->category && mb_strtolower((string) $product->category->name) === $categoryNeedle;
+            });
+
+        $products = match ($sort) {
+            'price_low' => $products->sortBy(fn (Product $product) => (float) $product->price),
+            'price_high' => $products->sortByDesc(fn (Product $product) => (float) $product->price),
+            'newest' => $products->sortByDesc(fn (Product $product) => $product->created_at),
+            'rating' => $products->sortByDesc(fn (Product $product) => $this->productScore($product)),
+            default => $products->sortByDesc(fn (Product $product) => $this->productRelevance($product, $needle)),
+        }->values();
+
+        return view('marketplace.products', compact('products', 'query', 'category', 'sort', 'categories'));
+    }
+
     public function store(Tenant $tenant)
     {
         abort_unless($tenant->status === 'active' && $tenant->catalog_status === CatalogStatus::Published->value, 404);
