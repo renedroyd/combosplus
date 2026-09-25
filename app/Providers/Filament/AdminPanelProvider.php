@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Livewire\OrderStat;
 use App\Livewire\SalesChart;
 use App\Livewire\StoreStat;
+use App\Filament\Widgets\StoreOnboarding;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -53,6 +54,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
+                StoreOnboarding::class,
                 StoreStat::class,
                 SalesChart::class,
             ])
