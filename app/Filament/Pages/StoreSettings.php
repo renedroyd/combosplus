@@ -112,7 +112,8 @@ class StoreSettings extends Page
             'logo' => ['nullable', 'string'],
         ])->validate();
 
-        DB::table('tenants')
+        DB::connection(config('tenancy.database.central_connection', config('database.default')))
+            ->table('tenants')
             ->where('id', $tenant->getTenantKey())
             ->update([
                 'name' => $data['name'],
