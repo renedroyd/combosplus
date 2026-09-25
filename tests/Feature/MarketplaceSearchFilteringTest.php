@@ -59,6 +59,7 @@ class MarketplaceSearchFilteringTest extends TestCase
                     'price' => 100,
                     'quantity' => 1,
                     'sku' => 'LAP-001',
+                    'description' => 'Laptop para trabajo.',
                     'is_visible' => true,
                 ]);
             });
@@ -78,6 +79,7 @@ class MarketplaceSearchFilteringTest extends TestCase
                     'price' => 100,
                     'quantity' => 1,
                     'sku' => 'OCU-001',
+                    'description' => 'Producto oculto.',
                     'is_visible' => false,
                 ]);
             });
