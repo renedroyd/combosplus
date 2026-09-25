@@ -13,7 +13,7 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - **Phase 3 payment hardening:** remittance payment submission no longer marks a remittance as paid without trusted provider verification; submissions enter procesando and remain pending verification.
 - **Phase 4 — Premium administration:** **active**. Dashboard KPI hierarchy, operational table filters, task-oriented navigation, compact record actions, admin shell density refinement, lightweight table design-system defaults and responsive/dark-mode support are implemented.
 - **Marketplace migration:** **active**. Marketplace Core, Reputation, seller registration, tenant domain provisioning, seller authentication/session bridging and store settings are implemented. Seller catalog onboarding has automated coverage for category/product creation, marketplace visibility and tenant isolation. Seller catalog forms now include assisted slug generation, searchable category selection, clearer publication/inventory controls and an explicit catalog publication lifecycle.
-- **Current implementation gate:** Marketplace Discovery is implemented on the working branch; verify its CI, merge only when green, verify post-merge main CI, then continue with Marketplace search/filtering.
+- **Current implementation gate:** Marketplace Discovery and Marketplace search/filtering are implemented on main with verified green CI. The next step is to connect public Marketplace products to the tenant commerce flow without breaking tenant isolation.
 
 ## Delivery rules
 
