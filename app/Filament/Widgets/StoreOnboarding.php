@@ -3,6 +3,8 @@
 namespace App\Filament\Widgets;
 
 use App\Enums\TenantRole;
+use App\Filament\Resources\Categories\CategoryResource;
+use App\Filament\Resources\Products\ProductResource;
 use App\Models\PlatformUser;
 use App\Models\TenantMembership;
 use Filament\Widgets\Widget;
@@ -58,19 +60,19 @@ class StoreOnboarding extends Widget
                 'title' => 'Crea una categoría',
                 'description' => 'Organiza tu catálogo.',
                 'done' => $categoryCount > 0,
-                'url' => '/admin/categories/create',
+                'url' => CategoryResource::getUrl('create'),
             ],
             [
                 'title' => 'Añade tu primer producto',
                 'description' => 'Publica algo para tus clientes.',
                 'done' => $productCount > 0,
-                'url' => '/admin/products/create',
+                'url' => ProductResource::getUrl('create'),
             ],
             [
                 'title' => 'Publica tu catálogo',
                 'description' => 'Haz visibles tus productos.',
                 'done' => $visibleProductCount > 0,
-                'url' => '/admin/products',
+                'url' => ProductResource::getUrl('index'),
             ],
         ];
 
