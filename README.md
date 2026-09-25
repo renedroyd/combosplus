@@ -7,6 +7,7 @@ CombosPlus is evolving into a premium multi-tenant commerce platform for busines
 ## Current capabilities
 
 - Product catalog and categories
+- Marketplace product discovery with search, category filtering and sorting
 - Offers
 - Cart and checkout
 - Orders and order history
