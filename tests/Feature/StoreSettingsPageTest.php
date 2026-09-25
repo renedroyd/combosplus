@@ -52,7 +52,7 @@ class StoreSettingsPageTest extends TestCase
 
         $page->save();
 
-        $this->assertDatabaseHas('tenants', [
+        $this->assertDatabaseHas(config('tenancy.database.central_connection', config('database.default')) . '.tenants', [
             'id' => $tenant->getTenantKey(),
             'name' => 'Tienda actualizada',
             'slug' => 'tienda-actualizada',
