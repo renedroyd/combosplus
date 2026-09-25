@@ -16,7 +16,11 @@ class EnsureTenantMembership
 
     public function handle(Request $request, Closure $next): Response
     {
-        $user = $request->user();
+        // Filament authenticates sellers through the admin guard, while the tenant
+        // storefront uses the default web guard. Prefer the panel guard when it
+        // has an authenticated user so the same membership check works in both
+        // contexts without weakening tenant isolation.
+        $user = $request->user('admin') ?? $request->user();
 
         if (! $this->tenantAccess->canAccessCurrentTenant($user)) {
             abort(403, 'No tienes acceso a este negocio.');
