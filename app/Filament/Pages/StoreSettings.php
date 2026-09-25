@@ -19,7 +19,7 @@ class StoreSettings extends Page
 
     protected static ?string $navigationLabel = 'Mi tienda';
 
-    protected static ?string $navigationGroup = 'Tienda';
+    protected static string|\UnitEnum|null $navigationGroup = 'Tienda';
 
     protected static ?int $navigationSort = 1;
 
@@ -57,11 +57,7 @@ class StoreSettings extends Page
                     ->required()
                     ->alphaDash()
                     ->maxLength(80)
-                    ->unique(
-                        table: 'tenants',
-                        column: 'slug',
-                        ignoreRecord: true,
-                    ),
+                    ->unique(table: 'tenants', column: 'slug', ignoreRecord: true),
                 Textarea::make('description')
                     ->label('Descripción')
                     ->rows(4)
