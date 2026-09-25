@@ -27,6 +27,7 @@ class MarketplaceCatalogOnboardingTest extends TestCase
                     'name' => 'Catálogo Demo',
                     'slug' => 'catalogo-demo',
                     'status' => 'active',
+                'catalog_status' => 'published',
                 ]);
             $tenant->refresh();
 
