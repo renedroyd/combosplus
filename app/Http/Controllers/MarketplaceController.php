@@ -91,6 +91,10 @@ class MarketplaceController extends Controller
 
                 $tenant->refresh();
 
+                $tenant->domains()->create([
+                    'domain' => Str::lower($data['slug']) . '.' . config('tenancy.central_domains.0', 'localhost'),
+                ]);
+
                 TenantMembership::create([
                     'tenant_id' => $tenant->getTenantKey(),
                     'user_id' => $owner->getAuthIdentifier(),
