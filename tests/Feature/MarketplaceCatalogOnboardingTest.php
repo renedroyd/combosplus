@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class MarketplaceCatalogOnboardingTest extends TestCase
@@ -19,11 +20,14 @@ class MarketplaceCatalogOnboardingTest extends TestCase
         ]);
 
         try {
-            $tenant->update([
-                'name' => 'Catálogo Demo',
-                'slug' => 'catalogo-demo',
-                'status' => 'active',
-            ]);
+            DB::table('tenants')
+                ->where('id', $tenant->getTenantKey())
+                ->update([
+                    'name' => 'Catálogo Demo',
+                    'slug' => 'catalogo-demo',
+                    'status' => 'active',
+                ]);
+            $tenant->refresh();
 
             $tenant->domains()->create([
                 'domain' => 'catalogo-demo.localhost',
