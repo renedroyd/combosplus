@@ -52,11 +52,16 @@ class StoreSettingsPageTest extends TestCase
 
         $page->save();
 
-        $this->assertDatabaseHas(config('tenancy.database.central_connection', config('database.default')) . '.tenants', [
-            'id' => $tenant->getTenantKey(),
-            'name' => 'Tienda actualizada',
-            'slug' => 'tienda-actualizada',
-            'description' => 'Una descripción pública.',
-        ]);
+        $this->assertTrue(
+            DB::connection(config('tenancy.database.central_connection', config('database.default')))
+                ->table('tenants')
+                ->where([
+                    'id' => $tenant->getTenantKey(),
+                    'name' => 'Tienda actualizada',
+                    'slug' => 'tienda-actualizada',
+                    'description' => 'Una descripción pública.',
+                ])
+                ->exists(),
+        );
     }
 }
