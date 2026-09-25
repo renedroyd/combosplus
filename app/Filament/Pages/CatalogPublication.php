@@ -130,7 +130,7 @@ class CatalogPublication extends Page
         abort_unless($user instanceof PlatformUser, 403);
 
         abort_unless(
-            $user->tenantMemberships()
+            $user->memberships()
                 ->where('tenant_id', $this->currentTenant()?->getTenantKey())
                 ->where('role', 'owner')
                 ->where('status', 'active')
