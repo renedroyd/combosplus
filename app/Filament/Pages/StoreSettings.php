@@ -9,6 +9,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Pages\Page;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -125,6 +126,10 @@ class StoreSettings extends Page
 
         $this->form->fill($data);
 
-        $this->notify('success', 'Los datos de tu tienda fueron actualizados.');
+        Notification::make()
+            ->title('Tienda actualizada')
+            ->body('Los datos de tu tienda fueron actualizados.')
+            ->success()
+            ->send();
     }
 }
