@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -26,6 +27,10 @@ class MarketplaceSellerOnboardingTest extends TestCase
             'slug' => 'tienda-demo',
             'name' => 'Tienda Demo',
             'status' => 'active',
+        ]);
+        $this->assertDatabaseHas('domains', [
+            'tenant_id' => Tenant::query()->where('slug', 'tienda-demo')->value('id'),
+            'domain' => 'tienda-demo.localhost',
         ]);
         $this->assertDatabaseHas('tenant_memberships', [
             'role' => 'owner',
