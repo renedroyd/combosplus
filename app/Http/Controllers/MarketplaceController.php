@@ -152,16 +152,41 @@ class MarketplaceController extends Controller
     public function stores(Request $request)
     {
         $query = trim((string) $request->query('q'));
+        $category = trim((string) $request->query('category'));
+        $sort = (string) $request->query('sort', 'rating');
         $needle = mb_strtolower($query);
+        $categoryNeedle = mb_strtolower($category);
 
-        $stores = $this->publishedTenants()
-            ->filter(fn (Tenant $tenant) => $query === ''
-                || str_contains(mb_strtolower((string) $tenant->name), $needle)
-                || str_contains(mb_strtolower((string) $tenant->description), $needle))
-            ->sortByDesc(fn (Tenant $tenant) => $this->storeScore($tenant))
+        $publishedTenants = $this->publishedTenants();
+        $categories = $this->collectCategories($publishedTenants)
+            ->sortByDesc('product_count')
             ->values();
 
-        return view('marketplace.stores', compact('stores', 'query'));
+        $stores = $publishedTenants
+            ->filter(function (Tenant $tenant) use ($query, $needle, $categoryNeedle): bool {
+                $matchesText = $query === ''
+                    || str_contains(mb_strtolower((string) $tenant->name), $needle)
+                    || str_contains(mb_strtolower((string) $tenant->description), $needle);
+
+                if (! $matchesText || $categoryNeedle === '') {
+                    return $matchesText;
+                }
+
+                return $tenant->run(
+                    fn () => \App\Models\Category::query()
+                        ->whereRaw('LOWER(name) = ?', [$categoryNeedle])
+                        ->whereHas('products', fn ($products) => $products->where('is_visible', true))
+                        ->exists()
+                );
+            });
+
+        $stores = match ($sort) {
+            'newest' => $stores->sortByDesc(fn (Tenant $tenant) => $tenant->created_at),
+            'name' => $stores->sortBy(fn (Tenant $tenant) => mb_strtolower((string) $tenant->name)),
+            default => $stores->sortByDesc(fn (Tenant $tenant) => $this->storeScore($tenant)),
+        };
+
+        return view('marketplace.stores', compact('stores', 'query', 'category', 'sort', 'categories'));
     }
 
     public function store(Tenant $tenant)
