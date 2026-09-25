@@ -52,7 +52,7 @@ CombosPlus is now evolving from a tenant storefront/back-office foundation into 
 1. **Marketplace Core** — public Marketplace home, store discovery, public store pages, public product pages, lightweight search, and a simple store-registration entry point.
 2. **Reputation** — store, product, and platform reviews with moderation and verified-purchase signals.
 3. **Discovery** — best-rated stores, popular stores, new stores, featured products, offers, categories and richer search.
-4. **Seller onboarding** — guided store creation, branding, catalog setup and progressive completion. Store registration, tenant-domain provisioning, seller authentication, store settings and catalog onboarding coverage are implemented. Seller catalog forms now provide assisted URL generation, clearer publication controls, searchable categories and lightweight product validation.
+4. **Seller onboarding** — guided store creation, branding, catalog setup and progressive completion. Store registration, tenant-domain provisioning, seller authentication, store settings and catalog onboarding coverage are implemented. Seller catalog forms now provide assisted URL generation, clearer publication controls, searchable categories, lightweight product validation and an explicit catalog publication lifecycle.
 5. **Marketplace commerce** — cart, checkout, orders, payments and customer notifications across tenants.
 6. **Growth** — favorites, follows, promotions, recommendations and seller analytics.
 
