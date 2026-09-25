@@ -12,10 +12,8 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - **Phase 3 — Identity & access:** **operational identity migration completed** for carts, addresses, orders and remittances. Platform identity is now the sole operational ownership key; legacy tenant-local identity columns have been removed.
 - **Phase 3 payment hardening:** remittance payment submission no longer marks a remittance as paid without trusted provider verification; submissions enter procesando and remain pending verification.
 - **Phase 4 — Premium administration:** **active**. Dashboard KPI hierarchy, operational table filters, task-oriented navigation, compact record actions, admin shell density refinement, lightweight table design-system defaults and responsive/dark-mode support are implemented.
-- **Latest implementation checkpoint:** PR #44 passed PR CI #118 and was merged into main at commit 3986ec6d119634151274d0932c75306541774d49.
-- **Current hardening:** remaining Phase 3 work is focused on replacing transitional remittance payment-state behavior with a provider-backed transaction abstraction and completing behavior-level payment audits.
-- **Marketplace migration:** **active**. Marketplace Core, Reputation, seller registration, tenant domain provisioning, seller authentication/session bridging and store settings are implemented. The seller catalog onboarding flow now has automated coverage for category/product creation, publishing visibility and tenant isolation.
-- **Next gate:** merge the catalog onboarding regression coverage after CI success, verify post-merge main CI, then continue with seller-facing catalog UX and marketplace discovery while maintaining tenant isolation and security coverage.
+- **Marketplace migration:** **active**. Marketplace Core, Reputation, seller registration, tenant domain provisioning, seller authentication/session bridging and store settings are implemented. Seller catalog onboarding has automated coverage for category/product creation, marketplace visibility and tenant isolation. Seller catalog forms now include assisted slug generation, searchable category selection and clearer publication/inventory controls.
+- **Current implementation gate:** verify PR CI for the seller catalog UX, merge only when green, verify post-merge main CI, then continue with Marketplace Discovery.
 
 ## Delivery rules
 
@@ -56,6 +54,22 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - [x] Enable responsive/dark-mode friendly administration behavior without custom CSS/JS weight.
 - [x] Tenant branding/settings: store profile, public slug/domain synchronization and seller-facing store settings.
 - [x] Seller onboarding: store creation, owner access, domain provisioning and catalog onboarding regression coverage.
+- [x] Seller catalog UX: assisted slugs, searchable categories, clearer publication controls and basic numeric validation.
+
+## Marketplace implementation
+
+- [x] Marketplace Core.
+- [x] Store/product/platform reputation schema and aggregate rating foundation.
+- [x] Seller registration and owner membership.
+- [x] Automatic tenant public-domain provisioning.
+- [x] Seller authentication and central-to-tenant session bridge.
+- [x] Store profile/settings and slug/domain synchronization.
+- [x] Catalog onboarding regression coverage and tenant isolation.
+- [x] Seller catalog form UX refinement.
+- [ ] Explicit draft/unpublished/published catalog state model.
+- [ ] Marketplace discovery: featured/new stores, featured products, offers and categories.
+- [ ] Marketplace search and filtering.
+- [ ] Marketplace commerce across tenants.
 
 ## Later phases
 
@@ -87,30 +101,10 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 
 ## CI checkpoints
 
-- Main CI #117: success after Phase 4 table design-system documentation checkpoint.
-- PR CI #118: success for responsive/dark-mode support.
-- PR #44: merged after PR CI #118 success.
-- Main CI #115: success after Phase 4 table design-system defaults.
-- PR CI #114: success for standardized premium table UX.
-- PR #42: merged after PR CI #114 success.
-- Main CI #111: success after merging Phase 4 admin layout density refinement.
-- PR CI #110: success for premium admin layout density.
-- PR #40: merged after PR CI #110 success.
-- Main CI #107: success after merging Phase 4 compact table actions.
-- PR CI #106: success for standardized compact table actions.
-- PR #38: merged after PR CI #106 success.
-- Main CI #105: success after Phase 4 navigation/information architecture.
-- PR #37: merged after PR CI #104 success.
-- Main CI #99: success for Phase 4 operational table UX before merge.
-- PR #35: merged after CI #99 success.
-- Main CI #96: success after Phase 4 dashboard KPI implementation.
-- PR CI #95: success for the first Phase 4 dashboard implementation.
-- Main CI #94: success after removal of legacy operational identity fields.
-- PR CI #93: success after removal of legacy operational identity fields.
-- Main CI #91: success after remittance payment submission service.
-- Main CI #87: success after remittance identity/payment-state hardening.
-- Main CI #81: success after operational identity migration.
-- Main CI #77: success after checkout/cart isolation fixes.
-- Main CI #71: success after address schema alignment.
-- PR CI #79: failed during the operational identity migration and was corrected before merge.
-- The GitHub Actions runs endpoint is the operational source of truth when specialized status/check wrappers return empty arrays.
+- Main CI #146 / run 36165705593: success after Marketplace catalog onboarding merge.
+- PR #57: merged after CI success; main commit d4931bd69b5f3b563dfbeef246f55f85210b32d2.
+- Main CI #146: success after PR #54 seller admin session bridge.
+- PR #55: merged after correcting Filament 5 navigation type and central-connection persistence/notification handling.
+- PR #56: merged after tenant slug/domain synchronization and collision validation.
+- PR #57: merged after catalog onboarding regression coverage and tenant isolation tests.
+- The direct GitHub Check Runs endpoint is the operational source of truth when specialized status/check wrappers return empty arrays.
