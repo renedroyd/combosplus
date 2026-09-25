@@ -29,6 +29,7 @@ class CatalogPublicationPageTest extends TestCase
                 'category_id' => $category->id,
                 'name' => 'Combo inicial',
                 'slug' => 'combo-inicial',
+                'description' => 'Producto de prueba',
                 'price' => 10,
                 'is_visible' => true,
             ]);
@@ -56,6 +57,7 @@ class CatalogPublicationPageTest extends TestCase
                 'category_id' => $category->id,
                 'name' => 'Borrador',
                 'slug' => 'borrador',
+                'description' => 'Producto de prueba',
                 'price' => 10,
                 'is_visible' => false,
             ]);
