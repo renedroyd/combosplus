@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Enums\TenantRole;
 use App\Filament\Pages\CatalogPublication;
-use App\Models\Category;
 use App\Models\PlatformUser;
 use App\Models\Product;
 use App\Models\Tenant;
@@ -23,10 +22,15 @@ class CatalogPublicationPageTest extends TestCase
         [$tenant, $user] = $this->createStore();
 
         $tenant->run(function (): void {
-            $category = Category::query()->create(['name' => 'Combos', 'slug' => 'combos']);
+            $categoryId = DB::table('categories')->insertGetId([
+                'name' => 'Combos',
+                'slug' => 'combos',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
             Product::query()->create([
-                'category_id' => $category->id,
+                'category_id' => $categoryId,
                 'name' => 'Combo inicial',
                 'slug' => 'combo-inicial',
                 'sku' => 'COMBO-001',
