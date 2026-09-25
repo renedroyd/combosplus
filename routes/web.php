@@ -1,9 +1,20 @@
 <?php
 
+use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\TenantSwitchController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/tenant/switch', [TenantSwitchController::class, 'index'])->name('tenant.switch.index');
-    Route::get('/tenant/switch/{tenantId}', [TenantSwitchController::class, 'switch'])->name('tenant.switch');
-});
+foreach ((array) config('tenancy.central_domains', []) as $centralDomain) {
+    Route::domain($centralDomain)->group(function () {
+        Route::get('/', [MarketplaceController::class, 'home'])->name('marketplace.home');
+        Route::get('/tiendas', [MarketplaceController::class, 'stores'])->name('marketplace.stores');
+        Route::get('/tiendas/{tenant:slug}', [MarketplaceController::class, 'store'])->name('marketplace.store');
+        Route::get('/tiendas/{tenant:slug}/productos/{product}', [MarketplaceController::class, 'product'])
+            ->name('marketplace.product');
+
+        Route::middleware(['auth'])->group(function () {
+            Route::get('/tenant/switch', [TenantSwitchController::class, 'index'])->name('tenant.switch.index');
+            Route::get('/tenant/switch/{tenantId}', [TenantSwitchController::class, 'switch'])->name('tenant.switch');
+        });
+    });
+}
