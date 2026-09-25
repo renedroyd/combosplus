@@ -48,8 +48,7 @@ class MarketplaceController extends Controller
             'description' => ['nullable', 'string', 'max:1000'],
         ];
 
-        if ($request->user()) {
-        } else {
+        if (! $request->user()) {
             $rules += [
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'email', 'max:255', 'unique:users,email'],
@@ -79,12 +78,18 @@ class MarketplaceController extends Controller
                     'id' => (string) Str::uuid(),
                 ]);
 
-                $tenant->forceFill([
-                    'name' => $data['store_name'],
-                    'slug' => Str::lower($data['slug']),
-                    'description' => $data['description'] ?? null,
-                    'status' => 'active',
-                ])->save();
+                // Persist Marketplace fields directly on the central record because
+                // Stancl's tenant model controls its own guarded attribute set.
+                Tenant::query()
+                    ->whereKey($tenant->getTenantKey())
+                    ->update([
+                        'name' => $data['store_name'],
+                        'slug' => Str::lower($data['slug']),
+                        'description' => $data['description'] ?? null,
+                        'status' => 'active',
+                    ]);
+
+                $tenant->refresh();
 
                 TenantMembership::create([
                     'tenant_id' => $tenant->getTenantKey(),
