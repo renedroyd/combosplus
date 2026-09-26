@@ -49,7 +49,10 @@ class MarketplaceCommerceEntryTest extends TestCase
 
             $response = app(MarketplaceController::class)->buy($request, $tenant, (string) $product->getKey());
 
-            $response->assertRedirect('http://tienda-commerce.localhost/productos/'.$product->getKey());
+            $this->assertSame(
+                'http://tienda-commerce.localhost/productos/'.$product->getKey(),
+                $response->getTargetUrl(),
+            );
         } finally {
             $tenant->delete();
         }
