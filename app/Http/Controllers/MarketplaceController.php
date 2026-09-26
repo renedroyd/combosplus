@@ -90,51 +90,54 @@ class MarketplaceController extends Controller
         $createdUser = null;
 
         try {
-            $tenant = DB::transaction(function () use ($data, $user, &$createdUser): Tenant {
-                $owner = $user;
+            // Tenant provisioning creates a database and runs tenant migrations.
+            // MySQL DDL implicitly commits, so this lifecycle cannot be wrapped in
+            // the central database transaction without leaving it inactive.
+            $owner = $user;
 
-                if (! $owner) {
-                    $owner = PlatformUser::create([
-                        'name' => $data['name'],
-                        'email' => $data['email'],
-                        'password' => Hash::make($data['password']),
-                    ]);
-                    $createdUser = $owner;
-                }
-
-                $tenant = Tenant::create([
-                    'id' => (string) Str::uuid(),
+            if (! $owner) {
+                $owner = PlatformUser::create([
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'password' => Hash::make($data['password']),
                 ]);
+                $createdUser = $owner;
+            }
 
-                Tenant::query()
-                    ->whereKey($tenant->getTenantKey())
-                    ->update([
-                        'name' => $data['store_name'],
-                        'slug' => Str::lower($data['slug']),
-                        'description' => $data['description'] ?? null,
-                        'status' => 'active',
-                        'catalog_status' => CatalogStatus::Draft->value,
-                    ]);
+            $tenant = Tenant::create([
+                'id' => (string) Str::uuid(),
+            ]);
 
-                $tenant->refresh();
-
-                $tenant->domains()->firstOrCreate([
-                    'domain' => Str::lower($data['slug']) . '.' . config('tenancy.central_domains.0', 'localhost'),
-                ]);
-
-                TenantMembership::create([
-                    'tenant_id' => $tenant->getTenantKey(),
-                    'user_id' => $owner->getAuthIdentifier(),
-                    'role' => 'owner',
+            Tenant::query()
+                ->whereKey($tenant->getTenantKey())
+                ->update([
+                    'name' => $data['store_name'],
+                    'slug' => Str::lower($data['slug']),
+                    'description' => $data['description'] ?? null,
                     'status' => 'active',
-                    'is_owner' => true,
+                    'catalog_status' => CatalogStatus::Draft->value,
                 ]);
 
-                return $tenant;
-            });
-        } catch (\Throwable $e) {
+            $tenant->refresh();
+
+            $tenant->domains()->firstOrCreate([
+                'domain' => Str::lower($data['slug']) . '.' . config('tenancy.central_domains.0', 'localhost'),
+            ]);
+
+            TenantMembership::create([
+                'tenant_id' => $tenant->getTenantKey(),
+                'user_id' => $owner->getAuthIdentifier(),
+                'role' => 'owner',
+                'status' => 'active',
+                'is_owner' => true,
+            ]);
+        } catch (\\Throwable $e) {
             if ($tenant) {
                 $tenant->delete();
+            }
+
+            if ($createdUser && ! TenantMembership::query()->where('user_id', $createdUser->getAuthIdentifier())->exists()) {
+                $createdUser->delete();
             }
 
             throw $e;
