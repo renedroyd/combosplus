@@ -13,7 +13,7 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - **Phase 3 payment hardening:** remittance payment submission no longer marks a remittance as paid without trusted provider verification; submissions enter procesando and remain pending verification.
 - **Phase 4 — Premium administration:** **active**. Dashboard KPI hierarchy, operational table filters, task-oriented navigation, compact record actions, admin shell density refinement, lightweight table design-system defaults and responsive/dark-mode support are implemented.
 - **Marketplace migration:** **active**. Marketplace Core, Reputation, seller registration, tenant domain provisioning, seller authentication/session bridging and store settings are implemented. Seller catalog onboarding has automated coverage for category/product creation, marketplace visibility and tenant isolation. Seller catalog forms now include assisted slug generation, searchable category selection, clearer publication/inventory controls and an explicit catalog publication lifecycle.
-- **Current implementation gate:** Marketplace Discovery and Marketplace search/filtering are implemented on main with verified green CI. The next step is to connect public Marketplace products to the tenant commerce flow without breaking tenant isolation.
+- **Current implementation gate:** Marketplace Discovery and product search/filtering are implemented on main with verified green CI. The next step is to connect public Marketplace products to the tenant commerce flow without breaking tenant isolation.
 
 ## Delivery rules
 
@@ -69,7 +69,8 @@ CombosPlus is evolving from a Laravel commerce application into a multi-tenant C
 - [x] Explicit draft/unpublished/published catalog state model.
 - [x] Marketplace discovery: featured/new stores, featured products and popular categories; offers remain pending the promotion model.
 - [x] Marketplace search by store name/description.
-- [ ] Marketplace category/filter navigation and richer product search.
+- [x] Marketplace category/filter navigation and richer product search.
+- [ ] Marketplace product pagination/caching for larger catalogs.
 - [x] Marketplace commerce entry point from public product pages into the owning tenant storefront flow.
 - [ ] Marketplace commerce across tenants with a unified cart/checkout experience.
 
