@@ -130,7 +130,7 @@ class MarketplaceController extends Controller
                 'status' => 'active',
                 'is_owner' => true,
             ]);
-        } catch (\\Throwable $e) {
+        } catch (\Throwable $e) {
             if ($tenant) {
                 $tenant->delete();
             }
