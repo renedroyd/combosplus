@@ -211,6 +211,28 @@ class MarketplaceController extends Controller
         return view('marketplace.store', compact('tenant', 'products', 'reviews'));
     }
 
+    public function buy(Request $request, Tenant $tenant, string $product)
+    {
+        abort_unless(
+            $tenant->status === 'active'
+                && $tenant->catalog_status === CatalogStatus::Published->value,
+            404,
+        );
+
+        $productModel = $tenant->run(
+            fn () => Product::query()->findOrFail($product)
+        );
+
+        abort_unless($productModel->is_visible, 404);
+
+        $domain = $tenant->domains()->orderBy('id')->first();
+        abort_unless($domain, 409, 'La tienda no tiene un dominio público configurado.');
+
+        return redirect()->away(
+            $request->getScheme() . '://' . $domain->domain . '/productos/' . $productModel->getKey()
+        );
+    }
+
     public function product(Tenant $tenant, string $product)
     {
         abort_unless($tenant->status === 'active' && $tenant->catalog_status === CatalogStatus::Published->value, 404);
