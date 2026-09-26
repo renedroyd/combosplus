@@ -137,6 +137,23 @@ TENANCY_CENTRAL_DOMAINS=localhost
 
 The exact database credentials can be changed together with the MySQL variables used by `compose.yaml`.
 
+**Tenant database creation:** Stancl Tenancy creates a separate MySQL database for each store. The local Sail user therefore needs global `CREATE` and `DROP` privileges. The Compose stack now installs `docker/mysql/tenant-privileges.sql` automatically when the MySQL data volume is initialized.
+
+If the `sail-mysql` volume already existed before this fix, MySQL will not rerun initialization scripts. Apply the grant once with:
+
+~~~bash
+./vendor/bin/sail mysql -uroot -p${DB_PASSWORD} -e "GRANT CREATE, DROP ON *.* TO 'sail'@'%'; FLUSH PRIVILEGES;"
+~~~
+
+Then retry store registration. To recreate a disposable local database from scratch instead, use:
+
+~~~bash
+./vendor/bin/sail down -v
+./vendor/bin/sail up -d
+~~~
+
+Do not use the local Sail privilege grant as the production database-security model. Production should use a dedicated database-management connection/user with only the privileges required by the tenancy lifecycle.
+
 5. Start the containers:
 
 ~~~bash
