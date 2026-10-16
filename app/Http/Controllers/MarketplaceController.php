@@ -10,6 +10,7 @@ use App\Models\StoreReview;
 use App\Models\Tenant;
 use App\Models\PlatformUser;
 use App\Models\TenantMembership;
+use App\Services\Tenancy\TenantCustomerProvisioner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -130,6 +131,12 @@ class MarketplaceController extends Controller
                 'status' => 'active',
                 'is_owner' => true,
             ]);
+
+            // The owner also needs a local identity in the newly created tenant DB.
+            // Run the provisioner in tenant context so it writes to this store's users table.
+            $tenant->run(
+                fn () => app(TenantCustomerProvisioner::class)->ensure($owner)
+            );
         } catch (\Throwable $e) {
             if ($tenant) {
                 $tenant->delete();
