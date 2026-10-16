@@ -20,14 +20,15 @@ class MarketplaceController extends Controller
 {
     public function home()
     {
+        $registeredTenants = $this->registeredTenants();
         $publishedTenants = $this->publishedTenants();
 
-        $stores = $publishedTenants
+        $stores = $registeredTenants
             ->sortByDesc(fn (Tenant $tenant) => $this->storeScore($tenant))
             ->take(8)
             ->values();
 
-        $newStores = $publishedTenants
+        $newStores = $registeredTenants
             ->sortByDesc(fn (Tenant $tenant) => $tenant->created_at)
             ->take(6)
             ->values();
@@ -166,12 +167,13 @@ class MarketplaceController extends Controller
         $needle = mb_strtolower($query);
         $categoryNeedle = mb_strtolower($category);
 
+        $registeredTenants = $this->registeredTenants();
         $publishedTenants = $this->publishedTenants();
         $categories = $this->collectCategories($publishedTenants)
             ->sortByDesc('product_count')
             ->values();
 
-        $stores = $publishedTenants
+        $stores = $registeredTenants
             ->filter(function (Tenant $tenant) use ($query, $needle, $categoryNeedle): bool {
                 $matchesText = $query === ''
                     || str_contains(mb_strtolower((string) $tenant->name), $needle)
@@ -200,15 +202,17 @@ class MarketplaceController extends Controller
 
     public function store(Tenant $tenant)
     {
-        abort_unless($tenant->status === 'active' && $tenant->catalog_status === CatalogStatus::Published->value, 404);
+        abort_unless($tenant->status === 'active' && filled($tenant->name), 404);
 
-        $products = $tenant->run(
-            fn () => Product::query()
-                ->where('is_visible', true)
-                ->latest()
-                ->take(24)
-                ->get()
-        );
+        $products = $tenant->catalog_status === CatalogStatus::Published->value
+            ? $tenant->run(
+                fn () => Product::query()
+                    ->where('is_visible', true)
+                    ->latest()
+                    ->take(24)
+                    ->get()
+            )
+            : collect();
 
         $reviews = StoreReview::approved()
             ->where('tenant_id', $tenant->getTenantKey())
@@ -263,13 +267,27 @@ class MarketplaceController extends Controller
         return view('marketplace.product', compact('tenant', 'product', 'reviews'));
     }
 
-    private function publishedTenants()
+    /**
+     * All active stores that have completed registration, even if their catalog
+     * is still a draft or has not been published yet.
+     */
+    private function registeredTenants()
     {
         return Tenant::query()
             ->where('status', 'active')
-            ->where('catalog_status', CatalogStatus::Published->value)
             ->whereNotNull('name')
             ->get();
+    }
+
+    /**
+     * Only published stores may contribute products and categories to public
+     * product discovery.
+     */
+    private function publishedTenants()
+    {
+        return $this->registeredTenants()
+            ->where('catalog_status', CatalogStatus::Published->value)
+            ->values();
     }
 
     private function collectProducts($tenants)
