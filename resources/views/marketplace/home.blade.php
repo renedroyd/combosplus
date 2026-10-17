@@ -2,7 +2,7 @@
 @section('title','Nexo — Tu mundo, más cerca')
 @section('content')
 <section class="relative isolate overflow-hidden bg-[#071b30] text-white">
-    <div class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.15fr_.85fr] lg:items-center lg:px-8 lg:py-24">
+    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
         <span class="inline-flex rounded-full border border-[#ffd21f]/30 bg-[#ffd21f]/10 px-3 py-1 text-sm font-semibold text-[#ffd21f]">Descubre algo extraordinario</span>
         <h1 class="mt-6 max-w-4xl text-4xl font-black leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">Tu mundo,<br><span class="text-[#ffd21f]">más cerca.</span></h1>
         <p class="mt-5 max-w-2xl text-lg leading-8 text-slate-300">Encuentra productos únicos, descubre tiendas independientes y conecta con marcas que tienen algo especial para ti.</p>
