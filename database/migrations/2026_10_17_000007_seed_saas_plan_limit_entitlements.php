@@ -43,21 +43,30 @@ return new class extends Migration
             ][$type];
 
             foreach ($limits as $key => $value) {
-                $exists = DB::table('saas_plan_entitlements')
-                    ->where('plan_id', $plan->id)
-                    ->where('key', $key)
-                    ->exists();
+                $description = match ($key) {
+                    'max_products' => 'Máximo de productos guardados; unlimited significa sin límite.',
+                    'max_users' => 'Usuarios del equipo activos, incluido el propietario; no cuenta clientes.',
+                    'max_branches' => 'Máximo de sucursales activas.',
+                };
 
-                if (! $exists) {
+                $query = DB::table('saas_plan_entitlements')
+                    ->where('plan_id', $plan->id)
+                    ->where('key', $key);
+
+                if ($query->exists()) {
+                    // These three limits were explicitly agreed for this release.
+                    // Align existing values while leaving unrelated entitlements untouched.
+                    $query->update([
+                        'value' => $value,
+                        'description' => $description,
+                        'updated_at' => now(),
+                    ]);
+                } else {
                     DB::table('saas_plan_entitlements')->insert([
                         'plan_id' => $plan->id,
                         'key' => $key,
                         'value' => $value,
-                        'description' => match ($key) {
-                            'max_products' => 'Máximo de productos guardados; unlimited significa sin límite.',
-                            'max_users' => 'Usuarios del equipo activos, incluido el propietario; no cuenta clientes.',
-                            'max_branches' => 'Máximo de sucursales activas.',
-                        },
+                        'description' => $description,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
@@ -68,7 +77,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Do not delete entitlement rows: platform administrators may
-        // have edited them after this migration ran.
+        // Do not delete entitlement rows: platform administrators may have
+        // edited them after this migration ran.
     }
 };
