@@ -51,6 +51,10 @@ class SaasSubscriptionPaymentReviewService
                     'rejection_reason' => $reason,
                 ])->save();
 
+                if ($status === SaasSubscriptionPayment::STATUS_APPROVED) {
+                    app(SaasSubscriptionLifecycleService::class)->activateFromApprovedPayment($record);
+                }
+
                 return $record->refresh();
             });
     }
