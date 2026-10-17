@@ -15,9 +15,11 @@ class SaasPlanPricingFoundationTest extends TestCase
         $this->assertSame('saas_plans', (new SaasPlan())->getTable());
         $this->assertSame('saas_plan_prices', (new SaasPlanPrice())->getTable());
 
-        $this->assertSame('central', (new SaasCurrency())->getConnectionName());
-        $this->assertSame('central', (new SaasPlan())->getConnectionName());
-        $this->assertSame('central', (new SaasPlanPrice())->getConnectionName());
+        $centralConnection = config('tenancy.database.central_connection');
+
+        $this->assertSame($centralConnection, (new SaasCurrency())->getConnectionName());
+        $this->assertSame($centralConnection, (new SaasPlan())->getConnectionName());
+        $this->assertSame($centralConnection, (new SaasPlanPrice())->getConnectionName());
     }
 
     public function test_plans_and_currencies_expose_price_relationships(): void
