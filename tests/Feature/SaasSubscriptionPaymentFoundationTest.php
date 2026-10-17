@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\\Feature;
+namespace Tests\Feature;
 
-use App\\Models\\SaasSubscriptionPayment;
-use App\\Services\\SaasSubscriptionPaymentReviewService;
-use Illuminate\\Validation\\ValidationException;
-use Tests\\TestCase;
+use App\Models\SaasSubscriptionPayment;
+use App\Services\SaasSubscriptionPaymentReviewService;
+use Illuminate\Validation\ValidationException;
+use Tests\TestCase;
 
 class SaasSubscriptionPaymentFoundationTest extends TestCase
 {
