@@ -16,46 +16,48 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use UnitEnum;
 
-class StoreBranchResource extends Resource
-{
-    protected static ?string $model = Branch::class;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
-
-    protected static ?string $modelLabel = 'Sucursal';
-
-    protected static ?string $pluralLabel = 'Sucursales';
-
-    protected static ?string $recordTitleAttribute = 'name';
-
-    protected static string|UnitEnum|null $navigationGroup = 'Configuración del negocio';
-
-    protected static ?int $navigationSort = 30;
-
-    public static function canCreate(): bool
+if (! class_exists(StoreBranchResource::class, false)) {
+    class StoreBranchResource extends Resource
     {
-        $tenantId = tenant()?->getTenantKey();
+        protected static ?string $model = Branch::class;
 
-        return is_string($tenantId)
-            && app(SaasTenantAccessService::class)->canCreateBranch($tenantId);
-    }
+        protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
 
-    public static function form(Schema $schema): Schema
-    {
-        return BranchForm::configure($schema);
-    }
+        protected static ?string $modelLabel = 'Sucursal';
 
-    public static function table(Table $table): Table
-    {
-        return BranchesTable::configure($table);
-    }
+        protected static ?string $pluralLabel = 'Sucursales';
 
-    public static function getPages(): array
-    {
-        return [
-            'index' => ListBranches::route('/'),
-            'create' => CreateBranch::route('/create'),
-            'edit' => EditBranch::route('/{record}/edit'),
-        ];
+        protected static ?string $recordTitleAttribute = 'name';
+
+        protected static string|UnitEnum|null $navigationGroup = 'Configuración del negocio';
+
+        protected static ?int $navigationSort = 30;
+
+        public static function canCreate(): bool
+        {
+            $tenantId = tenant()?->getTenantKey();
+
+            return is_string($tenantId)
+                && app(SaasTenantAccessService::class)->canCreateBranch($tenantId);
+        }
+
+        public static function form(Schema $schema): Schema
+        {
+            return BranchForm::configure($schema);
+        }
+
+        public static function table(Table $table): Table
+        {
+            return BranchesTable::configure($table);
+        }
+
+        public static function getPages(): array
+        {
+            return [
+                'index' => ListBranches::route('/'),
+                'create' => CreateBranch::route('/create'),
+                'edit' => EditBranch::route('/{record}/edit'),
+            ];
+        }
     }
 }

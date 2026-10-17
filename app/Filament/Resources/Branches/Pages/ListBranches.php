@@ -6,14 +6,16 @@ use App\Filament\Resources\Branches\StoreBranchResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
-class ListBranches extends ListRecords
-{
-    protected static string $resource = StoreBranchResource::class;
-
-    protected function getHeaderActions(): array
+if (! class_exists(ListBranches::class, false)) {
+    class ListBranches extends ListRecords
     {
-        return [
-            CreateAction::make(),
-        ];
+        protected static string $resource = StoreBranchResource::class;
+
+        protected function getHeaderActions(): array
+        {
+            return [
+                CreateAction::make(),
+            ];
+        }
     }
 }
