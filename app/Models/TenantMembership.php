@@ -40,12 +40,13 @@ class TenantMembership extends Model
         }
 
         $tenantId = (string) $this->tenant_id;
-        $connection = (string) config(
+        $connectionName = (string) config(
             'tenancy.database.central_connection',
             config('database.default'),
         );
+        $connection = DB::connection($connectionName);
 
-        return DB::connection($connection)->transaction(function () use ($tenantId, $options): bool {
+        $saveWithQuotaCheck = function () use ($tenantId, $options): bool {
             Tenant::query()->whereKey($tenantId)->lockForUpdate()->firstOrFail();
 
             // New tenants can finish onboarding before choosing/purchasing a
@@ -55,7 +56,15 @@ class TenantMembership extends Model
             }
 
             return parent::save($options);
-        });
+        };
+
+        // Test harnesses and callers may already hold a transaction on this
+        // connection. Reuse it rather than creating a nested savepoint.
+        if ($connection->transactionLevel() > 0) {
+            return $saveWithQuotaCheck();
+        }
+
+        return $connection->transaction($saveWithQuotaCheck);
     }
 
     private function shouldCheckTeamSeatQuota(): bool
