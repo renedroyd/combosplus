@@ -12,7 +12,7 @@ class PlatformAdminPanelTest extends TestCase
 {
     public function test_platform_panel_uses_a_separate_guard_and_admin_provider(): void
     {
-        $this->assertSame('platform', config('auth.guards.platform.provider'));
+        $this->assertSame('platform_admins', config('auth.guards.platform.provider'));
         $this->assertSame(Admin::class, config('auth.providers.platform_admins.model'));
         $this->assertSame(PlatformUser::class, config('auth.providers.admins.model'));
     }
