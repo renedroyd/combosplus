@@ -1,28 +1,28 @@
 <?php
 
-namespace App\\Filament\\Platform\\Resources\\SubscriptionPayments;
+namespace App\Filament\Platform\Resources\SubscriptionPayments;
 
-use App\\Filament\\Platform\\Resources\\SubscriptionPayments\\Pages\\CreateSubscriptionPayment;
-use App\\Filament\\Platform\\Resources\\SubscriptionPayments\\Pages\\EditSubscriptionPayment;
-use App\\Filament\\Platform\\Resources\\SubscriptionPayments\\Pages\\ListSubscriptionPayments;
-use App\\Models\\SaasPlanPrice;
-use App\\Models\\SaasSubscriptionPayment;
-use App\\Services\\SaasSubscriptionPaymentReviewService;
+use App\Filament\Platform\Resources\SubscriptionPayments\Pages\CreateSubscriptionPayment;
+use App\Filament\Platform\Resources\SubscriptionPayments\Pages\EditSubscriptionPayment;
+use App\Filament\Platform\Resources\SubscriptionPayments\Pages\ListSubscriptionPayments;
+use App\Models\SaasPlanPrice;
+use App\Models\SaasSubscriptionPayment;
+use App\Services\SaasSubscriptionPaymentReviewService;
 use BackedEnum;
-use Filament\\Actions\\Action;
-use Filament\\Actions\\EditAction;
-use Filament\\Forms\\Components\\FileUpload;
-use Filament\\Forms\\Components\\Select;
-use Filament\\Forms\\Components\\Textarea;
-use Filament\\Forms\\Components\\TextInput;
-use Filament\\Resources\\Resource;
-use Filament\\Schemas\\Components\\Section;
-use Filament\\Schemas\\Schema;
-use Filament\\Support\\Icons\\Heroicon;
-use Filament\\Tables\\Columns\\TextColumn;
-use Filament\\Tables\\Filters\\SelectFilter;
-use Filament\\Tables\\Table;
-use Illuminate\\Database\\Eloquent\\Model;
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use UnitEnum;
 
 class SubscriptionPaymentResource extends Resource
