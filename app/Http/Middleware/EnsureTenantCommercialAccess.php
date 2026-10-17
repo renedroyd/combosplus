@@ -56,10 +56,10 @@ class EnsureTenantCommercialAccess
     {
         $blocked = [
             'create', 'save', 'delete', 'deleteany', 'callmountedaction',
-            'calltableaction', 'callmountedtableaction', 'submit', 'process',
-            'destroy', 'store', 'execute', 'bulkdelete', 'mountaction',
-            'publish', 'unpublish', 'cancel', 'confirm', 'approve', 'reject',
-            'toggle', 'updatestatus', 'checkout', 'pay',
+            'calltableaction', 'callmountedtableaction', 'callmountedtablebulkaction',
+            'submit', 'process', 'destroy', 'store', 'execute', 'bulkdelete',
+            'mountaction', 'publish', 'unpublish', 'cancel', 'confirm',
+            'approve', 'reject', 'toggle', 'updatestatus', 'checkout', 'pay',
         ];
 
         foreach ((array) $request->input('components', []) as $component) {
