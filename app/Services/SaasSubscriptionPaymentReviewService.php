@@ -54,3 +54,4 @@ class SaasSubscriptionPaymentReviewService
                 return $record->refresh();
             });
     }
+}
