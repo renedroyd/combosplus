@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\Platform\SubscriptionPaymentReceiptController;
 use App\Http\Controllers\TenantSwitchController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,11 @@ foreach ((array) config('tenancy.central_domains', []) as $centralDomain) {
         Route::middleware(['auth'])->group(function () {
             Route::get('/tenant/switch', [TenantSwitchController::class, 'index'])->name('tenant.switch.index');
             Route::get('/tenant/switch/{tenantId}', [TenantSwitchController::class, 'switch'])->name('tenant.switch');
+        });
+
+        Route::middleware(['auth:platform'])->group(function () {
+            Route::get('/platform/subscription-payments/{payment}/receipt', SubscriptionPaymentReceiptController::class)
+                ->name('platform.subscription-payments.receipt');
         });
     });
 }
