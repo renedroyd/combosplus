@@ -7,10 +7,13 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Stancl\Tenancy\Database\Concerns\CentralConnection;
 
 class Admin extends Authenticatable implements FilamentUser
 {
-    use HasFactory, Notifiable;
+    use CentralConnection;
+    use HasFactory;
+    use Notifiable;
 
     protected $fillable = [
         'name',
@@ -30,9 +33,9 @@ class Admin extends Authenticatable implements FilamentUser
             'password' => 'hashed',
         ];
     }
-    
+
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        return $panel->getId() === 'platform';
     }
 }

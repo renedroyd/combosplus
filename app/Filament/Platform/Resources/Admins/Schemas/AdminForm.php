@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Admins\Schemas;
+namespace App\Filament\Platform\Resources\Admins\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
@@ -13,10 +13,10 @@ class AdminForm
     {
         return $schema
             ->components([
-                Section::make("Informacion del usuario")
+                Section::make('Información del administrador')
                     ->schema([
                         TextInput::make('name')
-                            ->label('Nombres y Apellidos')
+                            ->label('Nombre completo')
                             ->required()
                             ->columnSpanFull(),
                         TextInput::make('email')
@@ -28,18 +28,18 @@ class AdminForm
                             ->label('Correo verificado')
                             ->columnSpan(6),
                         TextInput::make('password')
-                            ->label('Contrasena')
+                            ->label('Contraseña')
                             ->password()
                             ->required()
                             ->columnSpan(6),
                         TextInput::make('verify_password')
-                            ->label('Verificar contrasena')
+                            ->label('Confirmar contraseña')
                             ->same('password')
                             ->dehydrated(false)
                             ->columnSpan(6),
                     ])
-                        ->columns(12)
-                        ->columnSpanFull()
+                    ->columns(12)
+                    ->columnSpanFull(),
             ]);
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\Admins;
+namespace App\Filament\Platform\Resources\Admins;
 
-use App\Filament\Resources\Admins\Pages\CreateAdmin;
-use App\Filament\Resources\Admins\Pages\EditAdmin;
-use App\Filament\Resources\Admins\Pages\ListAdmins;
-use App\Filament\Resources\Admins\Schemas\AdminForm;
-use App\Filament\Resources\Admins\Tables\AdminsTable;
+use App\Filament\Platform\Resources\Admins\Pages\CreateAdmin;
+use App\Filament\Platform\Resources\Admins\Pages\EditAdmin;
+use App\Filament\Platform\Resources\Admins\Pages\ListAdmins;
+use App\Filament\Platform\Resources\Admins\Schemas\AdminForm;
+use App\Filament\Platform\Resources\Admins\Tables\AdminsTable;
 use App\Models\Admin;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -43,9 +43,7 @@ class AdminResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
