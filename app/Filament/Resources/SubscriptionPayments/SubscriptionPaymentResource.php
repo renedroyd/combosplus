@@ -1,24 +1,24 @@
 <?php
 
-namespace App\\Filament\\Resources\\SubscriptionPayments;
+namespace App\Filament\Resources\SubscriptionPayments;
 
-use App\\Filament\\Resources\\SubscriptionPayments\\Pages\\CreateSubscriptionPayment;
-use App\\Filament\\Resources\\SubscriptionPayments\\Pages\\ListSubscriptionPayments;
-use App\\Models\\PlatformUser;
-use App\\Models\\SaasPlanPrice;
-use App\\Models\\SaasSubscriptionPayment;
+use App\Filament\Resources\SubscriptionPayments\Pages\CreateSubscriptionPayment;
+use App\Filament\Resources\SubscriptionPayments\Pages\ListSubscriptionPayments;
+use App\Models\PlatformUser;
+use App\Models\SaasPlanPrice;
+use App\Models\SaasSubscriptionPayment;
 use BackedEnum;
-use Filament\\Forms\\Components\\FileUpload;
-use Filament\\Forms\\Components\\Select;
-use Filament\\Forms\\Components\\TextInput;
-use Filament\\Resources\\Resource;
-use Filament\\Schemas\\Components\\Section;
-use Filament\\Schemas\\Schema;
-use Filament\\Support\\Icons\\Heroicon;
-use Filament\\Tables\\Columns\\TextColumn;
-use Filament\\Tables\\Filters\\SelectFilter;
-use Filament\\Tables\\Table;
-use Illuminate\\Database\\Eloquent\\Builder;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 class SubscriptionPaymentResource extends Resource
