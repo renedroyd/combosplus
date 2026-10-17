@@ -1,10 +1,10 @@
 <?php
 
-namespace App\\Filament\\Platform\\Resources\\SubscriptionPayments\\Pages;
+namespace App\Filament\Platform\Resources\SubscriptionPayments\Pages;
 
-use App\\Filament\\Platform\\Resources\\SubscriptionPayments\\SubscriptionPaymentResource;
-use Filament\\Actions\\DeleteAction;
-use Filament\\Resources\\Pages\\EditRecord;
+use App\Filament\Platform\Resources\SubscriptionPayments\SubscriptionPaymentResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
 
 class EditSubscriptionPayment extends EditRecord
 {
