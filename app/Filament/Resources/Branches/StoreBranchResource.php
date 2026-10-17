@@ -16,7 +16,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use UnitEnum;
 
-class BranchResource extends Resource
+class StoreBranchResource extends Resource
 {
     protected static ?string $model = Branch::class;
 

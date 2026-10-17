@@ -2,14 +2,14 @@
 
 namespace App\Filament\Resources\Branches\Pages;
 
-use App\Filament\Resources\Branches\BranchResource;
+use App\Filament\Resources\Branches\StoreBranchResource;
 use App\Services\SaasTenantAccessService;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 
 class CreateBranch extends CreateRecord
 {
-    protected static string $resource = BranchResource::class;
+    protected static string $resource = StoreBranchResource::class;
 
     protected function handleRecordCreation(array $data): Model
     {
