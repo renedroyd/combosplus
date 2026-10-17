@@ -7,21 +7,19 @@ use App\Services\SaasTenantAccessService;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 
-if (! class_exists(CreateBranch::class, false)) {
-    class CreateBranch extends CreateRecord
+class CreateBranch extends CreateRecord
+{
+    protected static string $resource = StoreBranchResource::class;
+
+    protected function handleRecordCreation(array $data): Model
     {
-        protected static string $resource = StoreBranchResource::class;
+        $tenantId = (string) tenant()->getTenantKey();
+        $access = app(SaasTenantAccessService::class);
 
-        protected function handleRecordCreation(array $data): Model
-        {
-            $tenantId = (string) tenant()->getTenantKey();
-            $access = app(SaasTenantAccessService::class);
+        return $access->withTenantLock($tenantId, function () use ($access, $tenantId, $data): Model {
+            $access->assertCanCreateBranch($tenantId);
 
-            return $access->withTenantLock($tenantId, function () use ($access, $tenantId, $data): Model {
-                $access->assertCanCreateBranch($tenantId);
-
-                return parent::handleRecordCreation($data);
-            });
-        }
+            return parent::handleRecordCreation($data);
+        });
     }
 }

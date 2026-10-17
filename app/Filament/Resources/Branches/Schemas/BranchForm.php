@@ -10,37 +10,35 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
-if (! class_exists(BranchForm::class, false)) {
-    class BranchForm
+class BranchForm
+{
+    public static function configure(Schema $schema): Schema
     {
-        public static function configure(Schema $schema): Schema
-        {
-            return $schema->components([
-                Section::make('Información de la sucursal')->schema([
-                    TextInput::make('name')
-                        ->label('Nombre')
-                        ->required()
-                        ->maxLength(150)
-                        ->live(onBlur: true)
-                        ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug((string) $state))),
-                    TextInput::make('slug')
-                        ->label('Identificador URL')
-                        ->required()
-                        ->maxLength(180)
-                        ->unique(ignoreRecord: true),
-                    Textarea::make('address')
-                        ->label('Dirección')
-                        ->maxLength(1000)
-                        ->columnSpanFull(),
-                    TextInput::make('phone')
-                        ->label('Teléfono')
-                        ->tel()
-                        ->maxLength(40),
-                    Toggle::make('is_active')
-                        ->label('Sucursal activa')
-                        ->default(true),
-                ])->columns(2)->columnSpanFull(),
-            ]);
-        }
+        return $schema->components([
+            Section::make('Información de la sucursal')->schema([
+                TextInput::make('name')
+                    ->label('Nombre')
+                    ->required()
+                    ->maxLength(150)
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug((string) $state))),
+                TextInput::make('slug')
+                    ->label('Identificador URL')
+                    ->required()
+                    ->maxLength(180)
+                    ->unique(ignoreRecord: true),
+                Textarea::make('address')
+                    ->label('Dirección')
+                    ->maxLength(1000)
+                    ->columnSpanFull(),
+                TextInput::make('phone')
+                    ->label('Teléfono')
+                    ->tel()
+                    ->maxLength(40),
+                Toggle::make('is_active')
+                    ->label('Sucursal activa')
+                    ->default(true),
+            ])->columns(2)->columnSpanFull(),
+        ]);
     }
 }
