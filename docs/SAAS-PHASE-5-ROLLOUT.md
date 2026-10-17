@@ -14,4 +14,4 @@ La migración central establece los valores acordados de productos, usuarios y s
 
 Después de la gracia se bloquean las escrituras comerciales, pero se mantienen la consulta del historial, la renovación, el acceso y mantenimiento del perfil personal, la gestión de direcciones y las funciones de autenticación y contacto. Las pruebas cubren los estados activo, gracia y restringido, los límites predeterminados de los tres planes y el límite de usuarios con el propietario incluido.
 
-Las comprobaciones de cupos de productos y sucursales se serializan usando la fila central del tenant; las altas de usuarios del equipo usan una transacción central y el mismo bloqueo para evitar que solicitudes concurrentes consuman la misma plaza.
+Las comprobaciones de cupos de productos y sucursales se serializan usando la fila central del tenant; las altas de usuarios del equipo usan una transacción central y el mismo bloqueo para evitar que solicitudes concurrentes consuman la misma plaza. Cuando el caller ya mantiene una transacción, la comprobación reutiliza esa transacción para evitar savepoints anidados incompatibles con el aislamiento de pruebas.
