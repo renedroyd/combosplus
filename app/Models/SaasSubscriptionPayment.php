@@ -17,6 +17,10 @@ class SaasSubscriptionPayment extends Model
 
     protected $table = 'saas_subscription_payments';
 
+    protected $attributes = [
+        'status' => self::STATUS_PENDING,
+    ];
+
     protected $fillable = [
         'tenant_id',
         'submitted_by_user_id',
