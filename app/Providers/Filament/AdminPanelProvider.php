@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Widgets\StoreOnboarding;
+use App\Http\Middleware\EnsureTenantCommercialAccess;
 use App\Http\Middleware\EnsureTenantMembership;
 use App\Livewire\OrderStat;
 use App\Livewire\SalesChart;
@@ -50,12 +51,12 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->resourceCreatePageRedirect('index')
             ->resourceEditPageRedirect('index')
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\\\Filament\\\\Resources')
+            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\\\Filament\\\\Pages')
             ->pages([
                 Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\\\Filament\\\\Widgets')
             ->widgets([
                 StoreOnboarding::class,
                 StoreStat::class,
@@ -77,6 +78,7 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 EnsureTenantMembership::class,
+                EnsureTenantCommercialAccess::class,
             ]);
     }
 }

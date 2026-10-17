@@ -8,6 +8,7 @@ use App\Filament\Resources\Products\Pages\ListProducts;
 use App\Filament\Resources\Products\Schemas\ProductForm;
 use App\Filament\Resources\Products\Tables\ProductsTable;
 use App\Models\Product;
+use App\Services\SaasTenantAccessService;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -30,6 +31,14 @@ class ProductResource extends Resource
     protected static string|UnitEnum|null $navigationGroup = 'Inventario';
 
     protected static ?int $navigationSort = 10;
+
+    public static function canCreate(): bool
+    {
+        $tenantId = tenant()?->getTenantKey();
+
+        return is_string($tenantId)
+            && app(SaasTenantAccessService::class)->canCreateProduct($tenantId);
+    }
 
     public static function form(Schema $schema): Schema
     {
