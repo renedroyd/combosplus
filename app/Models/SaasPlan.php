@@ -23,4 +23,9 @@ class SaasPlan extends Model
     {
         return $this->hasMany(SaasPlanPrice::class, 'plan_id');
     }
+
+    public function entitlements(): HasMany
+    {
+        return $this->hasMany(SaasPlanEntitlement::class, 'plan_id');
+    }
 }
