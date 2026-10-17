@@ -2,16 +2,20 @@
 
 namespace Tests\Feature;
 
+use App\Enums\TenantRole;
+use App\Models\PlatformUser;
 use App\Models\SaasCurrency;
 use App\Models\SaasPlan;
 use App\Models\SaasPlanEntitlement;
 use App\Models\SaasPlanPrice;
 use App\Models\SaasSubscription;
 use App\Models\Tenant;
+use App\Models\TenantMembership;
 use App\Services\SaasPlanEntitlementService;
 use App\Services\SaasTenantAccessService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class SaasSubscriptionAccessStateTest extends TestCase
@@ -80,6 +84,49 @@ class SaasSubscriptionAccessStateTest extends TestCase
             $this->assertFalse($access->canUseCommercialFeatures($tenant->id));
         } finally {
             $tenant->delete();
+        }
+    }
+
+    public function test_team_user_limit_includes_the_owner_and_blocks_an_extra_member(): void
+    {
+        [$tenant] = $this->createSubscription('saas-team-limit', now()->addDay());
+        $owner = PlatformUser::create([
+            'name' => 'Owner',
+            'email' => 'saas-team-owner@example.test',
+            'password' => 'password',
+        ]);
+        $manager = PlatformUser::create([
+            'name' => 'Manager',
+            'email' => 'saas-team-manager@example.test',
+            'password' => 'password',
+        ]);
+
+        try {
+            TenantMembership::create([
+                'tenant_id' => $tenant->id,
+                'user_id' => $owner->id,
+                'role' => TenantRole::Owner,
+                'status' => 'active',
+                'is_owner' => true,
+            ]);
+
+            try {
+                TenantMembership::create([
+                    'tenant_id' => $tenant->id,
+                    'user_id' => $manager->id,
+                    'role' => TenantRole::Manager,
+                    'status' => 'active',
+                    'is_owner' => false,
+                ]);
+
+                $this->fail('The Inicial plan must not allow a second team user.');
+            } catch (ValidationException $exception) {
+                $this->assertArrayHasKey('user_id', $exception->errors());
+            }
+        } finally {
+            $tenant->delete();
+            $owner->delete();
+            $manager->delete();
         }
     }
 

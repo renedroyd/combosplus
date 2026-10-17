@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Enums\TenantRole;
+use App\Services\SaasTenantAccessService;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Stancl\Tenancy\Database\Concerns\CentralConnection;
 
 class TenantMembership extends Model
@@ -27,38 +29,42 @@ class TenantMembership extends Model
         ];
     }
 
-    protected static function booted(): void
+    /**
+     * Serialize team-seat checks and membership writes against the central
+     * tenant row so concurrent additions cannot consume the same seat.
+     */
+    public function save(array $options = []): bool
     {
-        static::creating(function (self $membership): void {
-            if (! $membership->countsAsTeamUser()) {
-                return;
+        if (! $this->shouldCheckTeamSeatQuota()) {
+            return parent::save($options);
+        }
+
+        $tenantId = (string) $this->tenant_id;
+        $connection = (string) config(
+            'tenancy.database.central_connection',
+            config('database.default'),
+        );
+
+        return DB::connection($connection)->transaction(function () use ($tenantId, $options): bool {
+            Tenant::query()->whereKey($tenantId)->lockForUpdate()->firstOrFail();
+
+            // New tenants can finish onboarding before choosing/purchasing a
+            // plan. Once billing history exists, active team seats are capped.
+            if (SaasSubscription::query()->where('tenant_id', $tenantId)->exists()) {
+                app(SaasTenantAccessService::class)->assertCanAddTeamMember($tenantId);
             }
 
-            $tenantId = (string) $membership->tenant_id;
-
-            // Before the first subscription is purchased, onboarding must be
-            // able to finish creating the initial team. Once billing history
-            // exists, all new active team seats are checked against the plan.
-            if (! SaasSubscription::query()->where('tenant_id', $tenantId)->exists()) {
-                return;
-            }
-
-            app(SaasTenantAccessService::class)->assertCanAddTeamMember($tenantId);
+            return parent::save($options);
         });
+    }
 
-        static::updating(function (self $membership): void {
-            if (! $membership->countsAsTeamUser() || $membership->originalCountsAsTeamUser()) {
-                return;
-            }
+    private function shouldCheckTeamSeatQuota(): bool
+    {
+        if (! $this->countsAsTeamUser()) {
+            return false;
+        }
 
-            $tenantId = (string) $membership->tenant_id;
-
-            if (! SaasSubscription::query()->where('tenant_id', $tenantId)->exists()) {
-                return;
-            }
-
-            app(SaasTenantAccessService::class)->assertCanAddTeamMember($tenantId);
-        });
+        return ! $this->exists || ! $this->originalCountsAsTeamUser();
     }
 
     private function countsAsTeamUser(): bool
