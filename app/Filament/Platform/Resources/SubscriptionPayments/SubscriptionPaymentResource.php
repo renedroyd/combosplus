@@ -34,6 +34,21 @@ class SubscriptionPaymentResource extends Resource
     protected static string|UnitEnum|null $navigationGroup = 'Facturación SaaS';
     protected static ?int $navigationSort = 30;
 
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canEdit(\\Illuminate\\Database\\Eloquent\\Model $record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete(\\Illuminate\\Database\\Eloquent\\Model $record): bool
+    {
+        return false;
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
@@ -97,7 +112,6 @@ class SubscriptionPaymentResource extends Resource
                 ->visible(fn (SaasSubscriptionPayment $record): bool => $record->isPending())
                 ->form([Textarea::make('reason')->label('Motivo del rechazo')->required()->minLength(3)->maxLength(2000)])
                 ->action(fn (SaasSubscriptionPayment $record, array $data) => app(SaasSubscriptionPaymentReviewService::class)->reject($record, auth('platform')->id(), $data['reason'])),
-            EditAction::make()->visible(fn (SaasSubscriptionPayment $record): bool => $record->isPending()),
         ]);
     }
 
@@ -105,8 +119,6 @@ class SubscriptionPaymentResource extends Resource
     {
         return [
             'index' => ListSubscriptionPayments::route('/'),
-            'create' => CreateSubscriptionPayment::route('/create'),
-            'edit' => EditSubscriptionPayment::route('/{record}/edit'),
         ];
     }
 }
