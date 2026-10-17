@@ -16,12 +16,19 @@ return new class extends Migration
         foreach (DB::table('saas_plans')->get(['id', 'slug', 'name']) as $plan) {
             $slug = Str::slug((string) ($plan->slug ?: $plan->name));
             $type = match (true) {
-                in_array($slug, ['inicial', 'initial', 'starter', 'basic', 'basico'], true) => 'initial',
-                in_array($slug, ['profesional', 'professional', 'pro'], true) => 'professional',
-                in_array($slug, ['empresarial', 'enterprise', 'business', 'empresa'], true) => 'enterprise',
-                str_contains($slug, 'inicial'), str_contains($slug, 'initial') => 'initial',
-                str_contains($slug, 'profesional'), str_contains($slug, 'professional') => 'professional',
-                str_contains($slug, 'empresarial'), str_contains($slug, 'enterprise') => 'enterprise',
+                in_array($slug, ['inicial', 'initial', 'starter', 'basic', 'basico'], true)
+                    || str_contains($slug, 'inicial')
+                    || str_contains($slug, 'initial')
+                    || str_contains($slug, 'starter')
+                    || str_contains($slug, 'basic') => 'initial',
+                in_array($slug, ['profesional', 'professional', 'pro'], true)
+                    || str_contains($slug, 'profesional')
+                    || str_contains($slug, 'professional') => 'professional',
+                in_array($slug, ['empresarial', 'enterprise', 'business', 'empresa'], true)
+                    || str_contains($slug, 'empresarial')
+                    || str_contains($slug, 'enterprise')
+                    || str_contains($slug, 'business')
+                    || str_contains($slug, 'empresa') => 'enterprise',
                 default => null,
             };
 
@@ -61,7 +68,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Do not delete entitlement rows: platform administrators may have
-        // edited them after this migration ran.
+        // Do not delete entitlement rows: platform administrators may
+        // have edited them after this migration ran.
     }
 };

@@ -111,10 +111,20 @@ class SaasPlanEntitlementService
     {
         $slug = strtolower(trim($slug));
 
-        $plan = match ($slug) {
-            'inicial', 'initial', 'starter', 'basic', 'basico' => 'initial',
-            'profesional', 'professional', 'pro' => 'professional',
-            'empresarial', 'enterprise', 'business', 'empresa' => 'enterprise',
+        $plan = match (true) {
+            in_array($slug, ['inicial', 'initial', 'starter', 'basic', 'basico'], true)
+                || str_contains($slug, 'inicial')
+                || str_contains($slug, 'initial')
+                || str_contains($slug, 'starter')
+                || str_contains($slug, 'basic') => 'initial',
+            in_array($slug, ['profesional', 'professional', 'pro'], true)
+                || str_contains($slug, 'profesional')
+                || str_contains($slug, 'professional') => 'professional',
+            in_array($slug, ['empresarial', 'enterprise', 'business', 'empresa'], true)
+                || str_contains($slug, 'empresarial')
+                || str_contains($slug, 'enterprise')
+                || str_contains($slug, 'business')
+                || str_contains($slug, 'empresa') => 'enterprise',
             default => null,
         };
 
