@@ -40,7 +40,7 @@
                 <p class="mt-3 line-clamp-2 text-sm text-slate-500">{{ $store->description ?: 'Conoce esta tienda en CombosPlus.' }}</p>
             </a>
         @empty
-            <div class="col-span-full rounded-2xl border border-dashed border-slate-300 p-10 text-center text-slate-500">Aún no hay tiendas publicadas. Registra tu negocio y sé de los primeros.</div>
+            <div class="col-span-full rounded-2xl border border-dashed border-slate-300 p-10 text-center text-slate-500">Aún no hay tiendas registradas. Registra tu negocio y sé de los primeros.</div>
         @endforelse
     </div>
 </section>

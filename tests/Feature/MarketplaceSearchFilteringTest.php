@@ -15,7 +15,7 @@ class MarketplaceSearchFilteringTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_marketplace_store_search_matches_description_and_only_returns_published_stores(): void
+    public function test_marketplace_store_search_includes_registered_stores_with_unpublished_catalogs(): void
     {
         $matching = $this->createPublishedTenant('Café Central', 'cafe-central', 'Café artesanal y repostería local.');
         $other = $this->createPublishedTenant('Tienda Norte', 'tienda-norte', 'Artículos para el hogar.');
@@ -30,7 +30,7 @@ class MarketplaceSearchFilteringTest extends TestCase
 
             $this->assertTrue($stores->contains(fn (Tenant $tenant) => $tenant->getKey() === $matching->getKey()));
             $this->assertFalse($stores->contains(fn (Tenant $tenant) => $tenant->getKey() === $other->getKey()));
-            $this->assertFalse($stores->contains(fn (Tenant $tenant) => $tenant->getKey() === $draft->getKey()));
+            $this->assertTrue($stores->contains(fn (Tenant $tenant) => $tenant->getKey() === $draft->getKey()));
         } finally {
             $matching->delete();
             $other->delete();
