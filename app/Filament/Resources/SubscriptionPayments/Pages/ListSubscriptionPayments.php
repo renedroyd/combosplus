@@ -1,10 +1,10 @@
 <?php
 
-namespace App\\Filament\\Resources\\SubscriptionPayments\\Pages;
+namespace App\Filament\Resources\SubscriptionPayments\Pages;
 
-use App\\Filament\\Resources\\SubscriptionPayments\\SubscriptionPaymentResource;
-use Filament\\Actions\\CreateAction;
-use Filament\\Resources\\Pages\\ListRecords;
+use App\Filament\Resources\SubscriptionPayments\SubscriptionPaymentResource;
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
 
 class ListSubscriptionPayments extends ListRecords
 {
