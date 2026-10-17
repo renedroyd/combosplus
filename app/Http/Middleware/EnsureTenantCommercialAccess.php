@@ -22,7 +22,7 @@ class EnsureTenantCommercialAccess
             return $next($request);
         }
 
-        // Read-only pages, authentication, contact and renewal remain available.
+        // Read-only pages and account-management flows remain available.
         if ($request->isMethodSafe() || $this->isAllowedNonCommercialRoute($request)) {
             return $next($request);
         }
@@ -45,6 +45,9 @@ class EnsureTenantCommercialAccess
             || $request->is('register')
             || $request->is('password/*')
             || $request->is('contacto')
+            || $request->is('perfil')
+            || $request->is('addresses', 'addresses/*')
+            || $request->is('remesas/calcular-costo')
             || $request->is('tenant/health')
             || $request->is('livewire/upload-file');
     }

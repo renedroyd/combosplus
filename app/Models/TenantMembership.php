@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\TenantRole;
-use App\Services\SaasTenantAccessService;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use Stancl\Tenancy\Database\Concerns\CentralConnection;
@@ -36,17 +35,11 @@ class TenantMembership extends Model
             }
 
             $tenantId = (string) $membership->tenant_id;
-            $hasOwner = static::query()
-                ->where('tenant_id', $tenantId)
-                ->where('is_owner', true)
-                ->exists();
-            $hasSubscriptionHistory = SaasSubscription::query()
-                ->where('tenant_id', $tenantId)
-                ->exists();
 
-            // A brand-new tenant must be able to create its first owner before
-            // the owner submits the first subscription payment.
-            if ($membership->is_owner && ! $hasOwner && ! $hasSubscriptionHistory) {
+            // Before the first subscription is purchased, onboarding must be
+            // able to finish creating the initial team. Once billing history
+            // exists, all new active team seats are checked against the plan.
+            if (! SaasSubscription::query()->where('tenant_id', $tenantId)->exists()) {
                 return;
             }
 
@@ -54,13 +47,17 @@ class TenantMembership extends Model
         });
 
         static::updating(function (self $membership): void {
-            $wasTeamUser = $membership->originalCountsAsTeamUser();
-            $willBeTeamUser = $membership->countsAsTeamUser();
-
-            if ($willBeTeamUser && ! $wasTeamUser) {
-                app(SaasTenantAccessService::class)
-                    ->assertCanAddTeamMember((string) $membership->tenant_id);
+            if (! $membership->countsAsTeamUser() || $membership->originalCountsAsTeamUser()) {
+                return;
             }
+
+            $tenantId = (string) $membership->tenant_id;
+
+            if (! SaasSubscription::query()->where('tenant_id', $tenantId)->exists()) {
+                return;
+            }
+
+            app(SaasTenantAccessService::class)->assertCanAddTeamMember($tenantId);
         });
     }
 
