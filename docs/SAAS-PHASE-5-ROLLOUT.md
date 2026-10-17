@@ -9,3 +9,5 @@ Antes de habilitar la política en producción:
 5. Validar en un entorno de prueba los casos de suscripción vigente, día 7 de gracia, primer instante tras la gracia, renovación y límites de cada plan.
 
 La política se evalúa en cada solicitud; no requiere una tarea programada de expiración. La migración de sucursales es tenant-local y debe ejecutarse para todas las tiendas existentes antes de usar la gestión de sucursales.
+
+Después de la gracia se bloquean las escrituras comerciales, pero se mantienen la consulta del historial, la renovación, el acceso y mantenimiento del perfil personal, la gestión de direcciones y las funciones de autenticación y contacto.
