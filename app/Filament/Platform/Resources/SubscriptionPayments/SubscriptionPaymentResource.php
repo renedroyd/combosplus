@@ -95,6 +95,12 @@ class SubscriptionPaymentResource extends Resource
         ])->filters([
             SelectFilter::make('status')->options(['pending' => 'Pendiente', 'approved' => 'Aprobado', 'rejected' => 'Rechazado']),
         ])->recordActions([
+            Action::make('view_receipt')
+                ->label('Ver comprobante')
+                ->icon(Heroicon::OutlinedDocumentArrowDown)
+                ->visible(fn (SaasSubscriptionPayment $record): bool => filled($record->receipt_path))
+                ->url(fn (SaasSubscriptionPayment $record): string => route('platform.subscription-payments.receipt', ['payment' => $record->getKey()]))
+                ->openUrlInNewTab(),
             Action::make('approve')
                 ->label('Aprobar')
                 ->icon(Heroicon::OutlinedCheckCircle)
