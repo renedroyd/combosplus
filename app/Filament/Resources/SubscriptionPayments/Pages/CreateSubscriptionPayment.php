@@ -1,12 +1,12 @@
 <?php
 
-namespace App\\Filament\\Resources\\SubscriptionPayments\\Pages;
+namespace App\Filament\Resources\SubscriptionPayments\Pages;
 
-use App\\Filament\\Resources\\SubscriptionPayments\\SubscriptionPaymentResource;
-use App\\Models\\SaasPlanPrice;
-use App\\Models\\SaasSubscriptionPayment;
-use Filament\\Resources\\Pages\\CreateRecord;
-use Illuminate\\Validation\\ValidationException;
+use App\Filament\Resources\SubscriptionPayments\SubscriptionPaymentResource;
+use App\Models\SaasPlanPrice;
+use App\Models\SaasSubscriptionPayment;
+use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Validation\ValidationException;
 
 class CreateSubscriptionPayment extends CreateRecord
 {
@@ -17,7 +17,7 @@ class CreateSubscriptionPayment extends CreateRecord
         $tenantId = tenant()?->getTenantKey();
         $user = auth('admin')->user();
 
-        if (! is_string($tenantId) || ! $user instanceof \\App\\Models\\PlatformUser) {
+        if (! is_string($tenantId) || ! $user instanceof \App\Models\PlatformUser) {
             throw ValidationException::withMessages(['tenant_id' => 'No se pudo verificar la tienda activa.']);
         }
 
