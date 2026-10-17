@@ -15,6 +15,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ZellePaymentController;
+use App\Http\Middleware\EnsureTenantCommercialAccess;
 use App\Http\Middleware\EnsureTenantMembership;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -24,6 +25,7 @@ Route::middleware([
     'web',
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
+    EnsureTenantCommercialAccess::class,
 ])->group(function () {
     Route::get('/tenant/health', static function () {
         return response()->json([
@@ -38,7 +40,7 @@ Route::middleware([
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
     Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-    Route::post('register', [RegisterController::class, 'register']);
+    Route::post('register', [RegisterController::class, 'register'])->name('register.submit');
 
     Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
     Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');

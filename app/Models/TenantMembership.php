@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Enums\TenantRole;
+use App\Services\SaasTenantAccessService;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Stancl\Tenancy\Database\Concerns\CentralConnection;
 
 class TenantMembership extends Model
@@ -25,6 +27,71 @@ class TenantMembership extends Model
             'role' => TenantRole::class,
             'is_owner' => 'boolean',
         ];
+    }
+
+    /**
+     * Serialize team-seat checks and membership writes against the central
+     * tenant row so concurrent additions cannot consume the same seat.
+     */
+    public function save(array $options = []): bool
+    {
+        if (! $this->shouldCheckTeamSeatQuota()) {
+            return parent::save($options);
+        }
+
+        $tenantId = (string) $this->tenant_id;
+        $connectionName = (string) config(
+            'tenancy.database.central_connection',
+            config('database.default'),
+        );
+        $connection = DB::connection($connectionName);
+
+        $saveWithQuotaCheck = function () use ($tenantId, $options): bool {
+            Tenant::query()->whereKey($tenantId)->lockForUpdate()->firstOrFail();
+
+            // New tenants can finish onboarding before choosing/purchasing a
+            // plan. Once billing history exists, active team seats are capped.
+            if (SaasSubscription::query()->where('tenant_id', $tenantId)->exists()) {
+                app(SaasTenantAccessService::class)->assertCanAddTeamMember($tenantId);
+            }
+
+            return parent::save($options);
+        };
+
+        // Test harnesses and callers may already hold a transaction on this
+        // connection. Reuse it rather than creating a nested savepoint.
+        if ($connection->transactionLevel() > 0) {
+            return $saveWithQuotaCheck();
+        }
+
+        return $connection->transaction($saveWithQuotaCheck);
+    }
+
+    private function shouldCheckTeamSeatQuota(): bool
+    {
+        if (! $this->countsAsTeamUser()) {
+            return false;
+        }
+
+        return ! $this->exists || ! $this->originalCountsAsTeamUser();
+    }
+
+    private function countsAsTeamUser(): bool
+    {
+        $role = $this->role;
+        $role = $role instanceof TenantRole ? $role->value : (string) $role;
+        $status = $this->status ?? 'active';
+
+        return $status === 'active' && ($this->is_owner || $role !== 'customer');
+    }
+
+    private function originalCountsAsTeamUser(): bool
+    {
+        $role = $this->getRawOriginal('role');
+        $role = $role instanceof TenantRole ? $role->value : (string) $role;
+
+        return $this->getRawOriginal('status') === 'active'
+            && ((bool) $this->getRawOriginal('is_owner') || $role !== 'customer');
     }
 
     public function tenant(): BelongsTo

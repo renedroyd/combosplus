@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Widgets\StoreOnboarding;
+use App\Http\Middleware\EnsureTenantCommercialAccess;
 use App\Http\Middleware\EnsureTenantMembership;
 use App\Livewire\OrderStat;
 use App\Livewire\SalesChart;
@@ -77,6 +78,7 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 EnsureTenantMembership::class,
+                EnsureTenantCommercialAccess::class,
             ]);
     }
 }
