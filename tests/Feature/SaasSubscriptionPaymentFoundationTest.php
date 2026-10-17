@@ -18,7 +18,7 @@ class SaasSubscriptionPaymentFoundationTest extends TestCase
         $this->assertTrue($payment->isPending());
     }
 
-    public function test_rejection_requires_a_reason(): void
+    public function test_rejection_requires_a_reason_before_database_access(): void
     {
         $this->expectException(ValidationException::class);
 
