@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Admins\Tables;
+namespace App\Filament\Platform\Resources\Admins\Tables;
 
 use App\Filament\Tables\PremiumTableDefaults;
 use Filament\Actions\BulkActionGroup;

@@ -15,9 +15,9 @@ use Filament\Support\Enums\Width;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Illuminate\Routing\Middleware\SubstituteBindings;
 
 class PlatformPanelProvider extends PanelProvider
 {
@@ -36,6 +36,10 @@ class PlatformPanelProvider extends PanelProvider
             ->defaultThemeMode(ThemeMode::System)
             ->maxContentWidth(Width::Full)
             ->sidebarCollapsibleOnDesktop()
+            ->discoverResources(
+                in: app_path('Filament/Platform/Resources'),
+                for: 'App\\Filament\\Platform\\Resources',
+            )
             ->pages([
                 Dashboard::class,
             ])
