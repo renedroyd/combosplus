@@ -2,15 +2,12 @@
 
 namespace App\Filament\Platform\Resources\SubscriptionPayments;
 
-use App\Filament\Platform\Resources\SubscriptionPayments\Pages\CreateSubscriptionPayment;
-use App\Filament\Platform\Resources\SubscriptionPayments\Pages\EditSubscriptionPayment;
 use App\Filament\Platform\Resources\SubscriptionPayments\Pages\ListSubscriptionPayments;
 use App\Models\SaasPlanPrice;
 use App\Models\SaasSubscriptionPayment;
 use App\Services\SaasSubscriptionPaymentReviewService;
 use BackedEnum;
 use Filament\Actions\Action;
-use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -39,12 +36,12 @@ class SubscriptionPaymentResource extends Resource
         return false;
     }
 
-    public static function canEdit(\\Illuminate\\Database\\Eloquent\\Model $record): bool
+    public static function canEdit(Model $record): bool
     {
         return false;
     }
 
-    public static function canDelete(\\Illuminate\\Database\\Eloquent\\Model $record): bool
+    public static function canDelete(Model $record): bool
     {
         return false;
     }
