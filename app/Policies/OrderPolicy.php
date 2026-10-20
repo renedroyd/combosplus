@@ -34,7 +34,7 @@ class OrderPolicy
         $role = $this->access->membershipForCurrentTenant($user)?->role;
 
         if ($role === TenantRole::Customer) {
-            return (string) $order->user_id === (string) $user->getAuthIdentifier()
+            return (string) $order->platform_user_id === (string) $user->getAuthIdentifier()
                 && $order->status === 'pending';
         }
 
