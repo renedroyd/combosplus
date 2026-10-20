@@ -2,14 +2,18 @@
 
 namespace App\Filament\Resources\Categories\Schemas;
 
+use App\Models\Category;
+use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class CategoryForm
@@ -53,11 +57,26 @@ class CategoryForm
                     ->maxLength(500)
                     ->columnSpanFull(),
 
-                TextInput::make('parent_id')
+                Select::make('parent_id')
                     ->label('Categoría padre')
-                    ->numeric()
-                    ->minValue(1)
-                    ->helperText('Opcional. Puedes dejarlo vacío para una categoría principal.'),
+                    ->relationship(
+                        name: 'parent',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (Builder $query, ?Category $record): Builder => $record
+                            ? $query->whereKeyNot($record->getKey())
+                            : $query,
+                    )
+                    ->searchable()
+                    ->preload()
+                    ->nullable()
+                    ->rules(fn (?Category $record): array => [
+                        function (string $attribute, mixed $value, Closure $fail) use ($record): void {
+                            if ($record && filled($value) && Category::wouldCreateParentCycle($record->getKey(), $value)) {
+                                $fail('La categoría padre seleccionada crearía un ciclo en la jerarquía.');
+                            }
+                        },
+                    ])
+                    ->helperText('Opcional. Déjalo vacío para una categoría principal.'),
 
                 Toggle::make('is_visible')
                     ->label('Visible')

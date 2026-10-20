@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Tenant;
 use Tests\TestCase;
@@ -57,6 +58,40 @@ class TenantIsolationTest extends TestCase
         } finally {
             $tenantA->delete();
             $tenantB->delete();
+        }
+    }
+
+    public function test_category_hierarchy_relations_and_cycle_detection_work_in_tenant_database(): void
+    {
+        if (config('database.default') !== 'mysql') {
+            $this->markTestSkipped('Tenant hierarchy validation requires the MySQL CI service.');
+        }
+
+        $tenant = Tenant::create([
+            'id' => 'category-hierarchy-'.bin2hex(random_bytes(5)),
+        ]);
+
+        try {
+            $tenant->run(function (): void {
+                $parent = Category::create([
+                    'name' => 'Parent category',
+                    'slug' => 'parent-category',
+                ]);
+
+                $child = Category::create([
+                    'name' => 'Child category',
+                    'slug' => 'child-category',
+                    'parent_id' => $parent->id,
+                ]);
+
+                $this->assertSame($parent->id, $child->parent()->firstOrFail()->id);
+                $this->assertTrue($parent->children()->whereKey($child->id)->exists());
+                $this->assertTrue(Category::wouldCreateParentCycle($parent->id, $child->id));
+                $this->assertFalse(Category::wouldCreateParentCycle($child->id, $parent->id));
+                $this->assertTrue(Category::wouldCreateParentCycle($child->id, $child->id));
+            });
+        } finally {
+            $tenant->delete();
         }
     }
 }

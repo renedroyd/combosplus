@@ -3,8 +3,6 @@
 namespace App\Filament\Resources\Orders\Tables;
 
 use App\Filament\Tables\PremiumTableDefaults;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -38,17 +36,12 @@ class OrdersTable
             ])
             ->recordActions([
                 EditAction::make()->iconButton()->tooltip('Editar orden'),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
             ]);
     }
 
     private static function distinctOptions(string $column): array
     {
-        return App\Models\Order::query()
+        return \App\Models\Order::query()
             ->whereNotNull($column)
             ->distinct()
             ->orderBy($column)

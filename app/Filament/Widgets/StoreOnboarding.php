@@ -8,6 +8,7 @@ use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Resources\Products\ProductResource;
 use App\Models\PlatformUser;
 use App\Models\TenantMembership;
+use App\Models\Tenant;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,18 +26,22 @@ class StoreOnboarding extends Widget
             return ['steps' => [], 'progress' => 0, 'catalogStatus' => null];
         }
 
+        $tenant = tenant();
+
+        if (! $tenant instanceof Tenant) {
+            return ['steps' => [], 'progress' => 0, 'catalogStatus' => null];
+        }
+
         $membership = TenantMembership::query()
+            ->where('tenant_id', $tenant->getTenantKey())
             ->where('user_id', $user->getAuthIdentifier())
             ->where('status', 'active')
             ->where('role', TenantRole::Owner)
-            ->latest()
             ->first();
 
         if (! $membership) {
             return ['steps' => [], 'progress' => 0, 'catalogStatus' => null];
         }
-
-        $tenant = $membership->tenant;
         $hasProfile = filled($tenant?->name) && filled($tenant?->slug);
         $productCount = $tenant ? $tenant->run(fn () => \App\Models\Product::query()->count()) : 0;
         $visibleProductCount = $tenant ? $tenant->run(fn () => \App\Models\Product::query()->where('is_visible', true)->count()) : 0;

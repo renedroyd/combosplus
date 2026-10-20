@@ -20,32 +20,37 @@ class OrderForm
                     ->required(),
                 Select::make('status')
                     ->options([
-            'pending' => 'Pending',
-            'processing' => 'Processing',
-            'completed' => 'Completed',
-            'cancelled' => 'Cancelled',
-        ])
+                        'pending' => 'Pending',
+                        'processing' => 'Processing',
+                        'completed' => 'Completed',
+                        'cancelled' => 'Cancelled',
+                    ])
                     ->default('pending')
                     ->required(),
                 TextInput::make('subtotal')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->disabled(fn (string $operation): bool => $operation === 'edit'),
                 TextInput::make('tax')
                     ->required()
                     ->numeric()
-                    ->default(0.0),
+                    ->default(0.0)
+                    ->disabled(fn (string $operation): bool => $operation === 'edit'),
                 TextInput::make('shipping_cost')
                     ->required()
                     ->numeric()
                     ->default(0.0)
-                    ->prefix('$'),
+                    ->prefix('$')
+                    ->disabled(fn (string $operation): bool => $operation === 'edit'),
                 TextInput::make('discount')
                     ->required()
                     ->numeric()
-                    ->default(0.0),
+                    ->default(0.0)
+                    ->disabled(fn (string $operation): bool => $operation === 'edit'),
                 TextInput::make('total')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->disabled(fn (string $operation): bool => $operation === 'edit'),
                 Select::make('payment_status')
                     ->options(['pending' => 'Pending', 'paid' => 'Paid', 'failed' => 'Failed'])
                     ->default('pending')

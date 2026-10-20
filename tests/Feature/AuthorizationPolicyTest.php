@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Enums\TenantRole;
+use App\Models\Order;
 use App\Models\PlatformUser;
 use App\Models\Tenant;
+use App\Policies\OrderPolicy;
 use App\Models\TenantMembership;
 use App\Services\Tenancy\TenantAccessService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -30,6 +32,80 @@ class AuthorizationPolicyTest extends TestCase
             $tenant->delete();
             $manager->delete();
             $staff->delete();
+        }
+    }
+
+    public function test_customer_can_update_own_pending_order_using_platform_user_id(): void
+    {
+        $tenant = Tenant::create(['id' => 'policy-order-owner']);
+        $customer = PlatformUser::create([
+            'name' => 'Customer',
+            'email' => 'customer-order-policy@example.test',
+            'password' => 'password',
+        ]);
+
+        TenantMembership::create([
+            'tenant_id' => $tenant->id,
+            'user_id' => $customer->id,
+            'role' => TenantRole::Customer,
+            'status' => 'active',
+            'is_owner' => false,
+        ]);
+
+        $order = new Order([
+            'platform_user_id' => $customer->id,
+            'user_id' => null,
+            'status' => 'pending',
+        ]);
+
+        try {
+            $this->assertTrue($tenant->run(
+                fn () => app(OrderPolicy::class)->update($customer, $order)
+            ));
+        } finally {
+            $tenant->delete();
+            $customer->delete();
+        }
+    }
+
+    public function test_order_deletion_requires_tenant_membership_and_management_role(): void
+    {
+        $tenant = Tenant::create(['id' => 'policy-order-delete']);
+        $customer = PlatformUser::create([
+            'name' => 'Customer',
+            'email' => 'customer-order-delete@example.test',
+            'password' => 'password',
+        ]);
+        $outsider = PlatformUser::create([
+            'name' => 'Outsider',
+            'email' => 'outsider-order-delete@example.test',
+            'password' => 'password',
+        ]);
+
+        TenantMembership::create([
+            'tenant_id' => $tenant->id,
+            'user_id' => $customer->id,
+            'role' => TenantRole::Customer,
+            'status' => 'active',
+            'is_owner' => false,
+        ]);
+
+        $order = new Order([
+            'platform_user_id' => $customer->id,
+            'status' => 'pending',
+        ]);
+
+        try {
+            $this->assertFalse($tenant->run(
+                fn () => app(OrderPolicy::class)->delete($customer, $order)
+            ));
+            $this->assertFalse($tenant->run(
+                fn () => app(OrderPolicy::class)->delete($outsider, $order)
+            ));
+        } finally {
+            $tenant->delete();
+            $customer->delete();
+            $outsider->delete();
         }
     }
 
