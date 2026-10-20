@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Enums\TenantRole;
+use App\Filament\Resources\Products\ProductResource;
 use App\Models\Order;
 use App\Models\PlatformUser;
+use App\Models\Product;
 use App\Models\Tenant;
 use App\Policies\OrderPolicy;
 use App\Models\TenantMembership;
@@ -31,6 +33,51 @@ class AuthorizationPolicyTest extends TestCase
         } finally {
             $tenant->delete();
             $manager->delete();
+            $staff->delete();
+        }
+    }
+
+    public function test_product_create_authorization_is_separate_from_subscription_entitlements(): void
+    {
+        $tenant = Tenant::create(['id' => 'policy-product-create']);
+        $owner = PlatformUser::create([
+            'name' => 'Owner',
+            'email' => 'owner-product-create@example.test',
+            'password' => 'password',
+        ]);
+        $staff = PlatformUser::create([
+            'name' => 'Staff',
+            'email' => 'staff-product-create@example.test',
+            'password' => 'password',
+        ]);
+
+        TenantMembership::create([
+            'tenant_id' => $tenant->id,
+            'user_id' => $owner->id,
+            'role' => TenantRole::Owner,
+            'status' => 'active',
+            'is_owner' => true,
+        ]);
+        TenantMembership::create([
+            'tenant_id' => $tenant->id,
+            'user_id' => $staff->id,
+            'role' => TenantRole::Staff,
+            'status' => 'active',
+            'is_owner' => false,
+        ]);
+
+        try {
+            $tenant->run(function () use ($owner, $staff): void {
+                auth('admin')->setUser($owner);
+                $this->assertTrue(ProductResource::canCreate());
+
+                auth('admin')->setUser($staff);
+                $this->assertFalse(ProductResource::canCreate());
+            });
+        } finally {
+            auth('admin')->forgetUser();
+            $tenant->delete();
+            $owner->delete();
             $staff->delete();
         }
     }
