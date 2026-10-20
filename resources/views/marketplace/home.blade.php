@@ -6,9 +6,9 @@
         <span class="inline-flex rounded-full border border-[#ffd21f]/30 bg-[#ffd21f]/10 px-3 py-1 text-sm font-semibold text-[#ffd21f]">Descubre algo extraordinario</span>
         <h1 class="mt-6 max-w-4xl text-4xl font-black leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">Tu mundo,<br><span class="text-[#ffd21f]">más cerca.</span></h1>
         <p class="mt-5 max-w-2xl text-lg leading-8 text-slate-300">Encuentra productos únicos, descubre tiendas independientes y conecta con marcas que tienen algo especial para ti.</p>
-        <form action="{{ route('marketplace.stores') }}" method="GET" class="mt-8 flex max-w-2xl flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-2 sm:flex-row">
-            <label class="sr-only" for="marketplace-search">Buscar tiendas</label>
-            <input id="marketplace-search" name="q" type="search" placeholder="¿Qué te gustaría descubrir?" class="min-h-12 flex-1 rounded-xl border-0 bg-white px-4 text-slate-900 placeholder:text-slate-400">
+        <form action="{{ route('marketplace.products') }}" method="GET" class="mt-8 flex max-w-2xl flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-2 sm:flex-row">
+            <label class="sr-only" for="marketplace-product-search">Buscar tiendas</label>
+            <input id="marketplace-product-search" name="q" type="search" placeholder="¿Qué producto estás buscando?" class="min-h-12 flex-1 rounded-xl border-0 bg-white px-4 text-slate-900 placeholder:text-slate-400">
             <button class="min-h-12 rounded-xl bg-[#ffd21f] px-6 font-bold text-slate-950 transition hover:bg-yellow-300">Descubrir →</button>
         </form>
     </div>
@@ -37,7 +37,7 @@
             <a href="{{ route('marketplace.store',$store) }}" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
                 <div class="flex items-center gap-4"><div class="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-blue-50 font-bold text-blue-600">{{ mb_strtoupper(mb_substr($store->name,0,1)) }}</div><div class="min-w-0"><h3 class="truncate font-semibold group-hover:text-[#b78600]">{{ $store->name }}</h3><p class="text-sm text-slate-500">{{ $store->review_count }} opiniones</p></div></div>
                 <div class="mt-5 text-sm"><span class="text-amber-500">★</span> <b>{{ number_format((float)$store->rating,1) }}</b></div>
-                <p class="mt-3 line-clamp-2 text-sm text-slate-500">{{ $store->description ?: 'Conoce esta tienda en CombosPlus.' }}</p>
+                <p class="mt-3 line-clamp-2 text-sm text-slate-500">{{ $store->description ?: 'Conoce esta tienda en Nexo.' }}</p>
             </a>
         @empty
             <div class="col-span-full rounded-2xl border border-dashed border-slate-300 p-10 text-center text-slate-500">Aún no hay tiendas registradas. Registra tu negocio y sé de los primeros.</div>
@@ -53,7 +53,7 @@
             @foreach($newStores as $store)
                 <a href="{{ route('marketplace.store',$store) }}" class="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-[#ffd21f]/50 hover:shadow-md">
                     <div class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-slate-100 font-bold text-slate-700">{{ mb_strtoupper(mb_substr($store->name,0,1)) }}</div>
-                    <div class="min-w-0"><h3 class="truncate font-semibold group-hover:text-blue-600">{{ $store->name }}</h3><p class="mt-1 line-clamp-1 text-sm text-slate-500">{{ $store->description ?: 'Nuevo comercio en CombosPlus.' }}</p></div>
+                    <div class="min-w-0"><h3 class="truncate font-semibold group-hover:text-blue-600">{{ $store->name }}</h3><p class="mt-1 line-clamp-1 text-sm text-slate-500">{{ $store->description ?: 'Nuevo comercio en Nexo.' }}</p></div>
                 </a>
             @endforeach
         </div>
@@ -94,7 +94,7 @@
     <div><p class="text-sm font-semibold uppercase tracking-wider text-blue-600">Experiencias reales</p><h2 class="mt-1 text-3xl font-semibold">Lo que dicen nuestros clientes</h2></div>
     <div class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         @foreach($storeReviews as $review)<article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><div class="text-amber-500">★★★★★ <span class="ml-1 text-sm text-slate-500">{{ $review->rating }}/5</span></div><p class="mt-4 line-clamp-3 text-slate-700">“{{ $review->comment ?: 'Una experiencia valorada por nuestra comunidad.' }}”</p><p class="mt-5 text-sm font-semibold text-slate-900">{{ $review->tenant?->name ?: 'Tienda' }}</p><p class="text-xs text-slate-500">{{ $review->user?->name ?: 'Cliente' }}</p></article>@endforeach
-        @foreach($platformReviews as $review)<article class="rounded-2xl border border-blue-100 bg-blue-50 p-6"><div class="text-amber-500">★★★★★ <span class="ml-1 text-sm text-slate-500">{{ $review->rating }}/5</span></div><p class="mt-4 line-clamp-3 text-slate-700">“{{ $review->comment ?: 'Una opinión sobre la experiencia en CombosPlus.' }}”</p><p class="mt-5 text-sm font-semibold text-slate-900">Experiencia con CombosPlus</p><p class="text-xs text-slate-500">{{ $review->user?->name ?: 'Cliente' }}</p></article>@endforeach
+        @foreach($platformReviews as $review)<article class="rounded-2xl border border-blue-100 bg-blue-50 p-6"><div class="text-amber-500">★★★★★ <span class="ml-1 text-sm text-slate-500">{{ $review->rating }}/5</span></div><p class="mt-4 line-clamp-3 text-slate-700">“{{ $review->comment ?: 'Una opinión sobre la experiencia en Nexo.' }}”</p><p class="mt-5 text-sm font-semibold text-slate-900">Experiencia con Nexo</p><p class="text-xs text-slate-500">{{ $review->user?->name ?: 'Cliente' }}</p></article>@endforeach
         @if($storeReviews->isEmpty() && $platformReviews->isEmpty())<div class="col-span-full rounded-2xl border border-dashed border-slate-300 p-8 text-center text-slate-500">Las opiniones aparecerán aquí a medida que la comunidad comparta sus experiencias.</div>@endif
     </div>
 </section>
