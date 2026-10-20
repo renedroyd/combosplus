@@ -11,6 +11,7 @@ use App\Models\Tenant;
 use BackedEnum;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -83,6 +84,13 @@ class SubscriptionResource extends Resource
                         ])->all())
                     ->searchable()
                     ->required(),
+                TextInput::make('duration_days')
+                    ->label('Duración personalizada (días)')
+                    ->helperText('Opcional. Déjalo vacío para usar la periodicidad de la tarifa. Útil para períodos de prueba.')
+                    ->numeric()
+                    ->integer()
+                    ->minValue(1)
+                    ->maxValue(3660),
                 Textarea::make('creation_reason')
                     ->label('Motivo de la activación')
                     ->placeholder('Ej.: período de prueba acordado con la tienda')
