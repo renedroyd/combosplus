@@ -18,6 +18,9 @@ class CreateSubscription extends CreateRecord
             (int) $data['plan_price_id'],
             auth('platform')->user(),
             (string) $data['creation_reason'],
+            isset($data['duration_days']) && $data['duration_days'] !== ''
+                ? (int) $data['duration_days']
+                : null,
         );
     }
 }
