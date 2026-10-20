@@ -53,10 +53,17 @@ class SubscriptionResource extends Resource
             )->schema([
                 Select::make('tenant_id')
                     ->label('Tienda')
-                    ->options(fn (): array => Tenant::query()->orderBy('id')->get()->mapWithKeys(
-                        fn (Tenant $tenant): array => [
-                            (string) $tenant->getTenantKey() => (string) $tenant->getTenantKey(),
-                        ],
+                    ->options(fn (): array => Tenant::query()->with('domains')->orderBy('id')->get()->mapWithKeys(
+                        function (Tenant $tenant): array {
+                            $id = (string) $tenant->getTenantKey();
+                            $data = $tenant->getAttribute('data');
+                            $name = data_get($data, 'name') ?: data_get($data, 'slug') ?: $id;
+                            $domain = $tenant->domains->first()?->domain;
+
+                            return [
+                                $id => $name.' — '.$id.($domain ? ' ('.$domain.')' : ''),
+                            ];
+                        },
                     )->all())
                     ->searchable()
                     ->required(),
