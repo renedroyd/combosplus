@@ -7,8 +7,8 @@ use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\Pages\ListProducts;
 use App\Filament\Resources\Products\Schemas\ProductForm;
 use App\Filament\Resources\Products\Tables\ProductsTable;
+use App\Models\PlatformUser;
 use App\Models\Product;
-use App\Services\SaasTenantAccessService;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -35,9 +35,14 @@ class ProductResource extends Resource
     public static function canCreate(): bool
     {
         $tenantId = tenant()?->getTenantKey();
+        $user = auth('admin')->user();
 
+        // Authorization is role/membership-based. Subscription entitlements are
+        // enforced separately by CreateProduct and the commercial middleware so
+        // a billing restriction is not misreported as an authorization 403.
         return is_string($tenantId)
-            && app(SaasTenantAccessService::class)->canCreateProduct($tenantId);
+            && $user instanceof PlatformUser
+            && $user->can('create', Product::class);
     }
 
     public static function form(Schema $schema): Schema
