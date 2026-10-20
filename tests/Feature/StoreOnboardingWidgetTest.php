@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\TenantRole;
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Resources\Products\ProductResource;
+use App\Models\Category;
 use App\Models\PlatformUser;
 use App\Models\Tenant;
 use App\Models\TenantMembership;
@@ -53,6 +54,62 @@ class StoreOnboardingWidgetTest extends TestCase
             $this->assertSame(ProductResource::getUrl('index'), $data['steps'][3]['url']);
         } finally {
             $tenant->delete();
+            $user->delete();
+        }
+    }
+
+    public function test_onboarding_widget_uses_current_tenant_when_owner_has_multiple_stores(): void
+    {
+        $tenantA = Tenant::create([
+            'id' => 'onboarding-multi-a',
+            'name' => 'Store A',
+            'slug' => 'onboarding-multi-a',
+        ]);
+        $tenantB = Tenant::create([
+            'id' => 'onboarding-multi-b',
+            'name' => 'Store B',
+            'slug' => 'onboarding-multi-b',
+        ]);
+
+        $user = PlatformUser::create([
+            'name' => 'Multi-store Owner',
+            'email' => 'onboarding-multi-owner@example.test',
+            'password' => 'password',
+        ]);
+
+        try {
+            TenantMembership::create([
+                'tenant_id' => $tenantB->id,
+                'user_id' => $user->id,
+                'role' => TenantRole::Owner,
+                'status' => 'active',
+                'is_owner' => true,
+            ]);
+
+            // Make Store A the most recently created membership to catch regressions
+            // that accidentally select the user's latest membership instead of the active tenant.
+            TenantMembership::create([
+                'tenant_id' => $tenantA->id,
+                'user_id' => $user->id,
+                'role' => TenantRole::Owner,
+                'status' => 'active',
+                'is_owner' => true,
+            ]);
+
+            $tenantA->run(fn () => Category::create([
+                'name' => 'Store A category',
+                'slug' => 'store-a-category',
+            ]));
+
+            $this->actingAs($user, 'admin');
+            $widget = new \App\Filament\Widgets\StoreOnboarding;
+            $data = $tenantB->run(fn () => $widget->getViewData());
+
+            $this->assertSame(25, $data['progress']);
+            $this->assertFalse($data['steps'][1]['done']);
+        } finally {
+            $tenantA->delete();
+            $tenantB->delete();
             $user->delete();
         }
     }
