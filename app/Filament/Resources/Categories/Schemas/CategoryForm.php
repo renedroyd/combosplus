@@ -1,20 +1,20 @@
 <?php
 
-namespace App\\Filament\\Resources\\Categories\\Schemas;
+namespace App\Filament\Resources\Categories\Schemas;
 
-use App\\Models\\Category;
+use App\Models\Category;
 use Closure;
-use Filament\\Actions\\Action;
-use Filament\\Forms\\Components\\FileUpload;
-use Filament\\Forms\\Components\\Select;
-use Filament\\Forms\\Components\\Textarea;
-use Filament\\Forms\\Components\\TextInput;
-use Filament\\Forms\\Components\\Toggle;
-use Filament\\Schemas\\Components\\Utilities\\Get;
-use Filament\\Schemas\\Components\\Utilities\\Set;
-use Filament\\Schemas\\Schema;
-use Illuminate\\Database\\Eloquent\\Builder;
-use Illuminate\\Support\\Str;
+use Filament\Actions\Action;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class CategoryForm
 {
