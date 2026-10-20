@@ -3,8 +3,7 @@
 namespace App\Filament\Resources\Users\Tables;
 
 use App\Filament\Tables\PremiumTableDefaults;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -32,10 +31,6 @@ class UsersTable
             ->recordActions([
                 EditAction::make()->iconButton()->tooltip('Editar cliente'),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->toolbarActions([]);
     }
 }
