@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\\Feature;
+namespace Tests\Feature;
 
-use App\\Models\\Category;
-use App\\Models\\Product;
-use App\\Models\\Tenant;
-use Tests\\TestCase;
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\Tenant;
+use Tests\TestCase;
 
 class TenantIsolationTest extends TestCase
 {
@@ -88,7 +88,7 @@ class TenantIsolationTest extends TestCase
                 $this->assertTrue($parent->children()->whereKey($child->id)->exists());
                 $this->assertTrue(Category::wouldCreateParentCycle($parent->id, $child->id));
                 $this->assertFalse(Category::wouldCreateParentCycle($child->id, $parent->id));
-                $this->assertFalse(Category::wouldCreateParentCycle($child->id, $child->id) === false);
+                $this->assertTrue(Category::wouldCreateParentCycle($child->id, $child->id));
             });
         } finally {
             $tenant->delete();
