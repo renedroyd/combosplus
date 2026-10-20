@@ -51,6 +51,12 @@ class CategoryForm
                     )
                     ->helperText('Se genera automáticamente a partir del nombre; puedes ajustarlo.'),
 
+                Textarea::make('description')
+                    ->label('Descripción')
+                    ->rows(3)
+                    ->maxLength(500)
+                    ->columnSpanFull(),
+
                 Select::make('parent_id')
                     ->label('Categoría padre')
                     ->relationship(
