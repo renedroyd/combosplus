@@ -51,16 +51,17 @@ class ManualSubscriptionProvisioningTest extends TestCase
             $tenant->id,
             $price->id,
             $admin,
-            'Prueba administrativa de 30 días',
+            'Prueba administrativa de 14 días',
+            14,
         );
 
         $this->assertSame($tenant->id, $subscription->tenant_id);
         $this->assertSame($plan->id, $subscription->plan_id);
         $this->assertSame($admin->id, $subscription->created_by_admin_id);
-        $this->assertSame('Prueba administrativa de 30 días', $subscription->creation_reason);
+        $this->assertSame('Prueba administrativa de 14 días', $subscription->creation_reason);
         $this->assertSame('active', $subscription->status);
         $this->assertTrue($subscription->starts_at->equalTo(now()));
-        $this->assertTrue($subscription->ends_at->equalTo(now()->copy()->addMonthNoOverflow()));
+        $this->assertTrue($subscription->ends_at->equalTo(now()->copy()->addDays(14)));
         $this->assertNull($subscription->latest_payment_id);
     }
 
