@@ -42,7 +42,7 @@ class StoreOnboardingWidgetTest extends TestCase
             $this->actingAs($user, 'admin');
 
             $widget = new \App\Filament\Widgets\StoreOnboarding;
-            $data = $widget->getViewData();
+            $data = $tenant->run(fn () => $widget->getViewData());
 
             $this->assertSame(25, $data['progress']);
             $this->assertCount(4, $data['steps']);
