@@ -8,6 +8,7 @@ use App\Filament\Resources\Products\Pages\ListProducts;
 use App\Filament\Resources\Products\Schemas\ProductForm;
 use App\Filament\Resources\Products\Tables\ProductsTable;
 use App\Models\Product;
+use App\Models\PlatformUser;
 use App\Services\SaasTenantAccessService;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -36,7 +37,11 @@ class ProductResource extends Resource
     {
         $tenantId = tenant()?->getTenantKey();
 
+        $user = auth('admin')->user();
+
         return is_string($tenantId)
+            && $user instanceof PlatformUser
+            && $user->can('create', Product::class)
             && app(SaasTenantAccessService::class)->canCreateProduct($tenantId);
     }
 
