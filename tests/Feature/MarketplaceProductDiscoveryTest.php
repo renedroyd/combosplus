@@ -129,40 +129,19 @@ class MarketplaceProductDiscoveryTest extends TestCase
         }
     }
 
-    public function test_homepage_exposes_tenant_slugs_for_store_and_product_links(): void
+    public function test_homepage_exposes_registered_store_public_slug(): void
     {
-        $tenant = $this->createPublishedTenant('Nexo Test Store', 'nexo-test-store', 'Tienda de prueba.');
+        $tenant = $this->createTenant('Nexo Test Store', 'nexo-test-store', 'Tienda de prueba.', 'draft');
 
         try {
-            $tenant->run(function (): void {
-                $category = Category::create([
-                    'name' => 'Accesorios',
-                    'slug' => 'accesorios',
-                    'is_visible' => true,
-                    'sort_order' => 0,
-                ]);
-
-                Product::create([
-                    'category_id' => $category->getKey(),
-                    'name' => 'Bolso de prueba',
-                    'slug' => 'bolso-prueba',
-                    'price' => 25,
-                    'quantity' => 3,
-                    'sku' => 'BOL-TEST-001',
-                    'description' => 'Producto de prueba para la portada.',
-                    'is_visible' => true,
-                ]);
-            });
-
             $view = app(MarketplaceController::class)->home();
             $data = $view->getData();
 
             $this->assertTrue(
                 $data['stores']->contains(fn (Tenant $store): bool => $store->slug === 'nexo-test-store')
             );
-            $this->assertSame('Bolso de prueba', $data['featuredProducts']->first()->name);
-            $this->assertSame('nexo-test-store', $data['featuredProducts']->first()->marketplace_tenant_slug);
-            $this->assertSame('Accesorios', $data['categories']->first()->name);
+            $this->assertCount(0, $data['featuredProducts']);
+            $this->assertCount(0, $data['categories']);
         } finally {
             $tenant->delete();
         }
