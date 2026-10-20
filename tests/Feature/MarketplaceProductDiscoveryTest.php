@@ -129,6 +129,24 @@ class MarketplaceProductDiscoveryTest extends TestCase
         }
     }
 
+    public function test_homepage_exposes_registered_store_public_slug(): void
+    {
+        $tenant = $this->createTenant('Nexo Test Store', 'nexo-test-store', 'Tienda de prueba.', 'draft');
+
+        try {
+            $view = app(MarketplaceController::class)->home();
+            $data = $view->getData();
+
+            $this->assertTrue(
+                $data['stores']->contains(fn (Tenant $store): bool => $store->slug === 'nexo-test-store')
+            );
+            $this->assertCount(0, $data['featuredProducts']);
+            $this->assertCount(0, $data['categories']);
+        } finally {
+            $tenant->delete();
+        }
+    }
+
     private function createPublishedTenant(string $name, string $slug, string $description): Tenant
     {
         return $this->createTenant($name, $slug, $description, 'published');
