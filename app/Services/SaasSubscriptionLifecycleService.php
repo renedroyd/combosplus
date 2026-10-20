@@ -65,12 +65,19 @@ class SaasSubscriptionLifecycleService
         int $planPriceId,
         int|Admin $administrator,
         string $reason,
+        ?int $durationDays = null,
     ): SaasSubscription {
         $reason = trim($reason);
 
         if ($reason === '') {
             throw ValidationException::withMessages([
                 'creation_reason' => 'Indica el motivo administrativo de la activación.',
+            ]);
+        }
+
+        if ($durationDays !== null && ($durationDays < 1 || $durationDays > 3660)) {
+            throw ValidationException::withMessages([
+                'duration_days' => 'La duración personalizada debe estar entre 1 y 3660 días.',
             ]);
         }
 
@@ -108,7 +115,9 @@ class SaasSubscriptionLifecycleService
                     ? $latest->ends_at->copy()
                     : $now->copy();
 
-                $endsAt = $this->endDateFor($price->billing_interval, $startsAt);
+                $endsAt = $durationDays === null
+                    ? $this->endDateFor($price->billing_interval, $startsAt)
+                    : $startsAt->copy()->addDays($durationDays);
 
                 return SaasSubscription::query()->create([
                     'tenant_id' => $tenantId,
