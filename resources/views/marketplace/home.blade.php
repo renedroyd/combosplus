@@ -34,7 +34,7 @@
     <div class="flex items-end justify-between gap-4"><div><p class="text-sm font-semibold uppercase tracking-wider text-[#b78600]">Reputación</p><h2 class="mt-1 text-3xl font-semibold">Tiendas destacadas</h2></div><a href="{{ route('marketplace.stores') }}" class="text-sm font-semibold text-[#b78600]">Ver todas →</a></div>
     <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         @forelse($stores as $store)
-            <a href="{{ route('marketplace.store',$store) }}" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+            <a href="{{ route('marketplace.store',$store->slug) }}" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
                 <div class="flex items-center gap-4"><div class="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-[#fff8d6] font-bold text-[#b78600]">{{ mb_strtoupper(mb_substr($store->name,0,1)) }}</div><div class="min-w-0"><h3 class="truncate font-semibold group-hover:text-[#b78600]">{{ $store->name }}</h3><p class="text-sm text-slate-500">{{ $store->review_count }} opiniones</p></div></div>
                 <div class="mt-5 text-sm"><span class="text-amber-500">★</span> <b>{{ number_format((float)$store->rating,1) }}</b></div>
                 <p class="mt-3 line-clamp-2 text-sm text-slate-500">{{ $store->description ?: 'Conoce esta tienda en Nexo.' }}</p>
@@ -51,7 +51,7 @@
         <p class="text-sm font-semibold uppercase tracking-wider text-[#b78600]">Novedades</p><h2 class="mt-1 text-3xl font-semibold">Nuevas tiendas</h2>
         <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @foreach($newStores as $store)
-                <a href="{{ route('marketplace.store',$store) }}" class="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-[#ffd21f]/50 hover:shadow-md">
+                <a href="{{ route('marketplace.store',$store->slug) }}" class="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-[#ffd21f]/50 hover:shadow-md">
                     <div class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-slate-100 font-bold text-slate-700">{{ mb_strtoupper(mb_substr($store->name,0,1)) }}</div>
                     <div class="min-w-0"><h3 class="truncate font-semibold group-hover:text-[#b78600]">{{ $store->name }}</h3><p class="mt-1 line-clamp-1 text-sm text-slate-500">{{ $store->description ?: 'Nuevo comercio en Nexo.' }}</p></div>
                 </a>
