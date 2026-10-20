@@ -3,8 +3,7 @@
 namespace App\Filament\Resources\PaymentMethods\Tables;
 
 use App\Filament\Tables\PremiumTableDefaults;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -26,10 +25,6 @@ class PaymentMethodsTable
             ->recordActions([
                 EditAction::make()->iconButton()->tooltip('Editar metodo de pago'),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->toolbarActions([]);
     }
 }
