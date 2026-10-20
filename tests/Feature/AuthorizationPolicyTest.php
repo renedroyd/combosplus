@@ -68,6 +68,47 @@ class AuthorizationPolicyTest extends TestCase
         }
     }
 
+    public function test_order_deletion_requires_tenant_membership_and_management_role(): void
+    {
+        $tenant = Tenant::create(['id' => 'policy-order-delete']);
+        $customer = PlatformUser::create([
+            'name' => 'Customer',
+            'email' => 'customer-order-delete@example.test',
+            'password' => 'password',
+        ]);
+        $outsider = PlatformUser::create([
+            'name' => 'Outsider',
+            'email' => 'outsider-order-delete@example.test',
+            'password' => 'password',
+        ]);
+
+        TenantMembership::create([
+            'tenant_id' => $tenant->id,
+            'user_id' => $customer->id,
+            'role' => TenantRole::Customer,
+            'status' => 'active',
+            'is_owner' => false,
+        ]);
+
+        $order = new Order([
+            'platform_user_id' => $customer->id,
+            'status' => 'pending',
+        ]);
+
+        try {
+            $this->assertFalse($tenant->run(
+                fn () => app(OrderPolicy::class)->delete($customer, $order)
+            ));
+            $this->assertFalse($tenant->run(
+                fn () => app(OrderPolicy::class)->delete($outsider, $order)
+            ));
+        } finally {
+            $tenant->delete();
+            $customer->delete();
+            $outsider->delete();
+        }
+    }
+
     public function test_membership_in_one_tenant_does_not_authorize_another(): void
     {
         $allowed = Tenant::create(['id' => 'policy-allowed']);
