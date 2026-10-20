@@ -43,6 +43,10 @@ class OrderPolicy
 
     public function delete(PlatformUser $user, Order $order): bool
     {
+        if (! $this->access->canAccessCurrentTenant($user)) {
+            return false;
+        }
+
         $role = $this->access->membershipForCurrentTenant($user)?->role;
 
         return in_array($role, [TenantRole::Owner, TenantRole::Admin, TenantRole::Manager], true);
