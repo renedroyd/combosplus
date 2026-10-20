@@ -6,7 +6,6 @@ use App\Filament\Tables\PremiumTableDefaults;
 use App\Models\ZellePayment;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
@@ -45,6 +44,8 @@ class ZellePaymentsTable
                     ->label('Confirmar pago')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
+                    ->authorize(fn (ZellePayment $record): bool => (bool) (auth('admin')->user()?->can('update', $record) ?? false))
+                    ->authorize(fn (ZellePayment $record): bool => (bool) (auth('admin')->user()?->can('update', $record) ?? false))
                     ->visible(fn (ZellePayment $record) => $record->status === 'pending')
                     ->requiresConfirmation()
                     ->action(function (ZellePayment $record) {
@@ -79,10 +80,6 @@ class ZellePaymentsTable
                             ->send();
                     }),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->toolbarActions([]);
     }
 }
