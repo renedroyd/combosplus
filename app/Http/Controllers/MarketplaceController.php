@@ -335,7 +335,10 @@ class MarketplaceController extends Controller
                     ->with('category')
                     ->where('is_visible', true)
                     ->get()
-                    ->each(fn (Product $product) => $product->setAttribute('marketplace_tenant_id', $tenant->getKey()))
+                    ->each(function (Product $product) use ($tenant): void {
+                        $product->setAttribute('marketplace_tenant_id', $tenant->getKey());
+                        $product->setAttribute('marketplace_tenant_slug', $tenant->slug);
+                    })
             )
         );
     }
