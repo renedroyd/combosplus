@@ -73,6 +73,7 @@ class MarketplaceProductDiscoveryTest extends TestCase
             $this->assertCount(1, $products);
             $this->assertSame('Laptop Pro', $products->first()->name);
             $this->assertSame($matching->getKey(), $products->first()->marketplace_tenant_id);
+            $this->assertSame('tecnologia-plus', $products->first()->marketplace_tenant_slug);
         } finally {
             $matching->delete();
             $draft->delete();
