@@ -86,7 +86,7 @@ class SaasSubscriptionLifecycleService
             : $administrator;
 
         return DB::connection((new SaasSubscription())->getConnectionName())
-            ->transaction(function () use ($tenantId, $planPriceId, $administratorId, $reason): SaasSubscription {
+            ->transaction(function () use ($tenantId, $planPriceId, $administratorId, $reason, $durationDays): SaasSubscription {
                 Tenant::query()->whereKey($tenantId)->lockForUpdate()->firstOrFail();
 
                 $price = SaasPlanPrice::query()
