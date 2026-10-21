@@ -24,6 +24,8 @@ class SaasSubscription extends Model
         'plan_id',
         'plan_price_id',
         'latest_payment_id',
+        'created_by_admin_id',
+        'creation_reason',
         'status',
         'starts_at',
         'ends_at',
@@ -54,6 +56,11 @@ class SaasSubscription extends Model
     public function latestPayment(): BelongsTo
     {
         return $this->belongsTo(SaasSubscriptionPayment::class, 'latest_payment_id');
+    }
+
+    public function createdByAdmin(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'created_by_admin_id');
     }
 
     public function scopeCurrent(Builder $query, ?Carbon $at = null): Builder
