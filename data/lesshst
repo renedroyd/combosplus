@@ -1,0 +1,4 @@
+.less-history-file:
+.search
+"->only(['id', 'name']);
+" \App\Models\TenantMembership::where('tenant_id', $tenant->id)

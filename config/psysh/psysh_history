@@ -1,0 +1,4 @@
+_HiStOrY_V2_
+$tenant\040=\040\134App\134Models\134Tenant::whereHas(\012\040\040\040\040'domains',\012\040\040\040\040fn\040($q)\040=>\040$q->where('domain',\040'clasicodubai.localhost')\012)->first();
+exit
+exit
