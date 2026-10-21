@@ -8,6 +8,7 @@ use App\Filament\Resources\Branches\Pages\ListBranches;
 use App\Filament\Resources\Branches\Schemas\BranchForm;
 use App\Filament\Resources\Branches\Tables\BranchesTable;
 use App\Models\Branch;
+use App\Models\PlatformUser;
 use App\Services\SaasTenantAccessService;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -35,8 +36,11 @@ class StoreBranchResource extends Resource
     public static function canCreate(): bool
     {
         $tenantId = tenant()?->getTenantKey();
+        $user = auth('admin')->user();
 
         return is_string($tenantId)
+            && $user instanceof PlatformUser
+            && $user->can('create', Branch::class)
             && app(SaasTenantAccessService::class)->canCreateBranch($tenantId);
     }
 

@@ -2,8 +2,6 @@
 
 namespace App\Filament\Resources\ZellePayments;
 
-use App\Filament\Resources\ZellePayments\Pages\CreateZellePayment;
-use App\Filament\Resources\ZellePayments\Pages\EditZellePayment;
 use App\Filament\Resources\ZellePayments\Pages\ListZellePayments;
 use App\Filament\Resources\ZellePayments\Schemas\ZellePaymentForm;
 use App\Filament\Resources\ZellePayments\Tables\ZellePaymentsTable;
@@ -52,7 +50,6 @@ class ZellePaymentResource extends Resource
     {
         return [
             'index' => ListZellePayments::route('/'),
-            'edit' => EditZellePayment::route('/{record}/edit'),
         ];
     }
 }

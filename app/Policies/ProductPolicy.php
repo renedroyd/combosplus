@@ -15,7 +15,7 @@ class ProductPolicy
 
     public function viewAny(PlatformUser $user): bool
     {
-        return $this->access->canAccessCurrentTenant($user);
+        return $this->canViewCatalog($user);
     }
 
     public function view(PlatformUser $user, Product $product): bool
@@ -36,6 +36,18 @@ class ProductPolicy
     public function delete(PlatformUser $user, Product $product): bool
     {
         return $this->canManageCatalog($user);
+    }
+
+    private function canViewCatalog(PlatformUser $user): bool
+    {
+        $membership = $this->access->membershipForCurrentTenant($user);
+
+        return $membership !== null && in_array($membership->role, [
+            TenantRole::Owner,
+            TenantRole::Admin,
+            TenantRole::Manager,
+            TenantRole::Staff,
+        ], true);
     }
 
     private function canManageCatalog(PlatformUser $user): bool
