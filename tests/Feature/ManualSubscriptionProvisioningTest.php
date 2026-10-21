@@ -14,10 +14,9 @@ use Tests\TestCase;
 
 class ManualSubscriptionProvisioningTest extends TestCase
 {
-    // Tenant provisioning may execute MySQL DDL, which implicitly commits and
-    // invalidates the savepoints created by RefreshDatabase's outer transaction.
-    // Run migrations without wrapping each test in that transaction instead.
-    use DatabaseMigrations;
+    // Suppress tenant lifecycle events so tests do not create tenant databases
+    // or execute DDL inside RefreshDatabase's transaction.
+    use RefreshDatabase;
 
     public function test_platform_admin_can_manually_provision_subscription_with_audit_reason(): void
     {
