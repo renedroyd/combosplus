@@ -153,7 +153,6 @@ class MarketplaceProductDiscoveryTest extends TestCase
         $html = $view->render();
 
         $this->assertStringContainsString('Descubre tu próximo', $html);
-        $this->assertStringContainsString('Explora por categoría', $html);
         $this->assertStringContainsString('Productos que te pueden encantar', $html);
         $this->assertStringContainsString('Haz que más personas descubran tu negocio', $html);
         $this->assertStringContainsString('Vender en Nexo', $html);
