@@ -147,6 +147,18 @@ class MarketplaceProductDiscoveryTest extends TestCase
         }
     }
 
+    public function test_homepage_renders_prominent_discovery_and_seller_sections(): void
+    {
+        $view = app(MarketplaceController::class)->home();
+        $html = $view->render();
+
+        $this->assertStringContainsString('Descubre tu próximo', $html);
+        $this->assertStringContainsString('Explora por categoría', $html);
+        $this->assertStringContainsString('Productos que te pueden encantar', $html);
+        $this->assertStringContainsString('Haz que más personas descubran tu negocio', $html);
+        $this->assertStringContainsString('marketplace.register', $html);
+    }
+
     private function createPublishedTenant(string $name, string $slug, string $description): Tenant
     {
         return $this->createTenant($name, $slug, $description, 'published');
