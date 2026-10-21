@@ -8,7 +8,7 @@ use App\Models\SaasPlan;
 use App\Models\SaasPlanPrice;
 use App\Models\Tenant;
 use App\Services\SaasSubscriptionLifecycleService;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
@@ -23,7 +23,7 @@ class ManualSubscriptionProvisioningTest extends TestCase
     {
         $this->travelTo(now()->startOfSecond());
 
-        $tenant = Tenant::create(['id' => 'manual-subscription-tenant']);
+        $tenant = Tenant::withoutEvents(fn () => Tenant::create(['id' => 'manual-subscription-tenant']));
         $admin = Admin::create([
             'name' => 'Platform Admin',
             'email' => 'manual-subscription-admin@example.test',
@@ -70,7 +70,7 @@ class ManualSubscriptionProvisioningTest extends TestCase
 
     public function test_manual_provisioning_rejects_inactive_price(): void
     {
-        $tenant = Tenant::create(['id' => 'manual-subscription-inactive']);
+        $tenant = Tenant::withoutEvents(fn () => Tenant::create(['id' => 'manual-subscription-inactive']));
         $admin = Admin::create([
             'name' => 'Platform Admin',
             'email' => 'manual-subscription-inactive@example.test',
