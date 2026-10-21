@@ -8,13 +8,16 @@ use App\Models\SaasPlan;
 use App\Models\SaasPlanPrice;
 use App\Models\Tenant;
 use App\Services\SaasSubscriptionLifecycleService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class ManualSubscriptionProvisioningTest extends TestCase
 {
-    use RefreshDatabase;
+    // Tenant provisioning may execute MySQL DDL, which implicitly commits and
+    // invalidates the savepoints created by RefreshDatabase's outer transaction.
+    // Run migrations without wrapping each test in that transaction instead.
+    use DatabaseMigrations;
 
     public function test_platform_admin_can_manually_provision_subscription_with_audit_reason(): void
     {
