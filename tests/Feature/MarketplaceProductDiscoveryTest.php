@@ -9,6 +9,7 @@ use App\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Vite;
 use Tests\TestCase;
 
 class MarketplaceProductDiscoveryTest extends TestCase
@@ -149,6 +150,8 @@ class MarketplaceProductDiscoveryTest extends TestCase
 
     public function test_homepage_renders_prominent_discovery_and_seller_sections(): void
     {
+        Vite::fake();
+
         $view = app(MarketplaceController::class)->home();
         $html = $view->render();
 
