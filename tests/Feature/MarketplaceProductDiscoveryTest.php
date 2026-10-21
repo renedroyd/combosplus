@@ -150,7 +150,7 @@ class MarketplaceProductDiscoveryTest extends TestCase
 
     public function test_homepage_renders_prominent_discovery_and_seller_sections(): void
     {
-        Vite::fake();
+        Vite::shouldReceive('__invoke')->andReturn('');
 
         $view = app(MarketplaceController::class)->home();
         $html = $view->render();
