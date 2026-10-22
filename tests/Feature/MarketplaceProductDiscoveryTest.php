@@ -155,13 +155,13 @@ class MarketplaceProductDiscoveryTest extends TestCase
         $view = app(MarketplaceController::class)->home();
         $html = $view->render();
 
-        $this->assertStringContainsString('Descubre tu próximo', $html);
-        $this->assertStringContainsString('Productos que te pueden encantar', $html);
-        $this->assertStringContainsString('Haz que más personas descubran tu negocio', $html);
+        $this->assertStringContainsString('Bienvenido a', $html);
+        $this->assertStringContainsString('Productos destacados', $html);
+        $this->assertStringContainsString('Vende en NEXO', $html);
         $this->assertStringContainsString('Vender en Nexo', $html);
         $this->assertStringContainsString('images.unsplash.com', $html);
-        $this->assertStringContainsString('nexo-parallax', $html);
-        $this->assertStringContainsString('Un mundo de tiendas.', $html);
+        $this->assertStringContainsString('nexo-hero', $html);
+        $this->assertStringContainsString('Un mundo de tiendas', $html);
         $this->assertStringContainsString('Explorar tiendas', $html);
         $this->assertStringContainsString('alt="Tecnología y dispositivos electrónicos"', $html);
         $this->assertStringContainsString('loading="lazy"', $html);
