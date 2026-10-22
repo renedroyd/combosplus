@@ -9,6 +9,7 @@ use App\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Vite;
 use Tests\TestCase;
 
 class MarketplaceProductDiscoveryTest extends TestCase
@@ -145,6 +146,19 @@ class MarketplaceProductDiscoveryTest extends TestCase
         } finally {
             $tenant->delete();
         }
+    }
+
+    public function test_homepage_renders_prominent_discovery_and_seller_sections(): void
+    {
+        Vite::shouldReceive('__invoke')->andReturn('');
+
+        $view = app(MarketplaceController::class)->home();
+        $html = $view->render();
+
+        $this->assertStringContainsString('Descubre tu próximo', $html);
+        $this->assertStringContainsString('Productos que te pueden encantar', $html);
+        $this->assertStringContainsString('Haz que más personas descubran tu negocio', $html);
+        $this->assertStringContainsString('Vender en Nexo', $html);
     }
 
     private function createPublishedTenant(string $name, string $slug, string $description): Tenant
