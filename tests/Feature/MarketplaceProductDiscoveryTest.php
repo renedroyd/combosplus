@@ -159,6 +159,9 @@ class MarketplaceProductDiscoveryTest extends TestCase
         $this->assertStringContainsString('Productos que te pueden encantar', $html);
         $this->assertStringContainsString('Haz que más personas descubran tu negocio', $html);
         $this->assertStringContainsString('Vender en Nexo', $html);
+        $this->assertStringContainsString('images.unsplash.com', $html);
+        $this->assertStringContainsString('alt="Tecnología y dispositivos electrónicos"', $html);
+        $this->assertStringContainsString('loading="lazy"', $html);
     }
 
     private function createPublishedTenant(string $name, string $slug, string $description): Tenant
