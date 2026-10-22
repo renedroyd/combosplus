@@ -160,6 +160,9 @@ class MarketplaceProductDiscoveryTest extends TestCase
         $this->assertStringContainsString('Haz que más personas descubran tu negocio', $html);
         $this->assertStringContainsString('Vender en Nexo', $html);
         $this->assertStringContainsString('images.unsplash.com', $html);
+        $this->assertStringContainsString('nexo-parallax', $html);
+        $this->assertStringContainsString('Un mundo de tiendas.', $html);
+        $this->assertStringContainsString('Explorar tiendas', $html);
         $this->assertStringContainsString('alt="Tecnología y dispositivos electrónicos"', $html);
         $this->assertStringContainsString('loading="lazy"', $html);
     }

@@ -42,10 +42,24 @@
     </div>
 </section>
 
+
+<section aria-label="Descubre el universo Nexo" class="nexo-parallax relative isolate overflow-hidden bg-violet-950 text-white" style="background-image: linear-gradient(90deg, rgba(46,16,101,.94), rgba(88,28,135,.76), rgba(15,23,42,.70)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=2000&q=85')">
+    <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-r from-fuchsia-700/20 via-transparent to-orange-500/20"></div>
+    <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
+        <p class="text-xs font-black uppercase tracking-[.25em] text-amber-300 sm:text-sm">Más que comprar: descubrir</p>
+        <h2 class="mt-4 max-w-3xl text-3xl font-black leading-tight text-white drop-shadow-lg sm:text-5xl lg:text-6xl">Un mundo de tiendas. <span class="text-amber-300">Tu próxima historia.</span></h2>
+        <p class="mt-5 max-w-2xl text-base font-medium leading-7 text-white drop-shadow sm:text-xl sm:leading-8">Recorre comercios independientes, conoce sus propuestas y encuentra eso que no sabías que estabas buscando.</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+            <a href="{{ route('marketplace.stores') }}" class="inline-flex min-h-12 items-center rounded-xl bg-amber-300 px-6 py-3 font-black text-slate-950 shadow-lg transition hover:-translate-y-0.5 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-violet-900">Explorar tiendas <span class="ml-2" aria-hidden="true">↗</span></a>
+            <a href="{{ route('marketplace.products') }}" class="inline-flex min-h-12 items-center rounded-xl border-2 border-white/80 bg-slate-950/30 px-6 py-3 font-extrabold text-white transition hover:bg-white hover:text-violet-950 focus:outline-none focus:ring-2 focus:ring-amber-300">Ver productos</a>
+        </div>
+    </div>
+</section>
+
 @if($categories->isNotEmpty())
 <section class="bg-white">
     <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div class="flex items-end justify-between gap-4"><div><p class="text-xs font-extrabold uppercase tracking-[.2em] text-violet-700">Encuentra tu estilo</p><h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">Explora por categoría</h2></div><a href="{{ route('marketplace.products') }}" class="shrink-0 text-sm font-bold text-violet-700 hover:text-fuchsia-700">Ver catálogo <span aria-hidden="true">→</span></a></div>
+        <div class="flex items-end justify-between gap-4"><div><p class="text-xs font-black uppercase tracking-[.2em] text-violet-800">Encuentra tu estilo</p><h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">Explora por categoría</h2></div><a href="{{ route('marketplace.products') }}" class="shrink-0 text-sm font-bold text-violet-700 hover:text-fuchsia-700">Ver catálogo <span aria-hidden="true">→</span></a></div>
         <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5">
             @foreach($categories as $category)
                 @php
@@ -80,7 +94,7 @@
 @endif
 
 <section class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-    <div class="flex items-end justify-between gap-4"><div><p class="text-xs font-extrabold uppercase tracking-[.2em] text-fuchsia-700">Favoritas de la comunidad</p><h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">Tiendas que vale la pena descubrir</h2><p class="mt-2 max-w-2xl text-sm text-slate-600 sm:text-base">Conoce a los vendedores y encuentra tu próximo lugar favorito para comprar.</p></div><a href="{{ route('marketplace.stores') }}" class="shrink-0 text-sm font-bold text-violet-700 hover:text-fuchsia-700">Todas las tiendas <span aria-hidden="true">→</span></a></div>
+    <div class="flex items-end justify-between gap-4"><div><p class="text-xs font-extrabold uppercase tracking-[.2em] text-fuchsia-700">Favoritas de la comunidad</p><h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">Tiendas que vale la pena descubrir</h2><p class="mt-2 max-w-2xl text-sm font-medium text-slate-700 sm:text-base">Conoce a los vendedores y encuentra tu próximo lugar favorito para comprar.</p></div><a href="{{ route('marketplace.stores') }}" class="shrink-0 text-sm font-bold text-violet-700 hover:text-fuchsia-700">Todas las tiendas <span aria-hidden="true">→</span></a></div>
     <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         @forelse($stores as $store)
             <a href="{{ route('marketplace.store',$store->slug) }}" class="group rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-200 hover:shadow-xl hover:shadow-violet-100/60">
@@ -128,6 +142,14 @@
         @empty
             <div class="col-span-full rounded-3xl border border-dashed border-violet-200 bg-violet-50 p-10 text-center"><p class="text-3xl" aria-hidden="true">📦</p><h3 class="mt-3 text-lg font-bold text-slate-900">Pronto habrá productos para descubrir</h3><p class="mt-2 text-sm text-slate-600">Mientras tanto, conoce las tiendas que ya forman parte de Nexo.</p><a href="{{ route('marketplace.stores') }}" class="mt-5 inline-flex rounded-xl bg-violet-700 px-5 py-3 font-bold text-white hover:bg-violet-800">Explorar tiendas</a></div>
         @endforelse
+    </div>
+</section>
+
+
+<section aria-label="Explora nuevos hallazgos" class="nexo-parallax relative isolate overflow-hidden bg-slate-950 text-white" style="background-image: linear-gradient(90deg, rgba(124,45,18,.92), rgba(190,24,93,.78), rgba(76,29,149,.82)), url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=2000&q=85')">
+    <div class="relative mx-auto flex max-w-7xl flex-col gap-7 px-4 py-14 sm:px-6 sm:py-20 md:flex-row md:items-center md:justify-between lg:px-8 lg:py-24">
+        <div class="max-w-3xl"><p class="text-xs font-black uppercase tracking-[.25em] text-amber-300 sm:text-sm">Tu próxima sorpresa te espera</p><h2 class="mt-4 text-3xl font-black leading-tight text-white drop-shadow-lg sm:text-5xl">Sal de lo de siempre. <span class="text-amber-300">Encuentra algo distinto.</span></h2><p class="mt-4 max-w-2xl font-medium leading-7 text-white drop-shadow sm:text-lg">Explora negocios nuevos, descubre sus productos y apoya a las tiendas que hacen única a nuestra comunidad.</p></div>
+        <a href="{{ route('marketplace.stores', ['sort' => 'newest']) }}" class="inline-flex min-h-12 shrink-0 items-center justify-center rounded-xl bg-white px-6 py-3 font-black text-fuchsia-900 shadow-xl transition hover:-translate-y-0.5 hover:bg-amber-200 focus:outline-none focus:ring-2 focus:ring-white">Descubrir nuevas tiendas <span class="ml-2" aria-hidden="true">↗</span></a>
     </div>
 </section>
 
