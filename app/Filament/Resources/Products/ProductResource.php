@@ -37,12 +37,13 @@ class ProductResource extends Resource
         $tenantId = tenant()?->getTenantKey();
         $user = auth('admin')->user();
 
-        // Authorization is role/membership-based. Subscription entitlements are
-        // enforced separately by CreateProduct and the commercial middleware so
-        // a billing restriction is not misreported as an authorization 403.
+        // Keep role authorization separate from subscription limits, but hide
+        // the create action when the tenant is expired or has reached its cap.
+        // CreateProduct repeats the check on write to enforce the rule server-side.
         return is_string($tenantId)
             && $user instanceof PlatformUser
-            && $user->can('create', Product::class);
+            && $user->can('create', Product::class)
+            && app(\App\Services\SaasTenantAccessService::class)->canCreateProduct($tenantId);
     }
 
     public static function form(Schema $schema): Schema
