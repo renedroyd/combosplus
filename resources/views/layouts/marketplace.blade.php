@@ -3,18 +3,19 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="#312e81">
+    <meta name="theme-color" content="#6d28d9">
     <meta name="description" content="Nexo: descubre productos, explora tiendas independientes y lleva tu negocio a más clientes.">
     <title>@yield('title','Nexo — Tu mundo, más cerca')</title>
     @vite(['resources/css/app.css','resources/js/app.js'])
+<style>html{scroll-behavior:smooth}.nexo-parallax{background-position:center;background-size:cover;background-attachment:fixed}@media(max-width:767px),(prefers-reduced-motion:reduce){.nexo-parallax{background-attachment:scroll}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}</style>
 </head>
-<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+<body class="min-h-screen bg-white text-slate-950 antialiased selection:bg-fuchsia-200 selection:text-slate-950">
 <div class="bg-gradient-to-r from-violet-700 via-fuchsia-600 to-rose-500 text-white">
     <div class="mx-auto flex max-w-7xl items-center justify-center gap-2 px-4 py-2 text-center text-xs font-bold sm:text-sm">
         <span aria-hidden="true">✦</span><span>Descubre tiendas increíbles y encuentra algo nuevo en Nexo.</span><a href="{{ route('marketplace.register') }}" class="underline decoration-white/60 underline-offset-2 hover:decoration-white">¿Vendes? Únete aquí</a>
     </div>
 </div>
-<header class="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 text-slate-900 shadow-sm backdrop-blur">
+<header class="sticky top-0 z-40 border-b border-violet-100 bg-white/95 text-slate-950 shadow-md shadow-violet-950/5 backdrop-blur">
     <div class="mx-auto flex min-h-[4.5rem] max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <a href="{{ route('marketplace.home') }}" aria-label="Nexo, página principal" class="flex shrink-0 items-center gap-2 text-2xl font-black tracking-tight"><span class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-violet-700 to-fuchsia-600 text-xl text-white shadow-md shadow-violet-200">N</span><span class="bg-gradient-to-r from-violet-800 to-fuchsia-600 bg-clip-text text-transparent">Nexo<span class="text-slate-900">.</span></span></a>
         <form action="{{ route('marketplace.products') }}" method="GET" role="search" class="hidden min-w-0 max-w-xl flex-1 md:flex">
