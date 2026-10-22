@@ -10,27 +10,18 @@
     ];
     $categoryColors = ['bg-sky-100','bg-amber-100','bg-pink-100','bg-blue-100','bg-rose-100','bg-emerald-100','bg-orange-100','bg-yellow-100','bg-cyan-100','bg-violet-100'];
 @endphp
-<section class="nexo-hero relative isolate overflow-hidden text-white">
-    <div class="absolute inset-0 -z-20 bg-gradient-to-br from-[#080d48] via-[#102f9b] to-[#5621a8]"></div>
-    <div class="absolute inset-0 -z-10 opacity-25" style="background-image:radial-gradient(circle at 70% 30%,#56a8ff 0,transparent 35%),radial-gradient(circle at 40% 100%,#f03bb9 0,transparent 40%)"></div>
-    <div class="mx-auto grid max-w-[1400px] items-center gap-4 px-5 py-9 sm:px-8 sm:py-12 lg:grid-cols-[.9fr_1.1fr] lg:px-10 lg:py-14">
-        <div class="relative z-10 py-3">
-            <p class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-extrabold uppercase tracking-[.18em] text-amber-200">Conecta · Descubre · Compra</p>
-            <h1 class="mt-5 text-5xl font-black leading-[.98] tracking-tight sm:text-6xl xl:text-7xl">Bienvenido a<br><span class="nexo-wordmark mt-2 inline-block">NE<span class="text-orange-400">X</span>O</span></h1>
-            <p class="mt-5 max-w-lg text-xl font-bold leading-snug text-white sm:text-2xl">Tu marketplace inteligente, donde todo se conecta.</p>
-            <div class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-blue-50"><span>✓ Mejores precios</span><span>✓ Compra segura</span><span>✓ Descubre tiendas</span></div>
-            <a href="{{ route('marketplace.products') }}" class="mt-7 inline-flex min-h-12 items-center rounded-full bg-orange-500 px-6 py-3 font-black text-white shadow-lg shadow-orange-950/30 transition hover:-translate-y-0.5 hover:bg-orange-400">¡Descubre NEXO! <span class="ml-3 text-xl">→</span></a>
+<section class="nexo-hero relative isolate overflow-hidden bg-[#111] text-white">
+    <div class="absolute inset-0 -z-20 bg-cover bg-center" style="background-image:linear-gradient(90deg,rgba(0,0,0,.88) 0%,rgba(0,0,0,.42) 43%,rgba(0,0,0,.18) 72%,rgba(0,0,0,.8) 100%),url('https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=2200&q=90')"></div>
+    <div class="mx-auto grid min-h-[300px] max-w-[1400px] items-center gap-6 px-5 py-8 sm:min-h-[340px] sm:px-8 lg:grid-cols-[1fr_240px] lg:px-10">
+        <div class="max-w-2xl">
+            <h1 class="text-4xl font-black leading-[.98] tracking-tight sm:text-5xl lg:text-6xl">Tu mundo,<br><span class="text-yellow-400">más cerca</span></h1>
+            <p class="mt-4 max-w-lg text-sm leading-6 text-white sm:text-base">En Nexo encuentras todo lo que necesitas: tecnología, moda, hogar, deportes, belleza y mucho más. Las mejores marcas, los mejores precios.</p>
+            <a href="{{ route('marketplace.products') }}" class="mt-5 inline-flex min-h-10 items-center gap-3 rounded-full bg-yellow-400 px-6 py-2.5 text-sm font-black text-slate-950 hover:bg-yellow-300">Comprar ahora <span class="text-lg">→</span></a>
         </div>
-        <div class="relative min-h-[270px] sm:min-h-[380px] lg:min-h-[420px]">
-            <div class="absolute right-2 top-2 h-40 w-40 rounded-full bg-fuchsia-500/30 blur-3xl sm:right-10 sm:h-64 sm:w-64"></div>
-            <div class="absolute inset-0 grid grid-cols-2 gap-3 sm:gap-5">
-                <a href="{{ route('marketplace.products') }}" class="group relative mt-10 overflow-hidden rounded-[2rem] shadow-2xl sm:mt-14"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=85" alt="Reloj y accesorios" class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"><div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/10 to-transparent"></div><span class="absolute bottom-5 left-4 right-4 text-lg font-black sm:bottom-7 sm:left-6 sm:text-2xl">Estilo que inspira ↗</span></a>
-                <div class="grid grid-rows-2 gap-3 sm:gap-5">
-                    <a href="{{ route('marketplace.products') }}" class="group relative overflow-hidden rounded-[2rem] shadow-2xl"><img src="https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=800&q=85" alt="Tecnología y dispositivos electrónicos" class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"><div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 to-transparent"></div><span class="absolute bottom-4 left-4 right-4 font-black sm:bottom-5 sm:left-5 sm:text-xl">Tecnología ✦</span></a>
-                    <a href="{{ route('marketplace.products') }}" class="group relative overflow-hidden rounded-[2rem] shadow-2xl"><img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=85" alt="Decoración y artículos para el hogar" class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"><div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 to-transparent"></div><span class="absolute bottom-4 left-4 right-4 font-black sm:bottom-5 sm:left-5 sm:text-xl">Dale vida a tu hogar ↗</span></a>
-                </div>
-            </div>
-            <div class="absolute -bottom-2 left-1/2 flex -translate-x-1/2 gap-2 rounded-full border border-white/20 bg-slate-950/40 px-4 py-2 backdrop-blur"><span class="h-2.5 w-2.5 rounded-full bg-amber-300"></span><span class="h-2.5 w-2.5 rounded-full bg-white/60"></span><span class="h-2.5 w-2.5 rounded-full bg-white/60"></span></div>
+        <div class="hidden space-y-4 lg:block">
+            <div class="flex items-center gap-3"><span class="grid h-12 w-12 place-items-center rounded-full border border-white/30 bg-black/40 text-2xl">🚚</span><div><p class="font-black">Envíos rápidos</p><p class="text-xs text-white/80">A todo el país</p></div></div>
+            <div class="flex items-center gap-3"><span class="grid h-12 w-12 place-items-center rounded-full border border-white/30 bg-black/40 text-2xl">🛡</span><div><p class="font-black">Compra segura</p><p class="text-xs text-white/80">Tus datos protegidos</p></div></div>
+            <div class="flex items-center gap-3"><span class="grid h-12 w-12 place-items-center rounded-full border border-white/30 bg-black/40 text-2xl">🎧</span><div><p class="font-black">Atención 24/7</p><p class="text-xs text-white/80">Siempre para ti</p></div></div>
         </div>
     </div>
 </section>
@@ -62,8 +53,8 @@
     <div class="grid gap-4 lg:grid-cols-[1.85fr_1fr]">
         <div class="nexo-panel overflow-hidden rounded-2xl p-4 sm:p-5">
             <div class="mb-4 flex items-end justify-between gap-3"><div><p class="text-xs font-black uppercase tracking-[.18em] text-orange-600">Explora el catálogo</p><h2 class="mt-1 text-xl font-black text-slate-950 sm:text-2xl">Productos destacados</h2></div><a href="{{ route('marketplace.products') }}" class="shrink-0 text-xs font-extrabold text-violet-800 hover:text-orange-600 sm:text-sm">Ver todos →</a></div>
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                @forelse($featuredProducts->take(4) as $product)
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+                @forelse($featuredProducts->take(6) as $product)
                     <a href="{{ route('marketplace.product',[$product->marketplace_tenant_slug,$product->getKey()]) }}" class="group flex min-w-0 flex-col overflow-hidden rounded-xl border border-slate-100 bg-white transition hover:-translate-y-1 hover:border-violet-200 hover:shadow-lg">
                         <div class="aspect-square overflow-hidden bg-slate-50 p-2 sm:p-3">@if($product->image)<img src="{{ asset('storage/'.$product->image) }}" alt="{{ $product->name }}" class="h-full w-full object-contain transition duration-500 group-hover:scale-105" loading="lazy">@else<div class="grid h-full place-items-center text-5xl">🛍️</div>@endif</div>
                         <div class="flex flex-1 flex-col p-3"><p class="line-clamp-2 min-h-10 text-xs font-semibold leading-5 text-slate-800 sm:text-sm">{{ $product->name }}</p><p class="mt-2 text-base font-black text-red-600">{{ number_format((float)$product->price,2) }}</p><span class="mt-3 rounded-lg bg-orange-500 px-2 py-2 text-center text-xs font-black text-white transition group-hover:bg-orange-600">Ver producto →</span></div>
