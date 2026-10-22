@@ -145,6 +145,14 @@
     </div>
 </section>
 
+
+<section aria-label="Explora nuevos hallazgos" class="nexo-parallax relative isolate overflow-hidden bg-slate-950 text-white" style="background-image: linear-gradient(90deg, rgba(124,45,18,.92), rgba(190,24,93,.78), rgba(76,29,149,.82)), url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=2000&q=85')">
+    <div class="relative mx-auto flex max-w-7xl flex-col gap-7 px-4 py-14 sm:px-6 sm:py-20 md:flex-row md:items-center md:justify-between lg:px-8 lg:py-24">
+        <div class="max-w-3xl"><p class="text-xs font-black uppercase tracking-[.25em] text-amber-300 sm:text-sm">Tu próxima sorpresa te espera</p><h2 class="mt-4 text-3xl font-black leading-tight text-white drop-shadow-lg sm:text-5xl">Sal de lo de siempre. <span class="text-amber-300">Encuentra algo distinto.</span></h2><p class="mt-4 max-w-2xl font-medium leading-7 text-white drop-shadow sm:text-lg">Explora negocios nuevos, descubre sus productos y apoya a las tiendas que hacen única a nuestra comunidad.</p></div>
+        <a href="{{ route('marketplace.stores', ['sort' => 'newest']) }}" class="inline-flex min-h-12 shrink-0 items-center justify-center rounded-xl bg-white px-6 py-3 font-black text-fuchsia-900 shadow-xl transition hover:-translate-y-0.5 hover:bg-amber-200 focus:outline-none focus:ring-2 focus:ring-white">Descubrir nuevas tiendas <span class="ml-2" aria-hidden="true">↗</span></a>
+    </div>
+</section>
+
 @if($recentProducts->isNotEmpty())
 <section class="bg-gradient-to-b from-slate-50 to-white">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
