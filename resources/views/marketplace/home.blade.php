@@ -21,10 +21,22 @@
             <div aria-hidden="true" class="absolute -left-3 top-8 h-24 w-24 rounded-3xl bg-fuchsia-400/70 rotate-12 blur-[1px] sm:-left-5"></div>
             <div aria-hidden="true" class="absolute -right-3 bottom-8 h-28 w-28 rounded-full bg-amber-300/80 blur-[1px]"></div>
             <div class="relative grid grid-cols-2 gap-4">
-                <div class="flex min-h-48 flex-col justify-between rounded-[2rem] bg-gradient-to-br from-orange-300 to-rose-400 p-5 text-slate-950 shadow-xl sm:min-h-56 sm:p-7"><span class="text-xs font-extrabold uppercase tracking-[.18em]">Explora</span><div><span class="text-5xl sm:text-6xl" aria-hidden="true">🛍️</span><p class="mt-4 text-xl font-black sm:text-2xl">Grandes hallazgos</p></div></div>
-                <div class="mt-9 flex min-h-48 flex-col justify-between rounded-[2rem] bg-gradient-to-br from-cyan-300 to-sky-500 p-5 text-slate-950 shadow-xl sm:min-h-56 sm:p-7"><span class="text-xs font-extrabold uppercase tracking-[.18em]">Conecta</span><div><span class="text-5xl sm:text-6xl" aria-hidden="true">💎</span><p class="mt-4 text-xl font-black sm:text-2xl">Marcas especiales</p></div></div>
-                <div class="-mt-5 flex min-h-44 flex-col justify-between rounded-[2rem] bg-gradient-to-br from-lime-300 to-emerald-400 p-5 text-slate-950 shadow-xl sm:min-h-52 sm:p-7"><span class="text-xs font-extrabold uppercase tracking-[.18em]">Descubre</span><div><span class="text-5xl sm:text-6xl" aria-hidden="true">✨</span><p class="mt-4 text-xl font-black sm:text-2xl">Algo nuevo hoy</p></div></div>
-                <div class="flex min-h-44 flex-col justify-between rounded-[2rem] bg-gradient-to-br from-amber-200 to-orange-300 p-5 text-slate-950 shadow-xl sm:min-h-52 sm:p-7"><span class="text-xs font-extrabold uppercase tracking-[.18em]">Emprende</span><div><span class="text-5xl sm:text-6xl" aria-hidden="true">🚀</span><p class="mt-4 text-xl font-black sm:text-2xl">Tu negocio crece</p></div></div>
+                <a href="{{ route('marketplace.products') }}" class="group relative flex min-h-48 flex-col justify-between overflow-hidden rounded-[2rem] bg-orange-300 p-5 text-white shadow-xl sm:min-h-56 sm:p-7">
+                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=700&q=85" alt="Reloj moderno, accesorios y artículos de estilo" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-110" fetchpriority="high">
+                    <span class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/15 to-slate-950/10"></span><span class="relative text-xs font-extrabold uppercase tracking-[.18em]">Estilo y accesorios</span><span class="relative mt-12 text-xl font-black sm:text-2xl">Pequeños grandes hallazgos <span aria-hidden="true">↗</span></span>
+                </a>
+                <a href="{{ route('marketplace.products') }}" class="group relative mt-9 flex min-h-48 flex-col justify-between overflow-hidden rounded-[2rem] bg-cyan-300 p-5 text-white shadow-xl sm:min-h-56 sm:p-7">
+                    <img src="https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=700&q=85" alt="Tecnología y dispositivos electrónicos" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-110" fetchpriority="high">
+                    <span class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/15 to-slate-950/10"></span><span class="relative text-xs font-extrabold uppercase tracking-[.18em]">Tecnología</span><span class="relative mt-12 text-xl font-black sm:text-2xl">Ideas que conectan <span aria-hidden="true">↗</span></span>
+                </a>
+                <a href="{{ route('marketplace.products') }}" class="group relative -mt-5 flex min-h-44 flex-col justify-between overflow-hidden rounded-[2rem] bg-emerald-300 p-5 text-white shadow-xl sm:min-h-52 sm:p-7">
+                    <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=700&q=85" alt="Decoración y artículos para el hogar" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-110" loading="lazy">
+                    <span class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/15 to-slate-950/10"></span><span class="relative text-xs font-extrabold uppercase tracking-[.18em]">Hogar</span><span class="relative mt-10 text-xl font-black sm:text-2xl">Dale vida a tus espacios <span aria-hidden="true">↗</span></span>
+                </a>
+                <a href="{{ route('marketplace.products') }}" class="group relative flex min-h-44 flex-col justify-between overflow-hidden rounded-[2rem] bg-rose-300 p-5 text-white shadow-xl sm:min-h-52 sm:p-7">
+                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=85" alt="Calzado deportivo en color rojo" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-110" loading="lazy">
+                    <span class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/15 to-slate-950/10"></span><span class="relative text-xs font-extrabold uppercase tracking-[.18em]">Moda y deporte</span><span class="relative mt-10 text-xl font-black sm:text-2xl">Encuentra tu próximo favorito <span aria-hidden="true">↗</span></span>
+                </a>
             </div>
         </div>
     </div>
@@ -48,8 +60,19 @@
                         'calzado', 'zapatos' => '👟',
                         default => '🛍️',
                     };
+                    $categoryImage = match (mb_strtolower($category->name)) {
+                        'tecnología', 'tecnologia', 'electrónica', 'electronica' => 'https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=600&q=80',
+                        'moda', 'ropa', 'vestuario' => 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80',
+                        'hogar', 'casa', 'muebles' => 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=600&q=80',
+                        'deportes', 'deporte' => 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=600&q=80',
+                        'belleza', 'salud' => 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=600&q=80',
+                        'alimentos', 'comida' => 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80',
+                        'juguetes', 'niños', 'ninos' => 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?auto=format&fit=crop&w=600&q=80',
+                        'calzado', 'zapatos' => 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80',
+                        default => 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=600&q=80',
+                    };
                 @endphp
-                <a href="{{ route('marketplace.products', ['category' => $category->name]) }}" class="group flex min-h-32 flex-col justify-between rounded-2xl border border-slate-100 bg-gradient-to-br from-slate-50 to-violet-50/70 p-4 transition duration-200 hover:-translate-y-1 hover:border-violet-200 hover:shadow-lg hover:shadow-violet-100/70 focus:outline-none focus:ring-2 focus:ring-violet-500"><span class="grid h-12 w-12 place-items-center rounded-2xl bg-white text-2xl shadow-sm transition group-hover:scale-110">{{ $categoryIcon }}</span><span class="mt-4"><span class="block font-extrabold text-slate-800 group-hover:text-violet-800">{{ $category->name }}</span><span class="mt-1 block text-xs text-slate-500">{{ $category->product_count }} {{ $category->product_count === 1 ? 'producto' : 'productos' }}</span></span></a>
+                <a href="{{ route('marketplace.products', ['category' => $category->name]) }}" class="group overflow-hidden rounded-2xl border border-slate-100 bg-white transition duration-200 hover:-translate-y-1 hover:border-violet-200 hover:shadow-lg hover:shadow-violet-100/70 focus:outline-none focus:ring-2 focus:ring-violet-500"><div class="relative h-28 overflow-hidden bg-violet-50 sm:h-36"><img src="{{ $categoryImage }}" alt="Productos de {{ $category->name }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-110" loading="lazy"><span class="absolute inset-0 bg-gradient-to-t from-slate-950/35 to-transparent"></span><span class="absolute bottom-2 right-2 rounded-full bg-white/90 px-2 py-1 text-lg shadow-sm" aria-hidden="true">{{ $categoryIcon }}</span></div><div class="p-3 sm:p-4"><span class="block font-extrabold text-slate-800 group-hover:text-violet-800">{{ $category->name }}</span><span class="mt-1 block text-xs text-slate-500">{{ $category->product_count }} {{ $category->product_count === 1 ? 'producto' : 'productos' }}</span></div></a>
             @endforeach
         </div>
     </div>
