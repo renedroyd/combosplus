@@ -155,7 +155,7 @@ class MarketplaceProductDiscoveryTest extends TestCase
         $view = app(MarketplaceController::class)->home();
         $html = $view->render();
 
-        $this->assertStringContainsString('Bienvenido a', $html);
+        $this->assertStringContainsString('Tu mundo,', $html);
         $this->assertStringContainsString('Productos destacados', $html);
         $this->assertStringContainsString('Vende en NEXO', $html);
         $this->assertStringContainsString('images.unsplash.com', $html);
